@@ -28,7 +28,10 @@ services:
     environment:
       NEO4J_URI: bolt://neo4j:7687
       SERVER_ADDRESS: "0.0.0.0:8080"
-
+    volumes:
+      - /home/admin/labbi-app/labbi-app/static/images:/static/images
+      # ^^^ Linkes Verzeichnis: Host | rechtes: Container
+      # Passe /app/static/images ggf. an, falls dein Code ein anderes Arbeitsverzeichnis nutzt!
   nginx:
     image: nginx:latest
     container_name: labbi-nginx
