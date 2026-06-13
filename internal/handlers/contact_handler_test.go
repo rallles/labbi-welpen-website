@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"net/mail"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -68,6 +69,101 @@ func TestBuildContactMailMessageRejectsInvalidReplyTo(t *testing.T) {
 
 	if _, err := buildContactMailMessage(cfg, contact); err == nil {
 		t.Fatal("buildContactMailMessage() error = nil, want error")
+	}
+}
+
+func TestBuildContactMailMessageNameCRLFDoesNotInjectHeader(t *testing.T) {
+	cfg := config.Config{
+		SMTPUser:      "sender@example.invalid",
+		ContactMailTo: "contact@example.invalid",
+	}
+	contact := models.Contact{
+		Name:    "Alice\r\nX-Injected: yes",
+		Email:   "alice@example.invalid",
+		Phone:   "+49 123",
+		Message: "Hallo zusammen",
+	}
+
+	message, err := buildContactMailMessage(cfg, contact)
+	if err != nil {
+		t.Fatalf("buildContactMailMessage() error = %v", err)
+	}
+
+	headerPart := strings.SplitN(string(message), "\r\n\r\n", 2)[0]
+	if strings.Contains(headerPart, "\r\nX-Injected:") || strings.Contains(headerPart, "\nX-Injected:") {
+		t.Fatalf("headers contain injected header: %q", headerPart)
+	}
+	if strings.Contains(headerPart, "\r") || strings.Contains(headerPart, "\n") {
+		for _, line := range strings.Split(headerPart, "\r\n") {
+			if strings.Count(line, ":") > 1 {
+				t.Fatalf("header line has unexpected additional colon-separated field: %q", line)
+			}
+		}
+	}
+}
+
+func TestBuildContactMailMessageSanitizesSubject(t *testing.T) {
+	cfg := config.Config{
+		SMTPUser:      "sender@example.invalid",
+		ContactMailTo: "contact@example.invalid",
+	}
+	contact := models.Contact{
+		Name:    "Alice\r\nCc: attacker@example.invalid",
+		Email:   "alice@example.invalid",
+		Message: "Hallo zusammen",
+	}
+
+	message, err := buildContactMailMessage(cfg, contact)
+	if err != nil {
+		t.Fatalf("buildContactMailMessage() error = %v", err)
+	}
+
+	headerPart := strings.SplitN(string(message), "\r\n\r\n", 2)[0]
+	var subjectLine string
+	for _, line := range strings.Split(headerPart, "\r\n") {
+		if strings.HasPrefix(line, "Subject: ") {
+			subjectLine = line
+			break
+		}
+	}
+	if subjectLine == "" {
+		t.Fatalf("Subject header not found in %q", headerPart)
+	}
+	if strings.Contains(subjectLine, "\n") || strings.Contains(subjectLine, "\r") {
+		t.Fatalf("subject header contains CR/LF: %q", subjectLine)
+	}
+	if strings.Contains(subjectLine, "\r\nCc:") || strings.Contains(subjectLine, "\nCc:") {
+		t.Fatalf("subject header contains injected Cc header: %q", subjectLine)
+	}
+	if !strings.Contains(subjectLine, "Neue Kontaktanfrage von Alice Cc: attacker@example.invalid") {
+		t.Fatalf("unexpected subject line: %q", subjectLine)
+	}
+}
+
+func TestBuildContactMailMessageSetsReplyTo(t *testing.T) {
+	cfg := config.Config{
+		SMTPUser:      "sender@example.invalid",
+		ContactMailTo: "contact@example.invalid",
+	}
+	contact := models.Contact{
+		Name:    "Alice Example",
+		Email:   "alice@example.invalid",
+		Message: "Hallo zusammen",
+	}
+
+	message, err := buildContactMailMessage(cfg, contact)
+	if err != nil {
+		t.Fatalf("buildContactMailMessage() error = %v", err)
+	}
+
+	expectedReplyTo := "Reply-To: " + (&mail.Address{
+		Name:    sanitizeHeaderValue(contact.Name),
+		Address: contact.Email,
+	}).String()
+
+	headerPart := strings.SplitN(string(message), "\r\n\r\n", 2)[0]
+	if !strings.Contains(headerPart, expectedReplyTo) {
+		t.Fatalf("headers %q do not contain expected Reply-To %q", headerPart, expectedReplyTo)
 	}
 }
 
