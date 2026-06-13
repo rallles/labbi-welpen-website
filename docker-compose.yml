@@ -1,16 +1,24 @@
 services:
   neo4j:
-    image: neo4j:latest
+    image: neo4j:5.26.1-community
     container_name: neo4jLabbi
+    env_file:
+      - .env
     environment:
-      - NEO4J_AUTH=neo4j/latuerts
-    ports:
-      - "7474:7474"   # HTTP browser
-      - "7687:7687"   # Bolt (Go access)
+      NEO4J_AUTH: ${NEO4J_USER:?NEO4J_USER is required}/${NEO4J_PASSWORD:?NEO4J_PASSWORD is required}
+    expose:
+      - "7474"
+      - "7687"
     volumes:
       - neo4j_data:/data
     networks:
       - labbi-net
+    healthcheck:
+      test: ["CMD-SHELL", "cypher-shell -a bolt://localhost:7687 -u \"$${NEO4J_USER}\" -p \"$${NEO4J_PASSWORD}\" 'RETURN 1' >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 40s
 
   web:
     build:
@@ -18,40 +26,49 @@ services:
       dockerfile: Dockerfile
     container_name: labbi-web
     expose:
-      - "8080"  # <-- expose statt ports, da Reverse Proxy übernimmt
+      - "8080"
     depends_on:
-      - neo4j
+      neo4j:
+        condition: service_healthy
     networks:
       - labbi-net
     env_file:
       - .env
     environment:
       NEO4J_URI: bolt://neo4j:7687
-      SERVER_ADDRESS: "0.0.0.0:8080"
+      SERVER_ADDRESS: 0.0.0.0:8080
+      UPLOAD_DIR: /app/data/uploads
     volumes:
-      - /home/admin/labbi-app/labbi-app/static/images:/static/images
-      # ^^^ Linkes Verzeichnis: Host | rechtes: Container
-      # Passe /app/static/images ggf. an, falls dein Code ein anderes Arbeitsverzeichnis nutzt!
+      - uploads:/app/data/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/healthz >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+
   nginx:
-    image: nginx:latest
+    image: nginx:1.27.4-alpine
     container_name: labbi-nginx
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./internal/public:/var/www/html
+      - ./internal/public:/var/www/html:ro
       - ./static:/var/www/static:ro
+      - uploads:/var/www/uploads:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
-      - web
+      web:
+        condition: service_healthy
     networks:
       - labbi-net
 
 volumes:
   neo4j_data:
+  uploads:
 
 networks:
   labbi-net:
     driver: bridge
-

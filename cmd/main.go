@@ -2,14 +2,14 @@ package main
 
 import (
 	"context"
-	"labbi-app/internal/config"
-	"labbi-app/internal/database"
-	"labbi-app/internal/router"
-
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"labbi-app/internal/config"
+	"labbi-app/internal/database"
+	"labbi-app/internal/router"
 
 	"github.com/joho/godotenv"
 )
@@ -55,7 +55,7 @@ func main() {
 
 	// 3. ServeMux und Routing aufsetzen
 	mux := http.NewServeMux()
-	router.SetupRoutes(mux, driver)
+	router.SetupRoutes(mux, driver, cfg)
 
 	// 4. Server starten
 	log.Printf("Labbi-App läuft auf %s", cfg.ServerAddress)

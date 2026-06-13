@@ -11,7 +11,7 @@ import (
 )
 
 // ContactHandler zeigt das Kontaktformular (GET) und verarbeitet es (POST)
-func ContactHandler(w http.ResponseWriter, r *http.Request) {
+func ContactHandler(w http.ResponseWriter, r *http.Request, cfg config.Config) {
 	if r.Method == http.MethodGet {
 		// Formular anzeigen
 		renderTemplate(w, "contact.html", nil)
@@ -29,7 +29,6 @@ func ContactHandler(w http.ResponseWriter, r *http.Request) {
 	message := r.FormValue("message")
 
 	// 1. Neo4j speichern
-	cfg := config.LoadConfig()
 	driver, err := database.NewNeo4jDriver(cfg)
 	if err != nil {
 		http.Error(w, "Datenbankverbindung fehlgeschlagen", http.StatusInternalServerError)
@@ -57,7 +56,7 @@ func ContactHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 2. E-Mail senden (optional)
-	errorMail := sendContactMail(name, email, phone, message)
+	errorMail := sendContactMail(cfg, name, email, phone, message)
 	if errorMail != nil {
 		log.Printf("E-Mail-Versand fehlgeschlagen: %v", errorMail)
 	}
@@ -74,11 +73,15 @@ func ContactHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // sendContactMail versendet eine Benachrichtigungs-E-Mail
-func sendContactMail(name, email, phone, msg string) error {
-	cfg := config.LoadConfig()
-	from := cfg.Neo4jUser + "@example.com" // oder eigenes Absender-Email
-	to := cfg.Neo4jUser + "@example.com"   // Ziel-Adresse
-	auth := smtp.PlainAuth("", cfg.Neo4jUser, cfg.Neo4jPassword, "localhost")
+func sendContactMail(cfg config.Config, name, email, phone, msg string) error {
+	if cfg.SMTPHost == "" || cfg.SMTPPort == "" || cfg.SMTPUser == "" ||
+		cfg.SMTPPassword == "" || cfg.ContactMailTo == "" {
+		return nil
+	}
+
+	from := cfg.SMTPUser
+	to := cfg.ContactMailTo
+	auth := smtp.PlainAuth("", cfg.SMTPUser, cfg.SMTPPassword, cfg.SMTPHost)
 
 	subject := "Neue Kontaktanfrage von " + name
 	body := "Name: " + name + "\n" +
@@ -89,5 +92,5 @@ func sendContactMail(name, email, phone, msg string) error {
 	msgData := []byte("Subject: " + subject + "\r\n" +
 		"\r\n" + body)
 
-	return smtp.SendMail("localhost:25", auth, from, []string{to}, msgData)
+	return smtp.SendMail(cfg.SMTPHost+":"+cfg.SMTPPort, auth, from, []string{to}, msgData)
 }

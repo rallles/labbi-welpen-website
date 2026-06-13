@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"log"
 
 	"labbi-app/internal/config"
@@ -15,12 +16,13 @@ func NewNeo4jDriver(cfg config.Config) (neo4j.DriverWithContext, error) {
 		log.Println("WARN: Neo4j URI ist leer, verwende Default neo4j://localhost:7687")
 		cfg.Neo4jUri = "neo4j://localhost:7687"
 	}
+	if cfg.Neo4jUser == "" || cfg.Neo4jPassword == "" {
+		return nil, fmt.Errorf("neo4j credentials are not configured")
+	}
 
-	// Kontext und Auth
 	driver, err := neo4j.NewDriverWithContext(
 		cfg.Neo4jUri,
-		//neo4j.BasicAuth(cfg.Neo4jUser, cfg.Neo4jPassword, ""),
-		neo4j.BasicAuth("neo4j", "latuerts", ""),
+		neo4j.BasicAuth(cfg.Neo4jUser, cfg.Neo4jPassword, ""),
 	)
 	if err != nil {
 		return nil, err

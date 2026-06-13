@@ -14,12 +14,12 @@ COPY . ./
 RUN CGO_ENABLED=0 GOOS=linux go build -o labbi-app ./cmd
 
 # ---- Final Stage ----
-FROM alpine:latest
+FROM alpine:3.21.3
 
 WORKDIR /app
 
 # Install CA certificates for TLS
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates && mkdir -p /app/data/uploads
 
 # Copy the binary
 COPY --from=builder /app/labbi-app ./labbi-app
@@ -33,6 +33,7 @@ EXPOSE 8080
 
 # Default environment (can be overridden)
 ENV SERVER_ADDRESS=":8080"
+ENV UPLOAD_DIR="/app/data/uploads"
 
 # Entry point
 ENTRYPOINT ["/app/labbi-app"]

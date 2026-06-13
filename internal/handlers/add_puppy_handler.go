@@ -11,12 +11,14 @@ import (
 	"path/filepath"
 	"time"
 
+	"labbi-app/internal/config"
+
 	"github.com/google/uuid"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
 // AddPuppyHandler verarbeitet das Admin-Formular (POST) und speichert den neuen Welpen in Neo4j.
-func AddPuppyHandler(w http.ResponseWriter, r *http.Request, driver neo4j.DriverWithContext) {
+func AddPuppyHandler(w http.ResponseWriter, r *http.Request, driver neo4j.DriverWithContext, cfg config.Config) {
 	// Nur POST zulassen
 	if r.Method != http.MethodPost {
 		http.Error(w, "Methode nicht erlaubt", http.StatusMethodNotAllowed)
@@ -47,7 +49,7 @@ func AddPuppyHandler(w http.ResponseWriter, r *http.Request, driver neo4j.Driver
 
 	// Bilder verarbeiten
 	files := r.MultipartForm.File["images"]
-	imagePaths, err := saveUploadedImages(files)
+	imagePaths, err := saveUploadedImages(files, cfg.UploadDir)
 	if err != nil {
 		log.Printf("Fehler beim Speichern der Bilder: %v", err)
 		http.Error(w, "Fehler beim Speichern der Bilder", http.StatusInternalServerError)
@@ -115,21 +117,11 @@ func AddPuppyHandler(w http.ResponseWriter, r *http.Request, driver neo4j.Driver
 }
 
 // saveUploadedImages speichert alle hochgeladenen Dateien und liefert ihre Pfade zurück
-func saveUploadedImages(files []*multipart.FileHeader) ([]string, error) {
-	wd, err := os.Getwd()
-	if err != nil {
-		log.Printf("FEHLER: Arbeitsverzeichnis konnte nicht ermittelt werden: %v", err)
-		return nil, err
-	}
-	log.Printf("Arbeitsverzeichnis (os.Getwd): %s", wd)
+func saveUploadedImages(files []*multipart.FileHeader, uploadDir string) ([]string, error) {
+	log.Printf("Upload-Verzeichnis: %s", uploadDir)
 
-	projectRoot := filepath.Dir(wd)
-	imageDir := filepath.Join(projectRoot, "static", "images")
-	log.Printf("Projekt-Stammverzeichnis: %s", projectRoot)
-	log.Printf("Bilder-Verzeichnis: %s", imageDir)
-
-	if err := os.MkdirAll(imageDir, os.ModePerm); err != nil {
-		log.Printf("FEHLER: Bilder-Verzeichnis konnte nicht angelegt werden: %v", err)
+	if err := os.MkdirAll(uploadDir, 0755); err != nil {
+		log.Printf("FEHLER: Upload-Verzeichnis konnte nicht angelegt werden: %v", err)
 		return nil, err
 	}
 
@@ -147,7 +139,7 @@ func saveUploadedImages(files []*multipart.FileHeader) ([]string, error) {
 
 		ext := filepath.Ext(fh.Filename)
 		name := fmt.Sprintf("%s_%d%s", uuid.New().String(), time.Now().UnixNano(), ext)
-		target := filepath.Join(imageDir, name)
+		target := filepath.Join(uploadDir, name)
 		log.Printf("Speichere nach: %s", target)
 
 		out, err := os.Create(target)
