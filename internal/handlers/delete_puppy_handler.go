@@ -4,6 +4,9 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"time"
+
+	"labbi-app/internal/repository"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
@@ -20,22 +23,14 @@ func DeletePuppyHandler(w http.ResponseWriter, r *http.Request, driver neo4j.Dri
 		return
 	}
 
-	// Neo4j-Session
-	session := driver.NewSession(context.Background(), neo4j.SessionConfig{})
-	defer session.Close(context.Background())
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+	defer cancel()
 
-	// Cypher-Abfrage zum Löschen des Welpen
-	_, err := session.Run(context.Background(),
-		"MATCH (p:Puppy {id: $id}) DETACH DELETE p",
-		map[string]interface{}{"id": id},
-	)
-	if err != nil {
+	if err := repository.NewPuppyRepository(driver).Delete(ctx, id); err != nil {
 		log.Printf("Fehler beim Löschen des Welpen: %v", err)
 		http.Error(w, "Fehler beim Löschen des Welpen", http.StatusInternalServerError)
 		return
 	}
 
-	// Optional: Erfolgsmeldung setzen
-	// Zurück zur Übersicht
 	http.Redirect(w, r, "/admin/puppies", http.StatusSeeOther)
 }

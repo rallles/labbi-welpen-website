@@ -28,10 +28,9 @@
       </p>
     </div>
 
-    <!-- Galerie mit Alpine.js Lightbox -->
-    <div 
+    <div
       class="puppies-gallery"
-      x-data="{ 
+      x-data="{
         images: [
           '/static/images/welpe_001_.jpg',
           '/static/images/welpe_002_.jpg',
@@ -43,88 +42,42 @@
           '/static/images/welpe_008_.jpg',
           '/static/images/welpe_009_.jpg',
           '/static/images/welpe_010_.jpg'
-        ], 
-        show: false, 
+        ],
+        show: false,
         current: 0,
         next() { this.current = (this.current < this.images.length - 1) ? this.current + 1 : 0 },
         prev() { this.current = (this.current > 0) ? this.current - 1 : this.images.length - 1 }
       }"
       style="margin-top: 40px;"
     >
-      <!-- Galerie-Grid (passt zum bestehenden Style) -->
-<div 
-  class="puppies-gallery"
-  x-data="{ 
-    images: [
-      '/static/images/welpe_001_.jpg',
-      '/static/images/welpe_002_.jpg',
-      '/static/images/welpe_003_.jpg',
-      '/static/images/welpe_004_.jpg',
-      '/static/images/welpe_005_.jpg',
-      '/static/images/welpe_006_.jpg',
-      '/static/images/welpe_007_.jpg',
-      '/static/images/welpe_008_.jpg',
-      '/static/images/welpe_009_.jpg',
-      '/static/images/welpe_010_.jpg'
-    ], 
-    show: false, 
-    current: 0,
-    next() { this.current = (this.current < this.images.length - 1) ? this.current + 1 : 0 },
-    prev() { this.current = (this.current > 0) ? this.current - 1 : this.images.length - 1 }
-  }"
-  style="margin-top: 40px;"
->
-  <!-- NEU: Vertikale Spalte statt Galerie-Grid -->
-  <div style="display: flex; flex-direction: column; gap: 18px;">
-    <template x-for="(img, i) in images" :key="i">
-      <img 
-        :src="img"
-        class="gallery-thumb"
-        alt="Welpe"
-        @click="current = i; show = true"
-        style="max-width: 420px; width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.13); cursor: pointer; align-self: center;"
-      >
-    </template>
-  </div>
-  
-  <!-- Lightbox wie gehabt -->
-  <div class="lightbox" 
-    x-show="show" 
-    @click="show = false" 
-    x-transition
-    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-          background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 999;">
-    <span class="close-btn" 
-        @click.stop="show=false" 
-        style="position: absolute; top: 20px; right: 30px; font-size: 40px; color: #fff; cursor: pointer;">&times;</span>
-    <button class="prev-btn" 
-          @click.stop="prev()" 
-          style="position: absolute; left: 20px; font-size: 40px; color: #fff; background: none; border: none; cursor: pointer;">&#8592;</button>
-    <img :src="images[current]" alt="Welpe Groß" 
-        style="display: block; margin: auto; max-width: 90vw; max-height: 90vh; border-radius: 8px;">
-    <button class="next-btn" 
-          @click.stop="next()" 
-          style="position: absolute; right: 20px; font-size: 40px; color: #fff; background: none; border: none; cursor: pointer;">&#8594;</button>
-  </div>
-</div>
-      
-      <!-- Lightbox über die ganze Seite mit Navigationspfeilen -->
-      <div class="lightbox" 
-        x-show="show" 
-        @click="show = false" 
+      <div style="display: flex; flex-direction: column; gap: 18px;">
+        <template x-for="(img, i) in images" :key="i">
+          <img
+            :src="img"
+            class="gallery-thumb"
+            alt="Welpe"
+            @click="current = i; show = true"
+            style="max-width: 420px; width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.13); cursor: pointer; align-self: center;"
+          >
+        </template>
+      </div>
+
+      <div class="lightbox"
+        x-show="show"
+        @click="show = false"
         x-transition
-        style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+        style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
               background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 999;">
-        <span class="close-btn" 
-            @click.stop="show=false" 
+        <span class="close-btn"
+            @click.stop="show=false"
             style="position: absolute; top: 20px; right: 30px; font-size: 40px; color: #fff; cursor: pointer;">&times;</span>
-        <button class="prev-btn" 
-              @click.stop="prev()" 
+        <button class="prev-btn"
+              @click.stop="prev()"
               style="position: absolute; left: 20px; font-size: 40px; color: #fff; background: none; border: none; cursor: pointer;">&#8592;</button>
-        <img :src="images[current]" alt="Welpe Groß" 
+        <img :src="images[current]" alt="Welpe Groß"
             style="display: block; margin: auto; max-width: 90vw; max-height: 90vh; border-radius: 8px;">
-        <button class="next-btn" 
-              @click.stop="next()" 
+        <button class="next-btn"
+              @click.stop="next()"
               style="position: absolute; right: 20px; font-size: 40px; color: #fff; background: none; border: none; cursor: pointer;">&#8594;</button>
       </div>
     </div>

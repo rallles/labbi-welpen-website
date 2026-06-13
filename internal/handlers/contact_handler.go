@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/smtp"
+	"time"
 
 	"labbi-app/internal/config"
 	"labbi-app/internal/database"
@@ -37,10 +38,13 @@ func ContactHandler(w http.ResponseWriter, r *http.Request, cfg config.Config) {
 	}
 	defer driver.Close(context.Background())
 
-	session := driver.NewSession(context.Background(), database.DefaultSessionConfig())
-	defer session.Close(context.Background())
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+	defer cancel()
 
-	_, err = session.Run(context.Background(),
+	session := driver.NewSession(ctx, database.DefaultSessionConfig())
+	defer session.Close(ctx)
+
+	_, err = session.Run(ctx,
 		"CREATE (c:Contact {name: $name, email: $email, phone: $phone, message: $message, ts: datetime()})",
 		map[string]interface{}{
 			"name":    name,

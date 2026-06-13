@@ -2,40 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://labbi-welpen.de/</loc>
-    <lastmod>2025-06-22T18:39:00+00:00</lastmod>
+    <lastmod>2026-06-13</lastmod>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://labbi-welpen.de/about</loc>
-    <lastmod>2025-06-22T18:39:00+00:00</lastmod>
+    <lastmod>2026-06-13</lastmod>
     <priority>0.80</priority>
   </url>
   <url>
     <loc>https://labbi-welpen.de/dogs</loc>
-    <lastmod>2025-06-22T18:39:00+00:00</lastmod>
+    <lastmod>2026-06-13</lastmod>
     <priority>0.80</priority>
   </url>
   <url>
     <loc>https://labbi-welpen.de/puppies</loc>
-    <lastmod>2025-06-22T18:39:00+00:00</lastmod>
+    <lastmod>2026-06-13</lastmod>
     <priority>0.80</priority>
   </url>
   <url>
     <loc>https://labbi-welpen.de/contact</loc>
-    <lastmod>2025-06-22T18:39:00+00:00</lastmod>
+    <lastmod>2026-06-13</lastmod>
     <priority>0.80</priority>
   </url>
   <url>
     <loc>https://labbi-welpen.de/impressum</loc>
-    <lastmod>2025-06-22T18:39:00+00:00</lastmod>
-    <priority>0.80</priority>
+    <lastmod>2026-06-13</lastmod>
+    <priority>0.60</priority>
   </url>
-    <url>
-    <loc>https://labbi-welpen.de/robots.txt</loc>
-    <lastmod>2025-06-22T18:39:00+00:00</lastmod>
-    <priority>0.80</priority>
+  <url>
+    <loc>https://labbi-welpen.de/datenschutz</loc>
+    <lastmod>2026-06-13</lastmod>
+    <priority>0.60</priority>
   </url>
 </urlset>
-
-google-site-verification=jX4qmMhmZIRbQkPcRoRQmI1v8rd6cJEA2Hu5CgKn5X8
-https://labbi-welpen.de/robots.txt 2025-06-22T18:39:00+00:00 0.80

@@ -24,9 +24,11 @@ RUN apk add --no-cache ca-certificates && mkdir -p /app/data/uploads
 # Copy the binary
 COPY --from=builder /app/labbi-app ./labbi-app
 
-# Copy static assets and templates
+# Copy public assets, templates, and crawler metadata
 COPY --from=builder /app/static ./static
 COPY --from=builder /app/internal/templates ./templates
+COPY --from=builder /app/robots.txt ./robots.txt
+COPY --from=builder /app/sitemap.xml ./sitemap.xml
 
 # Expose port
 EXPOSE 8080

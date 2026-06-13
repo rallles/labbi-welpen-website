@@ -19,32 +19,22 @@ type Purchase struct {
 }
 
 type Puppy struct {
-	Name        string
-	Birthdate   string
-	Gender      string
-	Description string
-	Images      []string
+	ID           string    `json:"id"`
+	Name         string    `json:"name"`
+	Farbe        Fellfarbe `json:"farbe"`
+	Geburtsdatum string    `json:"geburtsdatum"`
+	Geschlecht   string    `json:"geschlecht"`
+	Gewicht      float64   `json:"gewicht"`
+	Charakter    string    `json:"charakter"`
+	Geimpft      bool      `json:"geimpft"`
+	Gechippt     bool      `json:"gechippt"`
+	Entwurmt     bool      `json:"entwurmt"`
+	Eltern       []string  `json:"eltern"`
+	Notizen      string    `json:"notizen"`
+	Bilder       []string  `json:"bilder"`
 }
 
-type Welpe struct {
-	ID           string    `json:"id"`           // Eindeutige ID (z. B. UUID)
-	Name         string    `json:"name"`         // Name des Welpen
-	Farbe        Fellfarbe `json:"farbe"`        // Fellfarbe
-	Geburtsdatum string    `json:"geburtsdatum"` // Geburtsdatum NORMALNO time.Time nicht string
-	Geschlecht   string    `json:"geschlecht"`   // "männlich" oder "weiblich"
-	Gewicht      float64   `json:"gewicht"`      // Gewicht in kg
-	Charakter    string    `json:"charakter"`    // z. B. "verspielt", "ruhig"
-	Geimpft      bool      `json:"geimpft"`      // Impfstatus
-	Gechippt     bool      `json:"gechippt"`     // Chip vorhanden
-	Entwurmt     bool      `json:"entwurmt"`     // Entwurmung erfolgt
-	BildURL      string    `json:"bildUrl"`      // Link zu einem Bild
-	Eltern       []string  `json:"eltern"`       // IDs der Elterntiere (z. B. Gandalf, Anna)
-	Notizen      string    `json:"notizen"`      // Freitext für Besonderheiten
-	Bilder       []string  `json:"bilder"`       // Liste von Bild-URLs
-}
-
-// Fellfarbe für Labrador Retriever
-// Diese Typdefinition ermöglicht es, nur vordefinierte Farben zu verwenden
+// Fellfarbe für Labrador Retriever.
 type Fellfarbe string
 
 const (
@@ -52,13 +42,12 @@ const (
 	FarbeSchwarz       Fellfarbe = "schwarz"
 	FarbeGelb          Fellfarbe = "gelb"
 	FarbeBraun         Fellfarbe = "braun"
-	FarbeFoxRed        Fellfarbe = "fox red" // Variante von Gelb
-	FarbeSilber        Fellfarbe = "silber"  // nicht FCI-anerkannt
+	FarbeFoxRed        Fellfarbe = "fox red"
+	FarbeSilber        Fellfarbe = "silber"
 	FarbeChampagner    Fellfarbe = "champagner"
-	FarbeCharcoal      Fellfarbe = "charcoal" // verdünntes Schwarz
+	FarbeCharcoal      Fellfarbe = "charcoal"
 )
 
-// IstGueltigeFarbe prüft, ob die gegebene Fellfarbe gültig ist
 func IstGueltigeFarbe(f Fellfarbe) bool {
 	switch f {
 	case FarbeSchwarz, FarbeGelb, FarbeBraun, FarbeFoxRed, FarbeSilber, FarbeChampagner, FarbeCharcoal:

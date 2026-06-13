@@ -25,6 +25,9 @@ func SetupRoutes(mux *http.ServeMux, driver neo4j.DriverWithContext, cfg config.
 		handlers.ContactHandler(w, r, cfg)
 	})
 	mux.HandleFunc("/impressum", handlers.ImpressumHandler)
+	mux.HandleFunc("/datenschutz", handlers.DatenschutzHandler)
+	mux.HandleFunc("/robots.txt", handlers.RobotsHandler)
+	mux.HandleFunc("/sitemap.xml", handlers.SitemapHandler)
 
 	// Admin-Bereich: Formular anzeigen (GET) und verarbeiten (POST)
 	//mux.HandleFunc("/admin/puppies/add", middleware.AuthMiddleware(handlers.AddPuppyHandler))

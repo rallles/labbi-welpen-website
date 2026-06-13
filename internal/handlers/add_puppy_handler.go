@@ -1,168 +1,199 @@
 package handlers
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"fmt"
+	"image/jpeg"
+	"image/png"
 	"io"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"time"
 
 	"labbi-app/internal/config"
+	"labbi-app/internal/models"
+	"labbi-app/internal/repository"
 
 	"github.com/google/uuid"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
+const (
+	maxUploadImages    = 10
+	maxUploadFileSize  = 5 << 20
+	maxUploadTotalSize = 25 << 20
+	multipartMemory    = 8 << 20
+)
+
+var errInvalidImageType = errors.New("invalid image type")
+
 // AddPuppyHandler verarbeitet das Admin-Formular (POST) und speichert den neuen Welpen in Neo4j.
 func AddPuppyHandler(w http.ResponseWriter, r *http.Request, driver neo4j.DriverWithContext, cfg config.Config) {
-	// Nur POST zulassen
 	if r.Method != http.MethodPost {
 		http.Error(w, "Methode nicht erlaubt", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Multipart-Form parsen (max. 20 MB im RAM)
-	if err := r.ParseMultipartForm(20 << 20); err != nil {
+	r.Body = http.MaxBytesReader(w, r.Body, maxUploadTotalSize)
+	if err := r.ParseMultipartForm(multipartMemory); err != nil {
 		log.Printf("Fehler beim Lesen des Formulars: %v", err)
-		http.Error(w, "Fehler beim Lesen des Formulars", http.StatusBadRequest)
+		status := http.StatusBadRequest
+		var maxBytesError *http.MaxBytesError
+		if errors.As(err, &maxBytesError) {
+			status = http.StatusRequestEntityTooLarge
+		}
+		http.Error(w, "Fehler beim Lesen des Formulars", status)
 		return
 	}
 
-	// Formularwerte auslesen
-	name := r.FormValue("name")
-	birthdate := r.FormValue("geburtsdatum")
-	gender := r.FormValue("geschlecht")
-	color := r.FormValue("farbe")
-	weight := r.FormValue("gewicht")
-	character := r.FormValue("charakter")
-	vaccinated := r.FormValue("geimpft") == "true"
-	chipped := r.FormValue("gechippt") == "true"
-	dewormed := r.FormValue("entwurmung") == "true"
-	notes := r.FormValue("notizen")
+	weight, err := strconv.ParseFloat(r.FormValue("gewicht"), 64)
+	if err != nil {
+		http.Error(w, "Ungültiges Gewicht", http.StatusBadRequest)
+		return
+	}
 
-	// Eltern (Checkboxen können mehrfach übergeben werden)
-	parents := r.Form["eltern"]
-
-	// Bilder verarbeiten
-	files := r.MultipartForm.File["images"]
-	imagePaths, err := saveUploadedImages(files, cfg.UploadDir)
+	imagePaths, err := saveUploadedImages(r.MultipartForm.File["images"], cfg.UploadDir)
 	if err != nil {
 		log.Printf("Fehler beim Speichern der Bilder: %v", err)
-		http.Error(w, "Fehler beim Speichern der Bilder", http.StatusInternalServerError)
+		http.Error(w, "Fehler beim Speichern der Bilder", uploadErrorStatus(err))
 		return
 	}
 
-	// Neo4j-Verbindung und Insert
-	session := driver.NewSession(context.Background(), neo4j.SessionConfig{})
-	defer session.Close(context.Background())
-
-	puppyID := uuid.NewString()
-	// Welpenknoten erstellen
-	_, err = session.Run(context.Background(),
-		`CREATE (p:Puppy {
-		    id: $id,
-		    name: $name,
-		    geburtsdatum: date($birthdate),
-		    geschlecht: $gender,
-		    farbe: $color,
-		    gewicht: toFloat($weight),
-		    charakter: $character,
-		    geimpft: $vaccinated,
-		    gechippt: $chipped,
-		    entwurmt: $dewormed,
-		    eltern: $parents,
-		    notizen: $notes,
-		    bilder: $images
-		})`, map[string]interface{}{
-			"id":         puppyID,
-			"name":       name,
-			"birthdate":  birthdate,
-			"gender":     gender,
-			"color":      color,
-			"weight":     weight,
-			"character":  character,
-			"vaccinated": vaccinated,
-			"chipped":    chipped,
-			"dewormed":   dewormed,
-			"parents":    parents,
-			"notes":      notes,
-			"images":     imagePaths,
-		})
-
-	// Elternbeziehungen anlegen, falls vorhanden
-	if len(parents) > 0 {
-		for _, parent := range parents {
-			_, err = session.Run(context.Background(),
-				`MATCH (p:Puppy {id: $puppyID}), (parent:Puppy {id: $parentID})
-				CREATE (p)-[:HAS_PARENT]->(parent)`,
-				map[string]interface{}{
-					"puppyID":  puppyID,
-					"parentID": parent,
-				})
-		}
+	puppy := models.Puppy{
+		ID:           uuid.NewString(),
+		Name:         r.FormValue("name"),
+		Geburtsdatum: r.FormValue("geburtsdatum"),
+		Geschlecht:   r.FormValue("geschlecht"),
+		Farbe:        models.Fellfarbe(r.FormValue("farbe")),
+		Gewicht:      weight,
+		Charakter:    r.FormValue("charakter"),
+		Geimpft:      r.FormValue("geimpft") == "true",
+		Gechippt:     r.FormValue("gechippt") == "true",
+		Entwurmt:     r.FormValue("entwurmung") == "true",
+		Eltern:       r.MultipartForm.Value["eltern"],
+		Notizen:      r.FormValue("notizen"),
+		Bilder:       imagePaths,
 	}
-	// Fehler beim Speichern in Neo4j
-	if err != nil {
+
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+	defer cancel()
+
+	repo := repository.NewPuppyRepository(driver)
+	if err := repo.Create(ctx, puppy); err != nil {
+		cleanupUploadedImages(cfg.UploadDir, imagePaths)
 		log.Printf("Fehler beim Speichern in Neo4j: %v", err)
 		http.Error(w, "Fehler beim Speichern", http.StatusInternalServerError)
 		return
 	}
 
-	// Bei Erfolg zurück zum Dashboard
 	http.Redirect(w, r, "/admin?success=true", http.StatusSeeOther)
 }
 
-// saveUploadedImages speichert alle hochgeladenen Dateien und liefert ihre Pfade zurück
+// saveUploadedImages speichert alle hochgeladenen Dateien und liefert öffentliche relative Pfade zurück.
 func saveUploadedImages(files []*multipart.FileHeader, uploadDir string) ([]string, error) {
-	log.Printf("Upload-Verzeichnis: %s", uploadDir)
+	if len(files) == 0 {
+		return nil, nil
+	}
+	if len(files) > maxUploadImages {
+		return nil, fmt.Errorf("too many images: max %d", maxUploadImages)
+	}
+	var totalSize int64
+	for _, fh := range files {
+		totalSize += fh.Size
+	}
+	if totalSize > maxUploadTotalSize {
+		return nil, fmt.Errorf("uploaded images exceed total limit of %d bytes", maxUploadTotalSize)
+	}
 
 	if err := os.MkdirAll(uploadDir, 0755); err != nil {
-		log.Printf("FEHLER: Upload-Verzeichnis konnte nicht angelegt werden: %v", err)
 		return nil, err
 	}
 
-	log.Printf("Anzahl hochgeladener Dateien: %d", len(files))
-
-	var paths []string
-	for idx, fh := range files {
-		log.Printf("Verarbeite Datei %d: Originalname: %s", idx+1, fh.Filename)
-
-		file, err := fh.Open()
+	paths := make([]string, 0, len(files))
+	for _, fh := range files {
+		path, err := saveUploadedImage(fh, uploadDir)
 		if err != nil {
-			log.Printf("FEHLER: Datei %s konnte nicht geöffnet werden: %v", fh.Filename, err)
+			cleanupUploadedImages(uploadDir, paths)
 			return nil, err
 		}
-
-		ext := filepath.Ext(fh.Filename)
-		name := fmt.Sprintf("%s_%d%s", uuid.New().String(), time.Now().UnixNano(), ext)
-		target := filepath.Join(uploadDir, name)
-		log.Printf("Speichere nach: %s", target)
-
-		out, err := os.Create(target)
-		if err != nil {
-			log.Printf("FEHLER: Datei konnte nicht angelegt werden: %v", err)
-			file.Close()
-			return nil, err
-		}
-
-		written, err := io.Copy(out, file)
-		if err != nil {
-			log.Printf("FEHLER: Datei %s konnte nicht gespeichert werden: %v", name, err)
-			out.Close()
-			file.Close()
-			return nil, err
-		}
-		log.Printf("Datei %s gespeichert (%d Bytes)", name, written)
-
-		paths = append(paths, name)
-
-		// WICHTIG: Dateien gleich schließen (nicht mit defer im Loop)
-		out.Close()
-		file.Close()
+		paths = append(paths, path)
 	}
 	return paths, nil
+}
+
+func saveUploadedImage(fh *multipart.FileHeader, uploadDir string) (string, error) {
+	if fh.Size > maxUploadFileSize {
+		return "", fmt.Errorf("image %q exceeds %d bytes", fh.Filename, maxUploadFileSize)
+	}
+
+	file, err := fh.Open()
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	limited := io.LimitReader(file, maxUploadFileSize+1)
+	data, err := io.ReadAll(limited)
+	if err != nil {
+		return "", err
+	}
+	if int64(len(data)) > maxUploadFileSize {
+		return "", fmt.Errorf("image %q exceeds %d bytes", fh.Filename, maxUploadFileSize)
+	}
+
+	ext, err := validateImage(data)
+	if err != nil {
+		return "", err
+	}
+
+	name := uuid.NewString() + ext
+	target := filepath.Join(uploadDir, name)
+	if err := os.WriteFile(target, data, 0644); err != nil {
+		return "", err
+	}
+	return "/uploads/" + name, nil
+}
+
+func validateImage(data []byte) (string, error) {
+	contentType := http.DetectContentType(data)
+	switch contentType {
+	case "image/jpeg":
+		if _, err := jpeg.DecodeConfig(bytes.NewReader(data)); err != nil {
+			return "", fmt.Errorf("decode jpeg: %w", err)
+		}
+		return ".jpg", nil
+	case "image/png":
+		if _, err := png.DecodeConfig(bytes.NewReader(data)); err != nil {
+			return "", fmt.Errorf("decode png: %w", err)
+		}
+		return ".png", nil
+	default:
+		return "", errInvalidImageType
+	}
+}
+
+func cleanupUploadedImages(uploadDir string, paths []string) {
+	for _, publicPath := range paths {
+		name := filepath.Base(publicPath)
+		if name == "." || name == string(filepath.Separator) {
+			continue
+		}
+		if err := os.Remove(filepath.Join(uploadDir, name)); err != nil && !errors.Is(err, os.ErrNotExist) {
+			log.Printf("Fehler beim Aufräumen von Upload %s: %v", publicPath, err)
+		}
+	}
+}
+
+func uploadErrorStatus(err error) int {
+	if errors.Is(err, errInvalidImageType) || strings.Contains(err.Error(), "exceeds") || strings.Contains(err.Error(), "too many images") || strings.Contains(err.Error(), "total limit") {
+		return http.StatusBadRequest
+	}
+	return http.StatusInternalServerError
 }
