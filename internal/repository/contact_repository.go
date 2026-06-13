@@ -20,17 +20,52 @@ func (r *ContactRepository) Create(ctx context.Context, contact models.Contact) 
 	session := r.driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer session.Close(ctx)
 
-	result, err := session.Run(ctx, `
-		CREATE (c:Contact {
-			id: $id,
-			name: $name,
-			email: $email,
-			phone: $phone,
-			message: $message,
-			createdAt: datetime($createdAt),
-			mailSent: $mailSent,
-			mailError: $mailError
-		})`, map[string]any{
+	_, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
+		result, err := tx.Run(ctx, `
+			CREATE (c:Contact {
+				id: $id,
+				name: $name,
+				email: $email,
+				phone: $phone,
+				message: $message,
+				createdAt: datetime($createdAt),
+				mailSent: $mailSent,
+				mailError: $mailError
+			})`, contactParams(contact))
+		if err != nil {
+			return nil, err
+		}
+		_, err = result.Consume(ctx)
+		return nil, err
+	})
+	return err
+}
+
+func (r *ContactRepository) UpdateMailStatus(ctx context.Context, id string, sent bool, mailError string) error {
+	session := r.driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer session.Close(ctx)
+
+	_, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
+		result, err := tx.Run(ctx, `
+			MATCH (c:Contact {id: $id})
+			SET c.mailSent = $mailSent,
+				c.mailError = $mailError`,
+			map[string]any{
+				"id":        id,
+				"mailSent":  sent,
+				"mailError": mailError,
+			})
+		if err != nil {
+			return nil, err
+		}
+		_, err = result.Consume(ctx)
+		return nil, err
+	})
+	return err
+}
+
+func contactParams(contact models.Contact) map[string]any {
+	return map[string]any{
 		"id":        contact.ID,
 		"name":      contact.Name,
 		"email":     contact.Email,
@@ -39,12 +74,7 @@ func (r *ContactRepository) Create(ctx context.Context, contact models.Contact) 
 		"createdAt": contact.CreatedAt.Format(timeFormatRFC3339Nano),
 		"mailSent":  contact.MailSent,
 		"mailError": contact.MailError,
-	})
-	if err != nil {
-		return err
 	}
-	_, err = result.Consume(ctx)
-	return err
 }
 
 const timeFormatRFC3339Nano = "2006-01-02T15:04:05.999999999Z07:00"

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"labbi-app/internal/config"
+	"labbi-app/internal/models"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
@@ -43,15 +44,48 @@ func EnsureConstraints(ctx context.Context, driver neo4j.DriverWithContext) erro
 	session := driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer session.Close(ctx)
 
-	result, err := session.Run(ctx,
-		"CREATE CONSTRAINT puppy_id IF NOT EXISTS FOR (p:Puppy) REQUIRE p.id IS UNIQUE",
-		nil,
-	)
-	if err != nil {
-		return fmt.Errorf("create puppy id constraint: %w", err)
+	constraints := []struct {
+		name  string
+		query string
+	}{
+		{
+			name:  "puppy id constraint",
+			query: "CREATE CONSTRAINT puppy_id IF NOT EXISTS FOR (p:Puppy) REQUIRE p.id IS UNIQUE",
+		},
+		{
+			name:  "dog id constraint",
+			query: "CREATE CONSTRAINT dog_id IF NOT EXISTS FOR (d:Dog) REQUIRE d.id IS UNIQUE",
+		},
 	}
-	if _, err := result.Consume(ctx); err != nil {
-		return fmt.Errorf("consume puppy id constraint result: %w", err)
+
+	for _, constraint := range constraints {
+		result, err := session.Run(ctx, constraint.query, nil)
+		if err != nil {
+			return fmt.Errorf("create %s: %w", constraint.name, err)
+		}
+		if _, err := result.Consume(ctx); err != nil {
+			return fmt.Errorf("consume %s result: %w", constraint.name, err)
+		}
+	}
+
+	for _, dog := range models.ParentDogs {
+		result, err := session.Run(ctx, `
+			MERGE (d:Dog {id: $id})
+			SET d.name = $name,
+				d.gender = $gender,
+				d.role = $role`,
+			map[string]any{
+				"id":     dog.ID,
+				"name":   dog.Name,
+				"gender": dog.Gender,
+				"role":   dog.Role,
+			})
+		if err != nil {
+			return fmt.Errorf("seed parent dog %s: %w", dog.ID, err)
+		}
+		if _, err := result.Consume(ctx); err != nil {
+			return fmt.Errorf("consume parent dog %s seed result: %w", dog.ID, err)
+		}
 	}
 	return nil
 }

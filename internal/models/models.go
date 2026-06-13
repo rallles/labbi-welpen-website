@@ -7,6 +7,13 @@ type Dog struct {
 	Name   string `json:"name"`
 	Born   string `json:"born"`
 	Gender string `json:"gender"`
+	Role   string `json:"role"`
+}
+
+var ParentDogs = []Dog{
+	{ID: "gandalf", Name: "Gandalf", Gender: "männlich", Role: "parent"},
+	{ID: "anna", Name: "Anna", Gender: "weiblich", Role: "parent"},
+	{ID: "brina", Name: "Brina", Gender: "weiblich", Role: "parent"},
 }
 
 type Buyer struct {
@@ -67,5 +74,31 @@ func IstGueltigeFarbe(f Fellfarbe) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+func IstBekannterElternhund(id string) bool {
+	return ParentDogByID(id).ID != ""
+}
+
+func ParentDogByID(id string) Dog {
+	for _, dog := range ParentDogs {
+		if dog.ID == id {
+			return dog
+		}
+	}
+	return Dog{}
+}
+
+func NormalizeParentDogID(value string) string {
+	switch value {
+	case "gandalf", "Gandalf":
+		return "gandalf"
+	case "anna", "Anna":
+		return "anna"
+	case "brina", "Brina":
+		return "brina"
+	default:
+		return value
 	}
 }

@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"labbi-app/internal/models"
 )
 
 var templateDir = "internal/templates"
@@ -40,8 +42,9 @@ func renderAdminTemplate(w http.ResponseWriter, page string, data interface{}) e
 	pagePath := filepath.Join(templateDir, page)
 
 	funcMap := template.FuncMap{
-		"join":     strings.Join,
-		"contains": containsString,
+		"join":          strings.Join,
+		"contains":      containsString,
+		"parentDogName": parentDogName,
 	}
 
 	tmpl, err := template.New("admin_base.html").Funcs(funcMap).ParseFiles(basePath, pagePath)
@@ -57,6 +60,14 @@ func renderAdminTemplate(w http.ResponseWriter, page string, data interface{}) e
 		http.Error(w, "Fehler beim Rendern der Seite", http.StatusInternalServerError)
 	}
 	return err
+}
+
+func parentDogName(id string) string {
+	dog := models.ParentDogByID(models.NormalizeParentDogID(id))
+	if dog.Name == "" {
+		return id
+	}
+	return dog.Name
 }
 
 func containsString(values []string, needle string) bool {

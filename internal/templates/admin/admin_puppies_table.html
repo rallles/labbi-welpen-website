@@ -34,7 +34,7 @@
                     <dt>Geimpft:</dt><dd>{{ if .Geimpft }}Ja{{ else }}Nein{{ end }}</dd>
                     <dt>Gechippt:</dt><dd>{{ if .Gechippt }}Ja{{ else }}Nein{{ end }}</dd>
                     <dt>Entwurmt:</dt><dd>{{ if .Entwurmt }}Ja{{ else }}Nein{{ end }}</dd>
-                    <dt>Eltern:</dt><dd>{{ range $i, $p := .Eltern }}{{ if $i }}, {{ end }}{{ $p }}{{ end }}</dd>
+                    <dt>Eltern:</dt><dd>{{ range $i, $p := .Eltern }}{{ if $i }}, {{ end }}{{ parentDogName $p }}{{ end }}</dd>
                     <dt>Notizen:</dt><dd>{{ .Notizen }}</dd>
                 </dl>
             </td>

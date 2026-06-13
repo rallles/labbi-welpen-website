@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"bytes"
 	"context"
-	"fmt"
+	"errors"
 	"log"
 	"net"
 	"net/http"
+	"net/mail"
+	"net/netip"
 	"net/smtp"
 	"strings"
 	"sync"
@@ -89,19 +92,22 @@ func handleContactPost(w http.ResponseWriter, r *http.Request, cfg config.Config
 		CreatedAt: time.Now().UTC(),
 	}
 
-	mailErr := sendContactMail(cfg, contact)
-	contact.MailSent = mailErr == nil && smtpConfigured(cfg)
-	contact.MailError = sanitizeMailError(mailErr)
-
 	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
 	defer cancel()
 
-	if err := repository.NewContactRepository(driver).Create(ctx, contact); err != nil {
+	contactRepo := repository.NewContactRepository(driver)
+	if err := contactRepo.Create(ctx, contact); err != nil {
 		log.Printf("Kontaktanfrage konnte nicht gespeichert werden: %v", err)
 		renderContactForm(w, form, []string{"Ihre Anfrage konnte gerade nicht gespeichert werden. Bitte versuchen Sie es später erneut."})
 		return
 	}
 
+	mailErr := sendContactMail(cfg, contact)
+	contact.MailSent = mailErr == nil && smtpConfigured(cfg)
+	contact.MailError = sanitizeMailError(mailErr)
+	if err := contactRepo.UpdateMailStatus(ctx, contact.ID, contact.MailSent, contact.MailError); err != nil {
+		log.Printf("Mailstatus konnte nicht aktualisiert werden: %v", err)
+	}
 	if mailErr != nil && smtpConfigured(cfg) {
 		log.Printf("E-Mail-Benachrichtigung fehlgeschlagen: %v", mailErr)
 	}
@@ -147,20 +153,32 @@ func (l *contactRateLimiter) Allow(ip string) bool {
 }
 
 func clientIP(r *http.Request) string {
-	if forwardedFor := r.Header.Get("X-Forwarded-For"); forwardedFor != "" {
-		parts := strings.Split(forwardedFor, ",")
-		if ip := strings.TrimSpace(parts[0]); ip != "" {
-			return ip
-		}
+	if ip, ok := validHeaderIP(r.Header.Get("X-Real-IP")); ok {
+		return ip
 	}
-	if realIP := strings.TrimSpace(r.Header.Get("X-Real-IP")); realIP != "" {
-		return realIP
+	if ip, ok := validHeaderIP(r.Header.Get("X-Forwarded-For")); ok {
+		return ip
 	}
 	host, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
-		return r.RemoteAddr
+		host = r.RemoteAddr
 	}
-	return host
+	if ip, ok := validHeaderIP(host); ok {
+		return ip
+	}
+	return "unknown"
+}
+
+func validHeaderIP(value string) (string, bool) {
+	value = strings.TrimSpace(value)
+	if value == "" || strings.Contains(value, ",") {
+		return "", false
+	}
+	addr, err := netip.ParseAddr(value)
+	if err != nil {
+		return "", false
+	}
+	return addr.String(), true
 }
 
 func smtpConfigured(cfg config.Config) bool {
@@ -171,20 +189,90 @@ func smtpConfigured(cfg config.Config) bool {
 // sendContactMail versendet eine Benachrichtigungs-E-Mail.
 func sendContactMail(cfg config.Config, contact models.Contact) error {
 	if !smtpConfigured(cfg) {
-		return fmt.Errorf("smtp_not_configured")
+		return errors.New("smtp_not_configured")
+	}
+
+	fromAddress, err := parseHeaderAddress(cfg.SMTPUser, "invalid_from")
+	if err != nil {
+		return err
+	}
+	toAddress, err := parseHeaderAddress(cfg.ContactMailTo, "invalid_to")
+	if err != nil {
+		return err
 	}
 
 	auth := smtp.PlainAuth("", cfg.SMTPUser, cfg.SMTPPassword, cfg.SMTPHost)
-	subject := "Neue Kontaktanfrage von " + contact.Name
-	body := "Name: " + contact.Name + "\n" +
+	msgData, err := buildContactMailMessage(cfg, contact)
+	if err != nil {
+		return err
+	}
+
+	return smtp.SendMail(cfg.SMTPHost+":"+cfg.SMTPPort, auth, fromAddress.Address, []string{toAddress.Address}, msgData)
+}
+
+func buildContactMailMessage(cfg config.Config, contact models.Contact) ([]byte, error) {
+	fromAddress, err := parseHeaderAddress(cfg.SMTPUser, "invalid_from")
+	if err != nil {
+		return nil, err
+	}
+	toAddress, err := parseHeaderAddress(cfg.ContactMailTo, "invalid_to")
+	if err != nil {
+		return nil, err
+	}
+	replyTo, err := parseHeaderAddress(contact.Email, "invalid_reply_to")
+	if err != nil {
+		return nil, err
+	}
+
+	from := mail.Address{
+		Name:    "Labbi-Welpen Kontaktformular",
+		Address: fromAddress.Address,
+	}
+	to := mail.Address{Address: toAddress.Address}
+
+	headers := []struct {
+		key   string
+		value string
+	}{
+		{"From", from.String()},
+		{"To", to.String()},
+		{"Reply-To", (&mail.Address{Name: sanitizeHeaderValue(contact.Name), Address: replyTo.Address}).String()},
+		{"Subject", sanitizeHeaderValue("Neue Kontaktanfrage von " + contact.Name)},
+		{"MIME-Version", "1.0"},
+		{"Content-Type", "text/plain; charset=UTF-8"},
+	}
+
+	var msg bytes.Buffer
+	for _, header := range headers {
+		msg.WriteString(header.key)
+		msg.WriteString(": ")
+		msg.WriteString(sanitizeHeaderValue(header.value))
+		msg.WriteString("\r\n")
+	}
+	msg.WriteString("\r\n")
+	msg.WriteString(buildContactMailBody(contact))
+	return msg.Bytes(), nil
+}
+
+func parseHeaderAddress(value string, errorCode string) (*mail.Address, error) {
+	address, err := mail.ParseAddress(sanitizeHeaderValue(value))
+	if err != nil {
+		return nil, errors.New(errorCode)
+	}
+	return address, nil
+}
+
+func buildContactMailBody(contact models.Contact) string {
+	return "Name: " + contact.Name + "\n" +
 		"E-Mail: " + contact.Email + "\n" +
 		"Telefon: " + contact.Phone + "\n\n" +
 		"Nachricht:\n" + contact.Message
+}
 
-	msgData := []byte("Subject: " + subject + "\r\n" +
-		"\r\n" + body)
-
-	return smtp.SendMail(cfg.SMTPHost+":"+cfg.SMTPPort, auth, cfg.SMTPUser, []string{cfg.ContactMailTo}, msgData)
+func sanitizeHeaderValue(value string) string {
+	value = strings.ReplaceAll(value, "\r", " ")
+	value = strings.ReplaceAll(value, "\n", " ")
+	return strings.TrimSpace(value)
 }
 
 func sanitizeMailError(err error) string {

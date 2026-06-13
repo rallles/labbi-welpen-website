@@ -4,6 +4,7 @@ import (
 	"net/mail"
 	"net/url"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -31,16 +32,23 @@ func ValidateContactForm(form ContactForm) []string {
 		errs = append(errs, "Name ist erforderlich.")
 	} else if utf8.RuneCountInString(form.Name) > 120 {
 		errs = append(errs, "Name darf maximal 120 Zeichen lang sein.")
+	} else if containsControlCharacter(form.Name, false) {
+		errs = append(errs, "Name darf keine Steuerzeichen enthalten.")
 	}
 
 	if form.Email == "" {
 		errs = append(errs, "E-Mail ist erforderlich.")
-	} else if _, err := mail.ParseAddress(form.Email); err != nil {
-		errs = append(errs, "Bitte geben Sie eine gültige E-Mail-Adresse ein.")
+	} else {
+		addr, err := mail.ParseAddress(form.Email)
+		if err != nil || addr.Address != form.Email {
+			errs = append(errs, "Bitte geben Sie eine gültige E-Mail-Adresse ein.")
+		}
 	}
 
 	if utf8.RuneCountInString(form.Phone) > 40 {
 		errs = append(errs, "Telefon darf maximal 40 Zeichen lang sein.")
+	} else if containsControlCharacter(form.Phone, false) {
+		errs = append(errs, "Telefon darf keine Steuerzeichen enthalten.")
 	}
 
 	messageLen := utf8.RuneCountInString(form.Message)
@@ -50,6 +58,20 @@ func ValidateContactForm(form ContactForm) []string {
 		errs = append(errs, "Nachricht muss mindestens 10 Zeichen lang sein.")
 	} else if messageLen > 3000 {
 		errs = append(errs, "Nachricht darf maximal 3000 Zeichen lang sein.")
+	} else if containsControlCharacter(form.Message, true) {
+		errs = append(errs, "Nachricht enthält ungültige Steuerzeichen.")
 	}
 	return errs
+}
+
+func containsControlCharacter(value string, allowLineBreaks bool) bool {
+	for _, r := range value {
+		if allowLineBreaks && (r == '\n' || r == '\r' || r == '\t') {
+			continue
+		}
+		if unicode.IsControl(r) {
+			return true
+		}
+	}
+	return false
 }

@@ -11,12 +11,6 @@ import (
 	"labbi-app/internal/models"
 )
 
-var allowedParents = map[string]bool{
-	"Gandalf": true,
-	"Anna":    true,
-	"Brina":   true,
-}
-
 type PuppyForm struct {
 	Name         string
 	Geburtsdatum string
@@ -92,7 +86,7 @@ func ValidatePuppyForm(form PuppyForm) ([]string, float64) {
 	}
 
 	for _, parent := range form.Eltern {
-		if !allowedParents[parent] {
+		if !models.IstBekannterElternhund(parent) {
 			errs = append(errs, fmt.Sprintf("Unbekannter Elternwert: %s.", parent))
 		}
 	}
@@ -109,7 +103,7 @@ func cleanParents(values []string) []string {
 	seen := make(map[string]bool, len(values))
 	for _, value := range values {
 		for _, item := range strings.Split(value, ",") {
-			parent := strings.TrimSpace(item)
+			parent := models.NormalizeParentDogID(strings.TrimSpace(item))
 			if parent == "" || seen[parent] {
 				continue
 			}

@@ -155,7 +155,7 @@ func (r *PuppyRepository) Delete(ctx context.Context, id string) error {
 }
 
 func replaceParentRelationships(ctx context.Context, tx neo4j.ManagedTransaction, puppyID string, parents []string) error {
-	result, err := tx.Run(ctx, `MATCH (:Puppy {id: $id})-[r:HAS_PARENT]->(:Puppy) DELETE r`, map[string]any{"id": puppyID})
+	result, err := tx.Run(ctx, `MATCH (:Puppy {id: $id})-[r:HAS_PARENT]->(:Dog) DELETE r`, map[string]any{"id": puppyID})
 	if err != nil {
 		return err
 	}
@@ -163,22 +163,29 @@ func replaceParentRelationships(ctx context.Context, tx neo4j.ManagedTransaction
 		return err
 	}
 
-	for _, parentID := range parents {
-		parentID = strings.TrimSpace(parentID)
+	for _, rawParentID := range parents {
+		parentID := models.NormalizeParentDogID(strings.TrimSpace(rawParentID))
 		if parentID == "" {
 			continue
 		}
 		result, err := tx.Run(ctx, `
 			MATCH (p:Puppy {id: $puppyID})
-			MATCH (parent:Puppy {id: $parentID})
-			MERGE (p)-[:HAS_PARENT]->(parent)`, map[string]any{
+			MATCH (parent:Dog {id: $parentID})
+			MERGE (p)-[:HAS_PARENT]->(parent)
+			RETURN parent.id`, map[string]any{
 			"puppyID":  puppyID,
 			"parentID": parentID,
 		})
 		if err != nil {
 			return err
 		}
-		if _, err := result.Consume(ctx); err != nil {
+		if !result.Next(ctx) {
+			if err := result.Err(); err != nil {
+				return err
+			}
+			return fmt.Errorf("parent dog %q not found", parentID)
+		}
+		if err := result.Err(); err != nil {
 			return err
 		}
 	}
@@ -197,7 +204,7 @@ func puppyParams(p models.Puppy) map[string]any {
 		"geimpft":      p.Geimpft,
 		"gechippt":     p.Gechippt,
 		"entwurmt":     p.Entwurmt,
-		"eltern":       p.Eltern,
+		"eltern":       normalizeParentDogIDs(p.Eltern),
 		"notizen":      p.Notizen,
 		"bilder":       p.Bilder,
 	}
@@ -226,10 +233,24 @@ func puppyFromRecord(record *neo4j.Record) (models.Puppy, error) {
 		Geimpft:      boolValue(props["geimpft"]),
 		Gechippt:     boolValue(props["gechippt"]),
 		Entwurmt:     boolValue(props["entwurmt"]),
-		Eltern:       stringSlice(props["eltern"]),
+		Eltern:       normalizeParentDogIDs(stringSlice(props["eltern"])),
 		Notizen:      stringValue(props["notizen"]),
 		Bilder:       stringSlice(props["bilder"]),
 	}, nil
+}
+
+func normalizeParentDogIDs(values []string) []string {
+	parents := make([]string, 0, len(values))
+	seen := make(map[string]bool, len(values))
+	for _, value := range values {
+		id := models.NormalizeParentDogID(strings.TrimSpace(value))
+		if id == "" || seen[id] {
+			continue
+		}
+		seen[id] = true
+		parents = append(parents, id)
+	}
+	return parents
 }
 
 func stringValue(value any) string {

@@ -70,7 +70,11 @@
     </tr>
     <tr>
       <td>Eltern</td>
-      <td><input type="text" name="eltern" value="{{ join .Form.Eltern ", " }}"> (Komma getrennt)</td>
+      <td>
+        <label><input type="checkbox" name="eltern" value="gandalf" {{ if contains .Form.Eltern "gandalf" }}checked{{ end }}> Gandalf</label>
+        <label><input type="checkbox" name="eltern" value="anna" {{ if contains .Form.Eltern "anna" }}checked{{ end }}> Anna</label>
+        <label><input type="checkbox" name="eltern" value="brina" {{ if contains .Form.Eltern "brina" }}checked{{ end }}> Brina</label>
+      </td>
     </tr>
     <tr>
       <td>Notizen:</td>
