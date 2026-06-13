@@ -27,8 +27,43 @@ func ListPuppiesAdminHandler(w http.ResponseWriter, r *http.Request, driver neo4
 		return
 	}
 
-	if err := renderAdminTemplate(w, "admin/admin_puppies_table.html", puppies); err != nil {
+	token, err := newCSRFToken()
+	if err != nil {
+		log.Printf("CSRF-Token konnte nicht erzeugt werden: %v", err)
+		http.Error(w, "Serverfehler", http.StatusInternalServerError)
+		return
+	}
+
+	page := AdminPuppiesPage{
+		CSRFToken: token,
+		Error:     adminErrorMessage(r.URL.Query().Get("error")),
+		Success:   adminSuccessMessage(r.URL.Query().Get("success")),
+		Puppies:   puppies,
+	}
+	if err := renderAdminTemplate(w, "admin/admin_puppies_table.html", page); err != nil {
 		log.Printf("Fehler beim Rendern der Welpen-Liste: %v", err)
 		http.Error(w, "Interner Fehler beim Rendern", http.StatusInternalServerError)
+	}
+}
+
+func adminErrorMessage(code string) string {
+	switch code {
+	case "missing_id":
+		return "Der Welpe konnte nicht gelöscht werden: ID fehlt."
+	case "delete_failed":
+		return "Der Welpe konnte nicht gelöscht werden. Bitte versuchen Sie es erneut."
+	default:
+		return ""
+	}
+}
+
+func adminSuccessMessage(code string) string {
+	switch code {
+	case "deleted":
+		return "Der Welpe wurde gelöscht."
+	case "updated":
+		return "Der Welpe wurde gespeichert."
+	default:
+		return ""
 	}
 }

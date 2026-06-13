@@ -15,6 +15,8 @@ type Config struct {
 	SMTPPassword  string
 	ContactMailTo string
 	UploadDir     string
+	StaticDir     string
+	TemplateDir   string
 }
 
 func LoadConfig() Config {
@@ -31,9 +33,17 @@ func LoadConfig() Config {
 		SMTPPassword:  os.Getenv("SMTP_PASSWORD"),
 		ContactMailTo: os.Getenv("CONTACT_MAIL_TO"),
 		UploadDir:     os.Getenv("UPLOAD_DIR"),
+		StaticDir:     os.Getenv("STATIC_DIR"),
+		TemplateDir:   os.Getenv("TEMPLATE_DIR"),
 	}
 	if cfg.UploadDir == "" {
 		cfg.UploadDir = "data/uploads"
+	}
+	if cfg.StaticDir == "" {
+		cfg.StaticDir = "static"
+	}
+	if cfg.TemplateDir == "" {
+		cfg.TemplateDir = "internal/templates"
 	}
 	return cfg
 }

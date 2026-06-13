@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Dog struct {
 	ID     string `json:"id"`
 	Name   string `json:"name"`
@@ -32,6 +34,17 @@ type Puppy struct {
 	Eltern       []string  `json:"eltern"`
 	Notizen      string    `json:"notizen"`
 	Bilder       []string  `json:"bilder"`
+}
+
+type Contact struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Phone     string    `json:"phone"`
+	Message   string    `json:"message"`
+	CreatedAt time.Time `json:"createdAt"`
+	MailSent  bool      `json:"mailSent"`
+	MailError string    `json:"mailError,omitempty"`
 }
 
 // Fellfarbe für Labrador Retriever.

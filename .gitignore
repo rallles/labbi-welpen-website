@@ -35,3 +35,6 @@ __pycache__/
 # certbot / letsencrypt
 /etc/letsencrypt
 /var/lib/letsencrypt
+
+# Optimierte Web-Derivate werden bewusst versioniert.
+!static/images/generated/

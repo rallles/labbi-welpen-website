@@ -38,6 +38,8 @@ services:
       NEO4J_URI: bolt://neo4j:7687
       SERVER_ADDRESS: 0.0.0.0:8080
       UPLOAD_DIR: /app/data/uploads
+      STATIC_DIR: /app/static
+      TEMPLATE_DIR: /app/templates
     volumes:
       - uploads:/app/data/uploads
     healthcheck:

@@ -2,8 +2,6 @@ package handlers
 
 import (
 	"net/http"
-	"os"
-	"path/filepath"
 )
 
 func DatenschutzHandler(w http.ResponseWriter, r *http.Request) {
@@ -34,22 +32,4 @@ func serveTextFile(w http.ResponseWriter, r *http.Request, name string, contentT
 	}
 	w.Header().Set("Content-Type", contentType)
 	_, _ = w.Write(content)
-}
-
-func readPublicFile(name string) ([]byte, error) {
-	wd, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-	paths := []string{
-		filepath.Join(wd, name),
-		filepath.Join(filepath.Dir(wd), name),
-	}
-	for _, path := range paths {
-		content, err := os.ReadFile(path)
-		if err == nil {
-			return content, nil
-		}
-	}
-	return nil, os.ErrNotExist
 }

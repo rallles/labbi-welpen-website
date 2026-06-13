@@ -32,16 +32,16 @@
       class="puppies-gallery"
       x-data="{
         images: [
-          '/static/images/welpe_001_.jpg',
-          '/static/images/welpe_002_.jpg',
-          '/static/images/welpe_003_.jpg',
-          '/static/images/welpe_004_.jpg',
-          '/static/images/welpe_005_.jpg',
-          '/static/images/welpe_006_.jpg',
-          '/static/images/welpe_007_.jpg',
-          '/static/images/welpe_008_.jpg',
-          '/static/images/welpe_009_.jpg',
-          '/static/images/welpe_010_.jpg'
+          { thumb: '/static/images/generated/welpe_001_-480.jpg', full: '/static/images/generated/welpe_001_-1600.jpg' },
+          { thumb: '/static/images/generated/welpe_002_-480.jpg', full: '/static/images/generated/welpe_002_-1600.jpg' },
+          { thumb: '/static/images/generated/welpe_003_-480.jpg', full: '/static/images/generated/welpe_003_-1600.jpg' },
+          { thumb: '/static/images/generated/welpe_004_-480.jpg', full: '/static/images/generated/welpe_004_-1600.jpg' },
+          { thumb: '/static/images/generated/welpe_005_-480.jpg', full: '/static/images/generated/welpe_005_-1600.jpg' },
+          { thumb: '/static/images/generated/welpe_006_-480.jpg', full: '/static/images/generated/welpe_006_-1600.jpg' },
+          { thumb: '/static/images/generated/welpe_007_-480.jpg', full: '/static/images/generated/welpe_007_-1600.jpg' },
+          { thumb: '/static/images/generated/welpe_008_-480.jpg', full: '/static/images/generated/welpe_008_-1600.jpg' },
+          { thumb: '/static/images/generated/welpe_009_-480.jpg', full: '/static/images/generated/welpe_009_-1600.jpg' },
+          { thumb: '/static/images/generated/welpe_010_-480.jpg', full: '/static/images/generated/welpe_010_-1600.jpg' }
         ],
         show: false,
         current: 0,
@@ -53,9 +53,11 @@
       <div style="display: flex; flex-direction: column; gap: 18px;">
         <template x-for="(img, i) in images" :key="i">
           <img
-            :src="img"
+            :src="img.thumb"
             class="gallery-thumb"
             alt="Welpe"
+            loading="lazy"
+            decoding="async"
             @click="current = i; show = true"
             style="max-width: 420px; width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.13); cursor: pointer; align-self: center;"
           >
@@ -74,7 +76,7 @@
         <button class="prev-btn"
               @click.stop="prev()"
               style="position: absolute; left: 20px; font-size: 40px; color: #fff; background: none; border: none; cursor: pointer;">&#8592;</button>
-        <img :src="images[current]" alt="Welpe Groß"
+        <img :src="images[current].full" alt="Welpe Groß"
             style="display: block; margin: auto; max-width: 90vw; max-height: 90vh; border-radius: 8px;">
         <button class="next-btn"
               @click.stop="next()"

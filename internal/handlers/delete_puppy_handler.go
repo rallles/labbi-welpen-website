@@ -16,10 +16,18 @@ func DeletePuppyHandler(w http.ResponseWriter, r *http.Request, driver neo4j.Dri
 		http.Error(w, "Methode nicht erlaubt", http.StatusMethodNotAllowed)
 		return
 	}
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Ungültige Eingaben", http.StatusBadRequest)
+		return
+	}
+	if !validCSRFToken(r.FormValue("csrf_token")) {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
 
 	id := r.FormValue("id")
 	if id == "" {
-		http.Error(w, "ID fehlt", http.StatusBadRequest)
+		http.Redirect(w, r, "/admin/puppies?error=missing_id", http.StatusSeeOther)
 		return
 	}
 
@@ -28,9 +36,9 @@ func DeletePuppyHandler(w http.ResponseWriter, r *http.Request, driver neo4j.Dri
 
 	if err := repository.NewPuppyRepository(driver).Delete(ctx, id); err != nil {
 		log.Printf("Fehler beim Löschen des Welpen: %v", err)
-		http.Error(w, "Fehler beim Löschen des Welpen", http.StatusInternalServerError)
+		http.Redirect(w, r, "/admin/puppies?error=delete_failed", http.StatusSeeOther)
 		return
 	}
 
-	http.Redirect(w, r, "/admin/puppies", http.StatusSeeOther)
+	http.Redirect(w, r, "/admin/puppies?success=deleted", http.StatusSeeOther)
 }

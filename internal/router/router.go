@@ -1,10 +1,7 @@
 package router
 
 import (
-	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 
 	"labbi-app/internal/config"
 	"labbi-app/internal/handlers"
@@ -14,6 +11,7 @@ import (
 )
 
 func SetupRoutes(mux *http.ServeMux, driver neo4j.DriverWithContext, cfg config.Config) {
+	handlers.SetTemplateDir(cfg.TemplateDir)
 	// 1) Spezifische Seiten zuerst
 	mux.HandleFunc("/about", handlers.AboutHandler)
 	mux.HandleFunc("/dogs", handlers.DogsHandler)
@@ -22,7 +20,7 @@ func SetupRoutes(mux *http.ServeMux, driver neo4j.DriverWithContext, cfg config.
 	mux.HandleFunc("/healthz", handlers.HealthHandler)
 
 	mux.HandleFunc("/contact", func(w http.ResponseWriter, r *http.Request) {
-		handlers.ContactHandler(w, r, cfg)
+		handlers.ContactHandler(w, r, cfg, driver)
 	})
 	mux.HandleFunc("/impressum", handlers.ImpressumHandler)
 	mux.HandleFunc("/datenschutz", handlers.DatenschutzHandler)
@@ -74,18 +72,9 @@ func SetupRoutes(mux *http.ServeMux, driver neo4j.DriverWithContext, cfg config.
 		}),
 	)
 
-	// 2) Statische Dateien
-	// 1) Arbeitsverzeichnis ermitteln
-	// wir starten in cmd/, also eine Ebene hoch
-	wd, err := os.Getwd()
-	if err != nil {
-		log.Fatalf("Arbeitsverzeichnis: %v", err)
-	}
-	projectRoot := filepath.Dir(wd)
-	staticDir := filepath.Join(projectRoot, "static")
-	// 2) Statische Dateien
+	// Statische Build-Assets und Uploads werden aus konfigurierten Verzeichnissen ausgeliefert.
 	mux.Handle("/static/",
-		http.StripPrefix("/static/", http.FileServer(http.Dir(staticDir))),
+		http.StripPrefix("/static/", http.FileServer(http.Dir(cfg.StaticDir))),
 	)
 	mux.Handle("/uploads/",
 		http.StripPrefix("/uploads/", http.FileServer(http.Dir(cfg.UploadDir))),

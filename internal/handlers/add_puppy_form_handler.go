@@ -5,18 +5,20 @@ import (
 	"net/http"
 )
 
-// AddPuppyFormHandler rendert das Formular zum Anlegen eines neuen Welpen.
 func AddPuppyFormHandler(w http.ResponseWriter, r *http.Request) {
-	// Nur GET-Anfragen erlauben
 	if r.Method != http.MethodGet {
 		http.Error(w, "Methode nicht erlaubt", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Formular-Template rendern
-	// Erwarteter Pfad: templates/admin/add_puppy.html
-	err := renderAdminTemplate(w, "admin/add_puppy.html", nil)
+	token, err := newCSRFToken()
 	if err != nil {
+		log.Printf("CSRF-Token konnte nicht erzeugt werden: %v", err)
+		http.Error(w, "Serverfehler", http.StatusInternalServerError)
+		return
+	}
+
+	if err := renderAdminTemplate(w, "admin/add_puppy.html", PuppyFormData{CSRFToken: token}); err != nil {
 		log.Printf("Fehler beim Anzeigen des Add-Puppy-Formulars: %v", err)
 	}
 }

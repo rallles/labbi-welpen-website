@@ -5,12 +5,10 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"strconv"
-	"strings"
 	"time"
 
-	"labbi-app/internal/models"
 	"labbi-app/internal/repository"
+	"labbi-app/internal/validation"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
@@ -36,14 +34,20 @@ func EditPuppyFormHandler(w http.ResponseWriter, r *http.Request, driver neo4j.D
 		return
 	}
 
-	if err := renderAdminTemplate(w, "admin/admin_puppies_edit.html", puppy); err != nil {
-		http.Error(w, "Fehler beim Anzeigen des Edit-Formulars", http.StatusInternalServerError)
-	}
+	renderEditPuppyForm(w, id, puppyFormFromModel(puppy), nil)
 }
 
 func EditPuppySaveHandler(w http.ResponseWriter, r *http.Request, driver neo4j.DriverWithContext) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Methode nicht erlaubt", http.StatusMethodNotAllowed)
+		return
+	}
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Ungültige Eingaben", http.StatusBadRequest)
+		return
+	}
+	if !validCSRFToken(r.FormValue("csrf_token")) {
+		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 
@@ -53,9 +57,10 @@ func EditPuppySaveHandler(w http.ResponseWriter, r *http.Request, driver neo4j.D
 		return
 	}
 
-	weight, err := strconv.ParseFloat(r.FormValue("gewicht"), 64)
-	if err != nil {
-		http.Error(w, "Ungültiges Gewicht", http.StatusBadRequest)
+	form := validation.PuppyFormFromValues(r.Form)
+	errs, weight := validation.ValidatePuppyForm(form)
+	if len(errs) > 0 {
+		renderEditPuppyForm(w, id, form, errs)
 		return
 	}
 
@@ -70,36 +75,28 @@ func EditPuppySaveHandler(w http.ResponseWriter, r *http.Request, driver neo4j.D
 	}
 	if err != nil {
 		log.Printf("Fehler beim Laden des Welpen: %v", err)
-		http.Error(w, "Fehler beim Laden des Welpen", http.StatusInternalServerError)
+		renderEditPuppyForm(w, id, form, []string{"Der Welpe konnte nicht geladen werden. Bitte versuchen Sie es erneut."})
 		return
 	}
 
-	parents := strings.Split(r.FormValue("eltern"), ",")
-	for i := range parents {
-		parents[i] = strings.TrimSpace(parents[i])
-	}
-
-	puppy := models.Puppy{
-		ID:           id,
-		Name:         r.FormValue("name"),
-		Geburtsdatum: r.FormValue("geburtsdatum"),
-		Geschlecht:   r.FormValue("geschlecht"),
-		Farbe:        models.Fellfarbe(r.FormValue("farbe")),
-		Gewicht:      weight,
-		Charakter:    r.FormValue("charakter"),
-		Geimpft:      r.FormValue("geimpft") == "on",
-		Gechippt:     r.FormValue("gechippt") == "on",
-		Entwurmt:     r.FormValue("entwurmt") == "on",
-		Eltern:       parents,
-		Notizen:      r.FormValue("notizen"),
-		Bilder:       existing.Bilder,
-	}
-
+	puppy := puppyFromForm(id, form, weight, existing.Bilder)
 	if err := repo.Update(ctx, puppy); err != nil {
 		log.Printf("Fehler beim Speichern des Welpen: %v", err)
-		http.Error(w, "Fehler beim Speichern", http.StatusInternalServerError)
+		renderEditPuppyForm(w, id, form, []string{"Der Welpe konnte nicht gespeichert werden. Bitte versuchen Sie es erneut."})
 		return
 	}
 
-	http.Redirect(w, r, "/admin/puppies", http.StatusSeeOther)
+	http.Redirect(w, r, "/admin/puppies?success=updated", http.StatusSeeOther)
+}
+
+func renderEditPuppyForm(w http.ResponseWriter, id string, form validation.PuppyForm, errors []string) {
+	token, err := newCSRFToken()
+	if err != nil {
+		log.Printf("CSRF-Token konnte nicht erzeugt werden: %v", err)
+		http.Error(w, "Serverfehler", http.StatusInternalServerError)
+		return
+	}
+	if err := renderAdminTemplate(w, "admin/admin_puppies_edit.html", PuppyFormData{ID: id, CSRFToken: token, Errors: errors, Form: form}); err != nil {
+		log.Printf("Fehler beim Anzeigen des Edit-Formulars: %v", err)
+	}
 }

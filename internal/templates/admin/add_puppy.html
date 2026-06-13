@@ -4,106 +4,102 @@
 
 {{ define "content" }}
 <div class="admin-form-container">
+  {{ if .Errors }}
+    <div class="form-errors" role="alert" style="border:1px solid #c0392b; background:#fdecea; color:#922b21; padding:1rem; margin-bottom:1rem;">
+      <strong>Bitte prüfen Sie Ihre Eingaben:</strong>
+      <ul>
+        {{ range .Errors }}<li>{{ . }}</li>{{ end }}
+      </ul>
+    </div>
+  {{ end }}
+
   <form action="/admin/puppies/add" method="post" enctype="multipart/form-data" class="admin-form">
-    
-    <!-- Name -->
+    <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}">
+
     <div class="form-group">
       <label for="name">Name:</label>
-      <input type="text" id="name" name="name" placeholder="Name des Welpen" required>
+      <input type="text" id="name" name="name" value="{{ .Form.Name }}" placeholder="Name des Welpen" required maxlength="80">
     </div>
 
-    <!-- Geburtsdatum -->
     <div class="form-group">
       <label for="birthdate">Geburtsdatum:</label>
-      <input type="date" id="birthdate" name="geburtsdatum" required>
+      <input type="date" id="birthdate" name="geburtsdatum" value="{{ .Form.Geburtsdatum }}" required>
     </div>
 
-    <!-- Geschlecht -->
     <div class="form-group">
       <label>Geschlecht:</label>
-      <label><input type="radio" name="geschlecht" value="männlich" required> männlich</label>
-      <label><input type="radio" name="geschlecht" value="weiblich"> weiblich</label>
+      <label><input type="radio" name="geschlecht" value="männlich" {{ if eq .Form.Geschlecht "männlich" }}checked{{ end }} required> männlich</label>
+      <label><input type="radio" name="geschlecht" value="weiblich" {{ if eq .Form.Geschlecht "weiblich" }}checked{{ end }}> weiblich</label>
     </div>
 
-    <!-- Farbe -->
     <div class="form-group">
       <label for="farbe">Fellfarbe:</label>
       <select id="farbe" name="farbe" required>
         <option value="">Bitte wählen</option>
-        <option value="schwarz">schwarz</option>
-        <option value="gelb">gelb</option>
-        <option value="braun">braun</option>
-        <option value="fox red">fox red</option>
-        <option value="silber">silber</option>
-        <option value="charcoal">charcoal</option>
-        <option value="champagner">champagner</option>
+        <option value="schwarz" {{ if eq .Form.Farbe "schwarz" }}selected{{ end }}>schwarz</option>
+        <option value="gelb" {{ if eq .Form.Farbe "gelb" }}selected{{ end }}>gelb</option>
+        <option value="braun" {{ if eq .Form.Farbe "braun" }}selected{{ end }}>braun</option>
+        <option value="fox red" {{ if eq .Form.Farbe "fox red" }}selected{{ end }}>fox red</option>
+        <option value="silber" {{ if eq .Form.Farbe "silber" }}selected{{ end }}>silber</option>
+        <option value="charcoal" {{ if eq .Form.Farbe "charcoal" }}selected{{ end }}>charcoal</option>
+        <option value="champagner" {{ if eq .Form.Farbe "champagner" }}selected{{ end }}>champagner</option>
       </select>
     </div>
 
-    <!-- Gewicht -->
     <div class="form-group">
       <label for="gewicht">Gewicht (kg):</label>
-      <input type="number" step="0.1" id="gewicht" name="gewicht" placeholder="z. B. 4.5" required>
+      <input type="number" step="0.1" id="gewicht" name="gewicht" value="{{ .Form.Gewicht }}" placeholder="z. B. 4.5" required>
     </div>
 
-    <!-- Charakter -->
     <div class="form-group">
       <label for="charakter">Charakter:</label>
-      <textarea id="charakter" name="charakter" rows="2" placeholder="z. B. verspielt, ruhig, energiegeladen" required></textarea>
+      <textarea id="charakter" name="charakter" rows="2" maxlength="1000" placeholder="z. B. verspielt, ruhig, energiegeladen">{{ .Form.Charakter }}</textarea>
     </div>
 
-    <!-- Impfstatus -->
     <div class="form-group">
       <label for="geimpft">Geimpft:</label>
       <select id="geimpft" name="geimpft" required>
-        <option value="true">Ja</option>
-        <option value="false">Nein</option>
+        <option value="true" {{ if .Form.Geimpft }}selected{{ end }}>Ja</option>
+        <option value="false" {{ if not .Form.Geimpft }}selected{{ end }}>Nein</option>
       </select>
     </div>
 
-    <!-- Gechippt -->
     <div class="form-group">
       <label for="gechippt">Gechippt:</label>
       <select id="gechippt" name="gechippt" required>
-        <option value="true">Ja</option>
-        <option value="false">Nein</option>
+        <option value="true" {{ if .Form.Gechippt }}selected{{ end }}>Ja</option>
+        <option value="false" {{ if not .Form.Gechippt }}selected{{ end }}>Nein</option>
       </select>
     </div>
 
-    <!-- Gechippt -->
     <div class="form-group">
-      <label for="entwurmung">Entwurmung erfolgt:</label>
-      <select id="entwurmung" name="entwurmung" required>
-        <option value="true">Ja</option>
-        <option value="false">Nein</option>
+      <label for="entwurmt">Entwurmung erfolgt:</label>
+      <select id="entwurmt" name="entwurmt" required>
+        <option value="true" {{ if .Form.Entwurmt }}selected{{ end }}>Ja</option>
+        <option value="false" {{ if not .Form.Entwurmt }}selected{{ end }}>Nein</option>
       </select>
     </div>
-    
-    <!-- Eltern -->
+
     <div class="form-group">
-      <label for="eltern">Eltern:</label>
-      <label><input type="checkbox" name="eltern" value="Gandalf"> Gandalf</label>
-      <label><input type="checkbox" name="eltern" value="Anna"> Anna</label>
-      <label><input type="checkbox" name="eltern" value="Brina"> Brina</label>
+      <label>Eltern:</label>
+      <label><input type="checkbox" name="eltern" value="Gandalf" {{ if contains .Form.Eltern "Gandalf" }}checked{{ end }}> Gandalf</label>
+      <label><input type="checkbox" name="eltern" value="Anna" {{ if contains .Form.Eltern "Anna" }}checked{{ end }}> Anna</label>
+      <label><input type="checkbox" name="eltern" value="Brina" {{ if contains .Form.Eltern "Brina" }}checked{{ end }}> Brina</label>
     </div>
 
-    <!-- Notizen -->
     <div class="form-group">
       <label for="notizen">Besondere Notizen:</label>
-      <textarea id="notizen" name="notizen" rows="3" placeholder="z. B. Futterunverträglichkeit, Lieblingsspielzeug..."></textarea>
+      <textarea id="notizen" name="notizen" rows="3" maxlength="2000" placeholder="z. B. Futterunverträglichkeit, Lieblingsspielzeug...">{{ .Form.Notizen }}</textarea>
     </div>
 
-    <!-- Bilder -->
     <div class="form-group">
       <label for="images">Bilder (mehrere auswählen):</label>
-      <input type="file" id="images" name="images" accept="image/*" multiple required>
+      <input type="file" id="images" name="images" accept="image/jpeg,image/png" multiple required>
     </div>
 
-    <!-- Absenden -->
     <button type="submit" class="btn-submit">Welpen anlegen</button>
   </form>
 </div>
-
 {{ end }}
 
 {{ define "year" }}2025{{ end }}

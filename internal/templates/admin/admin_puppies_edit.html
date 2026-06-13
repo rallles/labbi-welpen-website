@@ -4,52 +4,77 @@
 <link rel="stylesheet" href="/static/css/admin_puppy_edit.css">
 
 <h2>Welpe bearbeiten</h2>
+{{ if .Errors }}
+  <div class="form-errors" role="alert" style="border:1px solid #c0392b; background:#fdecea; color:#922b21; padding:1rem; margin-bottom:1rem;">
+    <strong>Bitte prüfen Sie Ihre Eingaben:</strong>
+    <ul>
+      {{ range .Errors }}<li>{{ . }}</li>{{ end }}
+    </ul>
+  </div>
+{{ end }}
+
 <form class="admin-form-container" method="post" action="/admin/puppies/edit">
+  <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}">
   <input type="hidden" name="id" value="{{ .ID }}">
   <table class="admin-puppies-edit" style="width: 768px;">
     <tr>
       <td>Name:</td>
-      <td><input type="text" name="name" value="{{ .Name }}"></td>
+      <td><input type="text" name="name" value="{{ .Form.Name }}" maxlength="80" required></td>
     </tr>
     <tr>
       <td>Geburtsdatum:</td>
-      <td><input type="date" name="geburtsdatum" value="{{ .Geburtsdatum }}"></td>
+      <td><input type="date" name="geburtsdatum" value="{{ .Form.Geburtsdatum }}" required></td>
     </tr>
     <tr>
       <td>Geschlecht:</td>
-      <td><input type="text" name="geschlecht" value="{{ .Geschlecht }}"></td>
+      <td>
+        <select name="geschlecht" required>
+          <option value="männlich" {{ if eq .Form.Geschlecht "männlich" }}selected{{ end }}>männlich</option>
+          <option value="weiblich" {{ if eq .Form.Geschlecht "weiblich" }}selected{{ end }}>weiblich</option>
+        </select>
+      </td>
     </tr>
     <tr>
       <td>Fellfarbe:</td>
-      <td><input type="text" name="farbe" value="{{ .Farbe }}"></td>
+      <td>
+        <select name="farbe" required>
+          <option value="schwarz" {{ if eq .Form.Farbe "schwarz" }}selected{{ end }}>schwarz</option>
+          <option value="gelb" {{ if eq .Form.Farbe "gelb" }}selected{{ end }}>gelb</option>
+          <option value="braun" {{ if eq .Form.Farbe "braun" }}selected{{ end }}>braun</option>
+          <option value="fox red" {{ if eq .Form.Farbe "fox red" }}selected{{ end }}>fox red</option>
+          <option value="silber" {{ if eq .Form.Farbe "silber" }}selected{{ end }}>silber</option>
+          <option value="charcoal" {{ if eq .Form.Farbe "charcoal" }}selected{{ end }}>charcoal</option>
+          <option value="champagner" {{ if eq .Form.Farbe "champagner" }}selected{{ end }}>champagner</option>
+        </select>
+      </td>
     </tr>
     <tr>
       <td>Gewicht (kg):</td>
-      <td><input type="number" name="gewicht" step="0.01" value="{{ .Gewicht }}"></td>
+      <td><input type="number" name="gewicht" step="0.01" value="{{ .Form.Gewicht }}" required></td>
     </tr>
     <tr>
       <td>Charakter:</td>
-      <td><input type="text" name="charakter" value="{{ .Charakter }}"></td>
+      <td><textarea name="charakter" maxlength="1000" style="width: 300px; height: 80px;">{{ .Form.Charakter }}</textarea></td>
     </tr>
     <tr>
       <td>Geimpft:</td>
-      <td><input type="checkbox" name="geimpft" {{ if .Geimpft }}checked{{ end }}></td>
+      <td><input type="checkbox" name="geimpft" {{ if .Form.Geimpft }}checked{{ end }}></td>
     </tr>
     <tr>
       <td>Gechippt:</td>
-      <td><input type="checkbox" name="gechippt" {{ if .Gechippt }}checked{{ end }}></td>
+      <td><input type="checkbox" name="gechippt" {{ if .Form.Gechippt }}checked{{ end }}></td>
     </tr>
     <tr>
       <td>Entwurmt:</td>
-      <td><input type="checkbox" name="entwurmt" {{ if .Entwurmt }}checked{{ end }}></td>
+      <td><input type="checkbox" name="entwurmt" {{ if .Form.Entwurmt }}checked{{ end }}></td>
     </tr>
     <tr>
-      <td>Eltern </td>
-      <td><input type="text" name="eltern" value="{{ join .Eltern ", " }}">(Komma getrennt):</td>
+      <td>Eltern</td>
+      <td><input type="text" name="eltern" value="{{ join .Form.Eltern ", " }}"> (Komma getrennt)</td>
     </tr>
     <tr>
-    <td>Notizen:</td>
-    <td><textarea name="notizen" style="width: 300px; height: 100px;">{{ .Notizen }}</textarea></td>
+      <td>Notizen:</td>
+      <td><textarea name="notizen" maxlength="2000" style="width: 300px; height: 100px;">{{ .Form.Notizen }}</textarea></td>
     </tr>
     <tr>
       <td colspan="2" style="text-align: right;">

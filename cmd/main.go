@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"labbi-app/internal/config"
 	"labbi-app/internal/database"
@@ -15,9 +16,6 @@ import (
 )
 
 func main() {
-
-	//utils.InitAdminTemplates()
-
 	// 1) Arbeitsverzeichnis ausgeben
 	wd, err := os.Getwd()
 	if err != nil {
@@ -58,9 +56,17 @@ func main() {
 	router.SetupRoutes(mux, driver, cfg)
 
 	// 4. Server starten
+	server := &http.Server{
+		Addr:              cfg.ServerAddress,
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       15 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       60 * time.Second,
+	}
+
 	log.Printf("Labbi-App läuft auf %s", cfg.ServerAddress)
-	err = http.ListenAndServe(cfg.ServerAddress, mux)
-	if err != nil {
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("Server konnte nicht gestartet werden: %v", err)
 	}
 }

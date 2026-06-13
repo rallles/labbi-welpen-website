@@ -13,13 +13,12 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 
 	"labbi-app/internal/config"
-	"labbi-app/internal/models"
 	"labbi-app/internal/repository"
+	"labbi-app/internal/validation"
 
 	"github.com/google/uuid"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
@@ -53,34 +52,26 @@ func AddPuppyHandler(w http.ResponseWriter, r *http.Request, driver neo4j.Driver
 		return
 	}
 
-	weight, err := strconv.ParseFloat(r.FormValue("gewicht"), 64)
-	if err != nil {
-		http.Error(w, "Ungültiges Gewicht", http.StatusBadRequest)
+	if !validCSRFToken(r.FormValue("csrf_token")) {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
+	form := validation.PuppyFormFromValues(r.MultipartForm.Value)
+	errs, weight := validation.ValidatePuppyForm(form)
+	if len(errs) > 0 {
+		renderAddPuppyForm(w, form, errs)
 		return
 	}
 
 	imagePaths, err := saveUploadedImages(r.MultipartForm.File["images"], cfg.UploadDir)
 	if err != nil {
 		log.Printf("Fehler beim Speichern der Bilder: %v", err)
-		http.Error(w, "Fehler beim Speichern der Bilder", uploadErrorStatus(err))
+		renderAddPuppyForm(w, form, []string{"Bilder konnten nicht verarbeitet werden. Bitte laden Sie JPEG- oder PNG-Dateien innerhalb der Größenlimits hoch."})
 		return
 	}
 
-	puppy := models.Puppy{
-		ID:           uuid.NewString(),
-		Name:         r.FormValue("name"),
-		Geburtsdatum: r.FormValue("geburtsdatum"),
-		Geschlecht:   r.FormValue("geschlecht"),
-		Farbe:        models.Fellfarbe(r.FormValue("farbe")),
-		Gewicht:      weight,
-		Charakter:    r.FormValue("charakter"),
-		Geimpft:      r.FormValue("geimpft") == "true",
-		Gechippt:     r.FormValue("gechippt") == "true",
-		Entwurmt:     r.FormValue("entwurmung") == "true",
-		Eltern:       r.MultipartForm.Value["eltern"],
-		Notizen:      r.FormValue("notizen"),
-		Bilder:       imagePaths,
-	}
+	puppy := puppyFromForm(uuid.NewString(), form, weight, imagePaths)
 
 	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
 	defer cancel()
@@ -89,11 +80,23 @@ func AddPuppyHandler(w http.ResponseWriter, r *http.Request, driver neo4j.Driver
 	if err := repo.Create(ctx, puppy); err != nil {
 		cleanupUploadedImages(cfg.UploadDir, imagePaths)
 		log.Printf("Fehler beim Speichern in Neo4j: %v", err)
-		http.Error(w, "Fehler beim Speichern", http.StatusInternalServerError)
+		renderAddPuppyForm(w, form, []string{"Der Welpe konnte nicht gespeichert werden. Bitte versuchen Sie es erneut."})
 		return
 	}
 
 	http.Redirect(w, r, "/admin?success=true", http.StatusSeeOther)
+}
+
+func renderAddPuppyForm(w http.ResponseWriter, form validation.PuppyForm, errors []string) {
+	token, err := newCSRFToken()
+	if err != nil {
+		log.Printf("CSRF-Token konnte nicht erzeugt werden: %v", err)
+		http.Error(w, "Serverfehler", http.StatusInternalServerError)
+		return
+	}
+	if err := renderAdminTemplate(w, "admin/add_puppy.html", PuppyFormData{CSRFToken: token, Errors: errors, Form: form}); err != nil {
+		log.Printf("Fehler beim Rendern des Add-Puppy-Formulars: %v", err)
+	}
 }
 
 // saveUploadedImages speichert alle hochgeladenen Dateien und liefert öffentliche relative Pfade zurück.

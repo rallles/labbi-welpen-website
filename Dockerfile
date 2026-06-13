@@ -36,6 +36,8 @@ EXPOSE 8080
 # Default environment (can be overridden)
 ENV SERVER_ADDRESS=":8080"
 ENV UPLOAD_DIR="/app/data/uploads"
+ENV STATIC_DIR="/app/static"
+ENV TEMPLATE_DIR="/app/templates"
 
 # Entry point
 ENTRYPOINT ["/app/labbi-app"]
