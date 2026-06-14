@@ -13,6 +13,8 @@
 *.out
 
 # Docker
+docker-compose.yml
+nginx.conf
 .env
 .env.*
 !.env.example
