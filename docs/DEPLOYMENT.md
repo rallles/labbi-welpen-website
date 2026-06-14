@@ -31,6 +31,7 @@ git pull
 4. Compose-Konfiguration pruefen.
 
 ```bash
+export COMPOSE_FILE=docker-compose.yml:docker-compose.aws.yml
 docker compose config
 ```
 
@@ -39,8 +40,7 @@ Vorsicht: Die Ausgabe kann Secrets aus `.env` enthalten. Nicht in Tickets oder C
 5. Build und Restart.
 
 ```bash
-docker compose build
-docker compose up -d
+docker compose up -d --build
 docker compose ps
 ```
 
@@ -55,12 +55,14 @@ docker compose logs -f web nginx neo4j
 Muss vorhanden sein:
 
 - `docker-compose.yml`
+- `docker-compose.aws.yml`
 - `Dockerfile`
-- `nginx.conf`
+- `nginx.aws.conf`
 - `static/`
 - `internal/public/`
 - `.env` mit echten Werten
-- `/etc/letsencrypt/...` Zertifikate
+- `/etc/letsencrypt/live/labbi-sites/fullchain.pem`
+- `/etc/letsencrypt/live/labbi-sites/privkey.pem`
 
 Darf nicht committed werden:
 
@@ -70,19 +72,29 @@ Darf nicht committed werden:
 
 ## Zertifikate und Nginx
 
-In `nginx.conf` sind vier HTTPS-Servernamen konfiguriert:
+Auf AWS mounted `docker-compose.aws.yml` die Datei `nginx.aws.conf` nach `/etc/nginx/nginx.conf`.
+Die Root-Datei `nginx.conf` ist nicht produktiv genutzt.
+
+In `nginx.aws.conf` sind vier HTTPS-Servernamen konfiguriert:
 
 - `labbi-welpen.de`
 - `www.labbi-welpen.de`
 - `labbi-hobby.de`
 - `www.labbi-hobby.de`
 
-Jeder HTTPS-Serverblock braucht ein passendes Zertifikat oder ein gemeinsames Multi-Domain-Zertifikat. ACME-Challenges werden aus `./internal/public` nach `/var/www/html` gemountet.
+Alle HTTPS-Serverbloecke verwenden das gemeinsame Let's-Encrypt-Zertifikat `labbi-sites`:
+
+- `/etc/letsencrypt/live/labbi-sites/fullchain.pem`
+- `/etc/letsencrypt/live/labbi-sites/privkey.pem`
+
+`labbi-welpen.de` bedient die App. `www.labbi-welpen.de`, `labbi-hobby.de` und `www.labbi-hobby.de` redirecten auf `https://labbi-welpen.de$request_uri`.
+ACME-Challenges werden aus `./internal/public` nach `/var/www/html` gemountet und bleiben auf HTTP unter `/.well-known/acme-challenge/` erreichbar.
 
 Pruefen:
 
 ```bash
 sudo ls -la /etc/letsencrypt/live
+sudo ls -la /etc/letsencrypt/live/labbi-sites
 docker compose logs nginx
 curl -I https://labbi-welpen.de/healthz
 ```
@@ -94,8 +106,8 @@ Ein einfacher Rollback ist Git-basiert:
 ```bash
 git log --oneline -5
 git checkout <alter-commit>
-docker compose build
-docker compose up -d
+export COMPOSE_FILE=docker-compose.yml:docker-compose.aws.yml
+docker compose up -d --build
 ```
 
 Danach wieder zur gewuenschten Branch zurueck:

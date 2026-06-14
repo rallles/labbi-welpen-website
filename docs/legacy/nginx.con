@@ -29,8 +29,8 @@ http {
     server {
         listen 443 ssl;
         server_name labbi-welpen.de;
-        ssl_certificate     /etc/letsencrypt/live/labbi-welpen.de/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/labbi-welpen.de/privkey.pem;
+        ssl_certificate     /etc/letsencrypt/live/labbi-sites/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/labbi-sites/privkey.pem;
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers HIGH:!aNULL:!MD5;
 
@@ -59,8 +59,8 @@ http {
     server {
         listen 443 ssl;
         server_name www.labbi-welpen.de;
-        ssl_certificate     /etc/letsencrypt/live/www.labbi-welpen.de/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/www.labbi-welpen.de/privkey.pem;
+        ssl_certificate     /etc/letsencrypt/live/labbi-sites/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/labbi-sites/privkey.pem;
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers HIGH:!aNULL:!MD5;
         location /static/ {
@@ -88,8 +88,8 @@ http {
     server {
         listen 443 ssl;
         server_name labbi-hobby.de;
-        ssl_certificate     /etc/letsencrypt/live/labbi-hobby.de/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/labbi-hobby.de/privkey.pem;
+        ssl_certificate     /etc/letsencrypt/live/labbi-sites/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/labbi-sites/privkey.pem;
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers HIGH:!aNULL:!MD5;
 
@@ -118,8 +118,8 @@ http {
     server {
         listen 443 ssl;
         server_name www.labbi-hobby.de;
-        ssl_certificate     /etc/letsencrypt/live/www.labbi-hobby.de/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/www.labbi-hobby.de/privkey.pem;
+        ssl_certificate     /etc/letsencrypt/live/labbi-sites/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/labbi-sites/privkey.pem;
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers HIGH:!aNULL:!MD5;
 

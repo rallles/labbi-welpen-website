@@ -72,24 +72,28 @@ docker compose ps
 
 Auf AWS muss `/etc/letsencrypt` vorhanden sein. Der AWS-Override mounted es read-only in den Nginx-Container und published nur Nginx auf `80:80` und `443:443`; Neo4j-Ports werden dort nicht nach aussen freigegeben.
 
+Produktiv verwendet Nginx das gemeinsame Let's-Encrypt-Zertifikat `labbi-sites`:
+
+```text
+/etc/letsencrypt/live/labbi-sites/fullchain.pem
+/etc/letsencrypt/live/labbi-sites/privkey.pem
+```
+
+Das Zertifikat enthaelt `labbi-welpen.de`, `www.labbi-welpen.de`, `labbi-hobby.de` und `www.labbi-hobby.de`.
+`labbi-welpen.de` bedient die App; die anderen HTTPS-Hostnamen redirecten auf `https://labbi-welpen.de$request_uri`.
+HTTP bleibt fuer ACME-Challenges unter `/.well-known/acme-challenge/` erreichbar und redirectet sonst auf HTTPS.
+
 ## Wichtig
 
 In keinem Service steht `env_file: .env`. Die Werte werden in `docker-compose.yml` gezielt in `environment:` an die Container weitergegeben. Dadurch bekommt Neo4j keine App-Variable wie `NEO4J_URI` mehr und startet sauber.
 
-certbot.timer läuft zweimal täglich
-↓
-certbot renew prüft labbi-sites
-↓
-wenn Zertifikat erneuert wird:
-Deploy-Hook läuft
-↓
-docker exec labbi-nginx nginx -t
-↓
-docker exec labbi-nginx nginx -s reload
-↓
-Nginx nutzt neues Zertifikat ohne Container-Neustart
+Certbot sollte `labbi-sites` erneuern und Nginx danach reloaden:
 
+```bash
 sudo certbot certificates
 sudo certbot renew --dry-run
 systemctl list-timers | grep -i certbot
 sudo tail -n 100 /var/log/labbi-certbot-renew.log
+docker exec labbi-nginx nginx -t
+docker exec labbi-nginx nginx -s reload
+```
