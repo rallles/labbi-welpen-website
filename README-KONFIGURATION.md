@@ -75,3 +75,21 @@ Auf AWS muss `/etc/letsencrypt` vorhanden sein. Der AWS-Override mounted es read
 ## Wichtig
 
 In keinem Service steht `env_file: .env`. Die Werte werden in `docker-compose.yml` gezielt in `environment:` an die Container weitergegeben. Dadurch bekommt Neo4j keine App-Variable wie `NEO4J_URI` mehr und startet sauber.
+
+certbot.timer läuft zweimal täglich
+↓
+certbot renew prüft labbi-sites
+↓
+wenn Zertifikat erneuert wird:
+Deploy-Hook läuft
+↓
+docker exec labbi-nginx nginx -t
+↓
+docker exec labbi-nginx nginx -s reload
+↓
+Nginx nutzt neues Zertifikat ohne Container-Neustart
+
+sudo certbot certificates
+sudo certbot renew --dry-run
+systemctl list-timers | grep -i certbot
+sudo tail -n 100 /var/log/labbi-certbot-renew.log
