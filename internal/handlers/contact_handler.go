@@ -24,8 +24,9 @@ import (
 )
 
 const (
-	contactRateLimitWindow = 10 * time.Minute
-	contactRateLimitMax    = 5
+	contactRateLimitWindow          = 10 * time.Minute
+	contactRateLimitCleanupInterval = 5 * time.Minute
+	contactRateLimitMax             = 5
 )
 
 type ContactPageData struct {
@@ -42,8 +43,9 @@ type ContactResultData struct {
 }
 
 type contactRateLimiter struct {
-	mu       sync.Mutex
-	requests map[string][]time.Time
+	mu          sync.Mutex
+	requests    map[string][]time.Time
+	lastCleanup time.Time
 }
 
 var defaultContactRateLimiter = &contactRateLimiter{requests: make(map[string][]time.Time)}
@@ -137,6 +139,14 @@ func (l *contactRateLimiter) Allow(ip string) bool {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
+	if l.requests == nil {
+		l.requests = make(map[string][]time.Time)
+	}
+	if l.lastCleanup.IsZero() || now.Sub(l.lastCleanup) >= contactRateLimitCleanupInterval {
+		l.cleanupLocked(cutoff)
+		l.lastCleanup = now
+	}
+
 	items := l.requests[ip]
 	kept := items[:0]
 	for _, seenAt := range items {
@@ -150,6 +160,22 @@ func (l *contactRateLimiter) Allow(ip string) bool {
 	}
 	l.requests[ip] = append(kept, now)
 	return true
+}
+
+func (l *contactRateLimiter) cleanupLocked(cutoff time.Time) {
+	for ip, items := range l.requests {
+		kept := items[:0]
+		for _, seenAt := range items {
+			if seenAt.After(cutoff) {
+				kept = append(kept, seenAt)
+			}
+		}
+		if len(kept) == 0 {
+			delete(l.requests, ip)
+			continue
+		}
+		l.requests[ip] = kept
+	}
 }
 
 func clientIP(r *http.Request) string {
@@ -272,7 +298,8 @@ func buildContactMailBody(contact models.Contact) string {
 func sanitizeHeaderValue(value string) string {
 	value = strings.ReplaceAll(value, "\r", " ")
 	value = strings.ReplaceAll(value, "\n", " ")
-	return strings.TrimSpace(value)
+	value = strings.ReplaceAll(value, ":", " ")
+	return strings.Join(strings.Fields(value), " ")
 }
 
 func sanitizeMailError(err error) string {

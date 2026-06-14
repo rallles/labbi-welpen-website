@@ -72,20 +72,6 @@ func TestValidateContactFormNameWithControlCharacters(t *testing.T) {
 	}
 }
 
-func TestValidateContactFormRejectsControlCharactersInHeaders(t *testing.T) {
-	form := ContactForm{
-		Name:    "Alice\r\nBcc: attacker@example.invalid",
-		Email:   "alice@example.invalid",
-		Phone:   "+49 123",
-		Message: "Hallo zusammen",
-	}
-
-	errs := ValidateContactForm(form)
-	if !containsValidationError(errs, "Name darf keine Steuerzeichen enthalten.") {
-		t.Fatalf("expected control-character error in name, got %v", errs)
-	}
-}
-
 func TestValidateContactFormRejectsControlCharactersInPhone(t *testing.T) {
 	form := ContactForm{
 		Name:    "Alice",

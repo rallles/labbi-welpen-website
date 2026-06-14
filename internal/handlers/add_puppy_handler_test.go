@@ -38,6 +38,16 @@ func TestSaveUploadedImagesAllowsJPEGAndPNG(t *testing.T) {
 	}
 }
 
+func TestSaveUploadedImagesAllowsEmptyFileList(t *testing.T) {
+	paths, err := saveUploadedImages(nil, t.TempDir())
+	if err != nil {
+		t.Fatalf("saveUploadedImages() error = %v", err)
+	}
+	if len(paths) != 0 {
+		t.Fatalf("got paths %v, want none", paths)
+	}
+}
+
 func TestSaveUploadedImagesRejectsNonImages(t *testing.T) {
 	files := multipartFiles(t, testFile{name: "not-image.jpg", data: []byte("<svg></svg>")})
 
@@ -59,6 +69,18 @@ func TestSaveUploadedImagesRejectsOversizedFile(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "exceeds") {
 		t.Fatalf("error = %v, want size limit error", err)
+	}
+}
+
+func TestSaveUploadedImagesRejectsOversizedTotal(t *testing.T) {
+	files := multipartFiles(t, testFile{name: "large-total.png", data: bytes.Repeat([]byte{0xff}, maxUploadTotalSize+1)})
+
+	_, err := saveUploadedImages(files, t.TempDir())
+	if err == nil {
+		t.Fatal("saveUploadedImages() error = nil, want error")
+	}
+	if !strings.Contains(err.Error(), "total limit") {
+		t.Fatalf("error = %v, want total size limit error", err)
 	}
 }
 

@@ -31,25 +31,44 @@ func TestCSRFValidRejectsUnknownToken(t *testing.T) {
 	}
 }
 
-type csrfStoreWithConsume interface {
-	Consume(token string) bool
-}
-
-func TestCSRFConsumeInvalidatesTokenWhenSupported(t *testing.T) {
+func TestCSRFConsumeAcceptsFreshToken(t *testing.T) {
 	store := NewCSRFStore()
 	token, err := store.Generate()
 	if err != nil {
 		t.Fatalf("Generate() error = %v", err)
 	}
 
-	consumer, ok := any(store).(csrfStoreWithConsume)
-	if !ok {
-		t.Skip("Consume() is not implemented")
+	if !store.Consume(token) {
+		t.Fatal("Consume() = false, want true for generated token")
 	}
-	if !consumer.Consume(token) {
+}
+
+func TestCSRFConsumeInvalidatesToken(t *testing.T) {
+	store := NewCSRFStore()
+	token, err := store.Generate()
+	if err != nil {
+		t.Fatalf("Generate() error = %v", err)
+	}
+
+	if !store.Consume(token) {
 		t.Fatal("Consume() = false, want true for generated token")
 	}
 	if store.Valid(token) {
 		t.Fatal("Valid() = true after Consume(), want false")
+	}
+}
+
+func TestCSRFConsumeRejectsReuse(t *testing.T) {
+	store := NewCSRFStore()
+	token, err := store.Generate()
+	if err != nil {
+		t.Fatalf("Generate() error = %v", err)
+	}
+
+	if !store.Consume(token) {
+		t.Fatal("first Consume() = false, want true")
+	}
+	if store.Consume(token) {
+		t.Fatal("second Consume() = true, want false")
 	}
 }

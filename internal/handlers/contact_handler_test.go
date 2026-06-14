@@ -1,11 +1,12 @@
 package handlers
 
 import (
-	"net/mail"
 	"net/http"
 	"net/http/httptest"
+	"net/mail"
 	"strings"
 	"testing"
+	"time"
 
 	"labbi-app/internal/config"
 	"labbi-app/internal/models"
@@ -78,7 +79,7 @@ func TestBuildContactMailMessageNameCRLFDoesNotInjectHeader(t *testing.T) {
 		ContactMailTo: "contact@example.invalid",
 	}
 	contact := models.Contact{
-		Name:    "Alice\r\nX-Injected: yes",
+		Name:    "Alice\r\nBcc: attacker@example.invalid\r\nX-Injected: yes",
 		Email:   "alice@example.invalid",
 		Phone:   "+49 123",
 		Message: "Hallo zusammen",
@@ -89,16 +90,22 @@ func TestBuildContactMailMessageNameCRLFDoesNotInjectHeader(t *testing.T) {
 		t.Fatalf("buildContactMailMessage() error = %v", err)
 	}
 
-	headerPart := strings.SplitN(string(message), "\r\n\r\n", 2)[0]
-	if strings.Contains(headerPart, "\r\nX-Injected:") || strings.Contains(headerPart, "\nX-Injected:") {
-		t.Fatalf("headers contain injected header: %q", headerPart)
-	}
-	if strings.Contains(headerPart, "\r") || strings.Contains(headerPart, "\n") {
-		for _, line := range strings.Split(headerPart, "\r\n") {
-			if strings.Count(line, ":") > 1 {
-				t.Fatalf("header line has unexpected additional colon-separated field: %q", line)
-			}
+	headers, _ := splitMailMessage(t, message)
+	for _, line := range strings.Split(headers, "\r\n") {
+		if strings.ContainsAny(line, "\r\n") {
+			t.Fatalf("header line contains raw CR/LF: %q", line)
 		}
+		name, _, ok := strings.Cut(line, ":")
+		if !ok {
+			t.Fatalf("malformed header line: %q", line)
+		}
+		switch strings.ToLower(strings.TrimSpace(name)) {
+		case "bcc", "x-injected":
+			t.Fatalf("headers contain injected %s header: %q", name, headers)
+		}
+	}
+	if strings.Contains(headers, "\nBcc:") || strings.Contains(headers, "\nX-Injected:") {
+		t.Fatalf("headers contain injected header line: %q", headers)
 	}
 }
 
@@ -135,7 +142,7 @@ func TestBuildContactMailMessageSanitizesSubject(t *testing.T) {
 	if strings.Contains(subjectLine, "\r\nCc:") || strings.Contains(subjectLine, "\nCc:") {
 		t.Fatalf("subject header contains injected Cc header: %q", subjectLine)
 	}
-	if !strings.Contains(subjectLine, "Neue Kontaktanfrage von Alice Cc: attacker@example.invalid") {
+	if !strings.Contains(subjectLine, "Neue Kontaktanfrage von Alice Cc attacker@example.invalid") {
 		t.Fatalf("unexpected subject line: %q", subjectLine)
 	}
 }
@@ -207,4 +214,35 @@ func TestClientIPFallsBackToUnknown(t *testing.T) {
 	if got := clientIP(req); got != "unknown" {
 		t.Fatalf("clientIP() = %q, want unknown", got)
 	}
+}
+
+func TestContactRateLimiterRemovesExpiredIPKeys(t *testing.T) {
+	now := time.Now()
+	limiter := &contactRateLimiter{
+		requests: map[string][]time.Time{
+			"198.51.100.7": []time.Time{now.Add(-2 * contactRateLimitWindow)},
+			"203.0.113.10": []time.Time{now},
+		},
+		lastCleanup: now.Add(-2 * contactRateLimitCleanupInterval),
+	}
+
+	if !limiter.Allow("192.0.2.55") {
+		t.Fatal("Allow() = false, want true")
+	}
+	if _, ok := limiter.requests["198.51.100.7"]; ok {
+		t.Fatalf("expired IP key was not removed: %#v", limiter.requests)
+	}
+	if _, ok := limiter.requests["203.0.113.10"]; !ok {
+		t.Fatalf("active IP key was removed: %#v", limiter.requests)
+	}
+}
+
+func splitMailMessage(t *testing.T, message []byte) (string, string) {
+	t.Helper()
+
+	parts := strings.Split(string(message), "\r\n\r\n")
+	if len(parts) != 2 {
+		t.Fatalf("message must contain exactly one CRLF header/body separator, got %d parts: %q", len(parts), string(message))
+	}
+	return parts[0], parts[1]
 }

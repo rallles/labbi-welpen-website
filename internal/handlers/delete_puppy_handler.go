@@ -20,7 +20,7 @@ func DeletePuppyHandler(w http.ResponseWriter, r *http.Request, driver neo4j.Dri
 		http.Error(w, "Ungültige Eingaben", http.StatusBadRequest)
 		return
 	}
-	if !validCSRFToken(r.FormValue("csrf_token")) {
+	if !consumeCSRFToken(r.FormValue("csrf_token")) {
 		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}

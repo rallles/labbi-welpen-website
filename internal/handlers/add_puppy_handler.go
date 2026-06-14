@@ -52,7 +52,7 @@ func AddPuppyHandler(w http.ResponseWriter, r *http.Request, driver neo4j.Driver
 		return
 	}
 
-	if !validCSRFToken(r.FormValue("csrf_token")) {
+	if !consumeCSRFToken(r.FormValue("csrf_token")) {
 		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}

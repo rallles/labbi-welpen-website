@@ -1,6 +1,10 @@
 package config
 
-import "os"
+import (
+	"fmt"
+	"os"
+	"strings"
+)
 
 type Config struct {
 	ServerAddress string
@@ -46,4 +50,27 @@ func LoadConfig() Config {
 		cfg.TemplateDir = "internal/templates"
 	}
 	return cfg
+}
+
+func (cfg Config) Validate() error {
+	var missing []string
+	required := []struct {
+		name  string
+		value string
+	}{
+		{name: "NEO4J_URI", value: cfg.Neo4jUri},
+		{name: "NEO4J_USER", value: cfg.Neo4jUser},
+		{name: "NEO4J_PASSWORD", value: cfg.Neo4jPassword},
+		{name: "ADMIN_USER", value: cfg.AdminUser},
+		{name: "ADMIN_PASSWORD", value: cfg.AdminPassword},
+	}
+	for _, item := range required {
+		if strings.TrimSpace(item.value) == "" {
+			missing = append(missing, item.name)
+		}
+	}
+	if len(missing) > 0 {
+		return fmt.Errorf("fehlende Pflichtwerte: %s", strings.Join(missing, ", "))
+	}
+	return nil
 }

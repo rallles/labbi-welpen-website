@@ -27,8 +27,8 @@ func newCSRFToken() (string, error) {
 	return security.DefaultCSRF.Generate()
 }
 
-func validCSRFToken(token string) bool {
-	return security.DefaultCSRF.Valid(token)
+func consumeCSRFToken(token string) bool {
+	return security.DefaultCSRF.Consume(token)
 }
 
 func puppyFormFromModel(puppy models.Puppy) validation.PuppyForm {

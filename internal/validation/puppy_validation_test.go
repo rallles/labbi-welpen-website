@@ -1,6 +1,8 @@
 package validation
 
 import (
+	"net/url"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -25,6 +27,16 @@ func TestValidatePuppyFormEmptyName(t *testing.T) {
 	errors, _ := ValidatePuppyForm(form)
 	if !containsValidationError(errors, "Name ist erforderlich.") {
 		t.Fatalf("expected name-required error, got %v", errors)
+	}
+}
+
+func TestValidatePuppyFormTooLongName(t *testing.T) {
+	form := validPuppyForm()
+	form.Name = strings.Repeat("a", 81)
+
+	errors, _ := ValidatePuppyForm(form)
+	if !containsValidationError(errors, "Name darf maximal 80 Zeichen lang sein.") {
+		t.Fatalf("expected name-length error, got %v", errors)
 	}
 }
 
@@ -68,6 +80,16 @@ func TestValidatePuppyFormInvalidCoatColor(t *testing.T) {
 	}
 }
 
+func TestValidatePuppyFormEmptyWeight(t *testing.T) {
+	form := validPuppyForm()
+	form.Gewicht = ""
+
+	errors, _ := ValidatePuppyForm(form)
+	if !containsValidationError(errors, "Gewicht muss eine Zahl sein.") {
+		t.Fatalf("expected numeric-weight error, got %v", errors)
+	}
+}
+
 func TestValidatePuppyFormInvalidWeight(t *testing.T) {
 	form := validPuppyForm()
 	form.Gewicht = "0"
@@ -75,6 +97,16 @@ func TestValidatePuppyFormInvalidWeight(t *testing.T) {
 	errors, _ := ValidatePuppyForm(form)
 	if !containsValidationError(errors, "Gewicht muss größer 0 und plausibel sein.") {
 		t.Fatalf("expected invalid-weight error, got %v", errors)
+	}
+}
+
+func TestValidatePuppyFormRejectsImplausiblyHighWeight(t *testing.T) {
+	form := validPuppyForm()
+	form.Gewicht = "80.1"
+
+	errors, _ := ValidatePuppyForm(form)
+	if !containsValidationError(errors, "Gewicht muss größer 0 und plausibel sein.") {
+		t.Fatalf("expected implausible-weight error, got %v", errors)
 	}
 }
 
@@ -88,6 +120,16 @@ func TestValidatePuppyFormTooLongCharacter(t *testing.T) {
 	}
 }
 
+func TestValidatePuppyFormTooLongNotes(t *testing.T) {
+	form := validPuppyForm()
+	form.Notizen = strings.Repeat("a", 2001)
+
+	errors, _ := ValidatePuppyForm(form)
+	if !containsValidationError(errors, "Notizen dürfen maximal 2000 Zeichen lang sein.") {
+		t.Fatalf("expected notes-length error, got %v", errors)
+	}
+}
+
 func TestValidatePuppyFormUnknownParent(t *testing.T) {
 	form := validPuppyForm()
 	form.Eltern = []string{"unknown-parent"}
@@ -95,6 +137,28 @@ func TestValidatePuppyFormUnknownParent(t *testing.T) {
 	errors, _ := ValidatePuppyForm(form)
 	if !containsValidationError(errors, "Unbekannter Elternwert: unknown-parent.") {
 		t.Fatalf("expected unknown-parent error, got %v", errors)
+	}
+}
+
+func TestPuppyFormFromValuesNormalizesParentCase(t *testing.T) {
+	form := PuppyFormFromValues(validPuppyValues(url.Values{
+		"eltern": []string{"Gandalf", "Anna"},
+	}))
+
+	want := []string{"gandalf", "anna"}
+	if !reflect.DeepEqual(form.Eltern, want) {
+		t.Fatalf("PuppyFormFromValues().Eltern = %v, want %v", form.Eltern, want)
+	}
+}
+
+func TestPuppyFormFromValuesRemovesDuplicateParents(t *testing.T) {
+	form := PuppyFormFromValues(validPuppyValues(url.Values{
+		"eltern": []string{"Gandalf, gandalf", "Anna", "anna"},
+	}))
+
+	want := []string{"gandalf", "anna"}
+	if !reflect.DeepEqual(form.Eltern, want) {
+		t.Fatalf("PuppyFormFromValues().Eltern = %v, want %v", form.Eltern, want)
 	}
 }
 
@@ -112,6 +176,26 @@ func validPuppyForm() PuppyForm {
 		Eltern:       []string{"gandalf", "anna"},
 		Notizen:      "alles gut",
 	}
+}
+
+func validPuppyValues(overrides url.Values) url.Values {
+	values := url.Values{
+		"name":         []string{"Balu"},
+		"geburtsdatum": []string{"2024-01-10"},
+		"geschlecht":   []string{"männlich"},
+		"farbe":        []string{"schwarz"},
+		"gewicht":      []string{"12.5"},
+		"charakter":    []string{"freundlich"},
+		"geimpft":      []string{"true"},
+		"gechippt":     []string{"true"},
+		"entwurmt":     []string{"true"},
+		"eltern":       []string{"gandalf", "anna"},
+		"notizen":      []string{"alles gut"},
+	}
+	for key, value := range overrides {
+		values[key] = value
+	}
+	return values
 }
 
 func containsValidationError(errs []string, want string) bool {

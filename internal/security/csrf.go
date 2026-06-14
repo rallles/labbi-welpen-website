@@ -51,6 +51,25 @@ func (s *CSRFStore) Valid(token string) bool {
 	return true
 }
 
+func (s *CSRFStore) Consume(token string) bool {
+	if token == "" {
+		return false
+	}
+
+	now := time.Now()
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	expiresAt, ok := s.tokens[token]
+	if !ok {
+		return false
+	}
+	delete(s.tokens, token)
+	if now.After(expiresAt) {
+		return false
+	}
+	return true
+}
+
 func (s *CSRFStore) cleanupLocked(now time.Time) {
 	for token, expiresAt := range s.tokens {
 		if now.After(expiresAt) {
