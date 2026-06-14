@@ -3,56 +3,73 @@
 {{ define "header" }}Kontakt{{ end }}
 
 {{ define "content" }}
-<section class="section contact-wrapper">
+<section class="section contact-page">
   <div class="section-header">
-    <h1>Kontakt</h1>
-    <p>Wir freuen uns auf Ihre Nachricht. Füllen Sie das Formular aus, wir melden uns so schnell wie möglich.</p>
+    <p class="eyebrow">Kontakt</p>
+    <h1>Wir freuen uns auf Ihre Nachricht</h1>
+    <p>Schreiben Sie uns kurz, wer Sie sind und was Sie sich wünschen. Wir melden uns so schnell wie möglich zurück.</p>
   </div>
 
-  {{ if .Errors }}
-    <div class="alert alert-danger form-errors" role="alert">
-      <strong>Bitte prüfen Sie Ihre Eingaben:</strong>
-      <ul>
-        {{ range .Errors }}<li>{{ . }}</li>{{ end }}
-      </ul>
-    </div>
-  {{ end }}
+  <div class="contact-layout">
+    <div class="card contact-card">
+      {{ if .Errors }}
+        <div class="alert alert-danger form-errors" role="alert">
+          <strong>Bitte prüfen Sie Ihre Eingaben:</strong>
+          <ul>
+            {{ range .Errors }}<li>{{ . }}</li>{{ end }}
+          </ul>
+        </div>
+      {{ end }}
 
-  <form action="/contact" method="post" class="contact-form">
-    <div class="honeypot" aria-hidden="true">
-      <label for="website">Website</label>
-      <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      <form action="/contact" method="post" class="contact-form">
+        <div class="honeypot" aria-hidden="true">
+          <label for="website">Website</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="form-field">
+          <label for="name">Name <span class="required">*</span></label>
+          <input type="text" id="name" name="name" value="{{ .Form.Name }}" required maxlength="120" placeholder="Ihr Name" class="form-control">
+        </div>
+
+        <div class="form-field">
+          <label for="email">E-Mail <span class="required">*</span></label>
+          <input type="email" id="email" name="email" value="{{ .Form.Email }}" required placeholder="ihre@adresse.de" class="form-control">
+        </div>
+
+        <div class="form-field">
+          <label for="phone">Telefon</label>
+          <input type="tel" id="phone" name="phone" value="{{ .Form.Phone }}" maxlength="40" placeholder="optional: +49 123 456789" class="form-control">
+        </div>
+
+        <div class="form-field">
+          <label for="message">Nachricht <span class="required">*</span></label>
+          <textarea id="message" name="message" rows="7" required maxlength="3000" placeholder="Ihre Nachricht..." class="form-control">{{ .Form.Message }}</textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="button button-primary">Nachricht senden</button>
+        </div>
+      </form>
     </div>
 
-    <div class="form-field">
-      <label for="name">Name <span class="required">*</span></label>
-      <input type="text" id="name" name="name" value="{{ .Form.Name }}" required maxlength="120" placeholder="Ihr Name" class="form-control">
-    </div>
-
-    <div class="form-field">
-      <label for="email">E-Mail <span class="required">*</span></label>
-      <input type="email" id="email" name="email" value="{{ .Form.Email }}" required placeholder="ihre@adresse.de" class="form-control">
-    </div>
-
-    <div class="form-field">
-      <label for="phone">Telefon</label>
-      <input type="tel" id="phone" name="phone" value="{{ .Form.Phone }}" maxlength="40" placeholder="optional: +49 123 456789" class="form-control">
-    </div>
-
-    <div class="form-field">
-      <label for="message">Nachricht <span class="required">*</span></label>
-      <textarea id="message" name="message" rows="6" required maxlength="3000" placeholder="Ihre Nachricht..." class="form-control">{{ .Form.Message }}</textarea>
-    </div>
-
-    <div class="form-actions">
-      <button type="submit" class="button button-primary">Absenden</button>
-    </div>
-  </form>
-  <p class="contact-meta">
-    Telefon: +49&nbsp;(0)171&nbsp;1033661<br>
-    E-Mail: <a href="mailto:kontakt@labbi-welpen.de">kontakt@labbi-welpen.de</a>
-  </p>
+    <aside class="card contact-info-card">
+      <h2>Direkter Kontakt</h2>
+      <p>Für ernstgemeinte Anfragen, Fragen zur Aufzucht oder einen persönlichen Besuch sind wir gern erreichbar.</p>
+      <dl class="contact-list">
+        <div>
+          <dt>Telefon</dt>
+          <dd><a href="tel:+491711033661">+49&nbsp;(0)171&nbsp;1033661</a></dd>
+        </div>
+        <div>
+          <dt>E-Mail</dt>
+          <dd><a href="mailto:kontakt@labbi-welpen.de">kontakt@labbi-welpen.de</a></dd>
+        </div>
+      </dl>
+      <p class="help-text">Wir melden uns in der Regel zeitnah und besprechen gern, ob ein Labradorwelpe zu Ihrer Situation passt.</p>
+    </aside>
+  </div>
 </section>
 {{ end }}
 
-{{ define "year" }}2025{{ end }}
+{{ define "year" }}2026{{ end }}

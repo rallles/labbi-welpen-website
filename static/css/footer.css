@@ -1,20 +1,68 @@
+/* ==========================================================================
+   Footer
+   --------------------------------------------------------------------------
+   Der Footer bleibt im normalen Dokumentfluss. Mobil stapeln sich Marke und
+   Links einspaltig; ab Tablet/Desktop entsteht ein ruhiges Spaltenlayout.
+   ========================================================================== */
+
 .footer-nav {
   margin-top: auto;
-  padding: var(--space-5) 0;
-  background: #fffdf8;
+  padding: var(--space-5) 0; /* Abstand: bewusst moderat, damit der Footer nicht schwer wirkt. */
+  background: var(--color-surface-warm); /* Farbe: warmer Sandton, passend zur Labrador-Bildwelt und den Basisfarben. */
   border-top: 1px solid var(--color-border);
 }
 
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Mobile zuerst: eine Spalte verhindert Enge und horizontales Scrollen. */
+  gap: var(--space-4); /* Abstand: mobil klar getrennt, aber nicht dominant. */
+}
+
+.footer-brand {
+  max-width: var(--content-readable);
+}
+
+.footer-logo {
+  min-height: 44px; /* Touchziel: Footer-Marke ist bequem antippbar. */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-heading);
+  font-weight: 800;
+  line-height: 1.15;
+  text-decoration: none;
+}
+
+.footer-logo .logo {
+  width: 2rem; /* Bildgroesse: kleiner als Headerlogo, Footer bleibt sekundaer. */
+  height: 2rem;
+  display: block;
+  flex: 0 0 auto;
+}
+
+.footer-text {
+  max-width: 34rem;
+  margin: var(--space-3) 0 0;
+  color: var(--color-muted);
+  font-size: 0.92rem; /* Schriftgroesse: etwas kleiner als Fliesstext, aber gut lesbar. */
+}
+
 .footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-3) var(--space-5);
+  display: grid;
+  gap: var(--space-2); /* Abstand: klare Linkliste statt enger Linkwolke. */
 }
 
 .footer-links a {
-  color: var(--color-text-muted);
+  min-height: 44px; /* Touchziel: alle Footerlinks sind mobil gut antippbar. */
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.35rem 0;
+  color: var(--color-muted);
   font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
   text-decoration: none;
 }
 
@@ -25,9 +73,14 @@
   text-underline-offset: 0.18em;
 }
 
-.footer-text {
-  margin-top: var(--space-4);
-  color: var(--color-text-muted);
-  font-size: 0.9rem;
-  text-align: center;
+@media (min-width: 48rem) {
+  .footer-nav {
+    padding: var(--space-6) 0; /* Breakpoint: Desktop bekommt etwas mehr Atemraum ohne fixed Verhalten. */
+  }
+
+  .footer-grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(10rem, 0.7fr) minmax(10rem, 0.9fr); /* Breakpoint: drei Spalten mit priorisierter Marke. */
+    align-items: start;
+    gap: var(--space-6);
+  }
 }

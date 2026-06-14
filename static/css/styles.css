@@ -1,44 +1,77 @@
+/* ==========================================================================
+   Design-System
+   --------------------------------------------------------------------------
+   Zentrale Basis der öffentlichen Website: warme Flächen, dunkler Text,
+   ruhiges Grün als Primärfarbe und Goldbraun als kleiner Akzent.
+   ========================================================================== */
+
 :root {
-  --color-page: #f6efe3;
-  --color-surface: #fffdf8;
-  --color-text: #2d2923;
-  --color-muted: #675f54;
-  --color-heading: #1f3328;
-  --color-primary: #3f7a50;
-  --color-primary-dark: #2f6040;
-  --color-primary-soft: #e4efe5;
-  --color-accent: #b4833f;
-  --color-accent-soft: #f3e4cc;
-  --color-border: #ddd0bd;
-  --color-danger: #a9362a;
-  --color-danger-bg: #fff0ec;
+  /* Farben: warme Labrador-Palette mit gutem Kontrast und ohne harte Reinweiss-Flaechen. */
+  --color-page: #f6efe3;          /* Hintergrund: warm hell, damit die Seite freundlich und hochwertig wirkt. */
+  --color-page-soft: #fbf6ed;     /* Heller Verlaufston fuer grosszuegige Sektionen. */
+  --color-surface: #fffdf8;       /* Karten: fast weiss fuer klare Lesbarkeit. */
+  --color-surface-warm: #fff7ea;  /* Warme Flaeche fuer CTA/Footer ohne Dominanz. */
+  --color-text: #2d2923;          /* Text: dunkles Braun statt Schwarz, angenehmer auf Beige. */
+  --color-muted: #665f55;         /* Sekundaertext: gedimmt, aber noch gut lesbar. */
+  --color-heading: #1f3328;       /* Headlines: tiefes Gruenbraun fuer ruhige Autoritaet. */
+  --color-primary: #3f7a50;       /* Primaerfarbe: natuerliches Gruen fuer CTAs. */
+  --color-primary-dark: #2f6040;  /* Hover: dunkler fuer klare Rueckmeldung. */
+  --color-primary-soft: #e4efe5;  /* Sanfter Fokus-/Hinweisfond. */
+  --color-accent: #b4833f;        /* Akzent: warmes Goldbraun fuer Eyebrows und Details. */
+  --color-border: #ddd0bd;        /* Linien: weich genug fuer ruhige Karten. */
+  --color-danger: #a9362a;        /* Fehler: gedecktes Rot statt grell. */
+  --color-danger-bg: #fff0ec;     /* Fehlerfond: sichtbar, aber nicht laut. */
   --color-success: #21784c;
   --color-success-bg: #e7f5ea;
 
+  /* Schrift: Systemfont bleibt schnell, vertraut und gut lesbar. */
   --font-sans: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --container-max: 1120px;
+  --font-size-base: 16px;         /* Basisgroesse: mobil gut lesbar und browserfreundlich. */
+  --line-height-base: 1.65;       /* Zeilenhoehe: entspannter fuer laengere Infotexte. */
 
+  /* Abstaende: mobile-first Skala, damit Layouts kompakt bleiben und trotzdem atmen. */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
-  --space-4: 1rem;
+  --space-4: 1rem;                /* Mobile Innenabstaende: verhindert Randkleben bei 360px. */
   --space-5: 1.5rem;
   --space-6: 2rem;
+  --space-7: 3rem;
 
+  /* Formen: Karten bleiben hochwertig, aber nicht verspielt. */
   --radius-sm: 5px;
   --radius-md: 8px;
   --shadow-sm: 0 2px 10px rgba(45, 41, 35, 0.08);
+  --shadow-md: 0 14px 34px rgba(45, 41, 35, 0.12);
+
+  /* Breiten: Desktop bleibt professionell zentriert, Textzeilen bleiben lesbar. */
+  --container-max: 1120px;
+  --content-narrow: 680px;
+  --content-readable: 760px;
+
+  /* Navigation: feste Werte verhindern Ueberdeckung durch den fixed Header. */
+  --nav-height-mobile: 3.75rem;   /* Headerhoehe: kompakt, aber mit 44px Touchzielen. */
+  --nav-height-desktop: 4.25rem;  /* Desktophoehe: etwas luftiger fuer horizontale Navigation. */
+
+  /* Breakpoints: mobile-first; Grids wachsen erst, wenn genug Platz da ist. */
+  --breakpoint-md: 48rem;
+  --breakpoint-nav: 56rem;
+  --breakpoint-lg: 64rem;
 }
+
+/* ==========================================================================
+   Basis / Reset
+   ========================================================================== */
 
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+  box-sizing: border-box; /* Breiten bleiben inklusive Padding stabil; wichtig gegen horizontales Scrollen. */
 }
 
 html {
-  overflow-x: hidden;
-  font-size: 16px;
+  overflow-x: hidden;      /* Sicherheitsnetz gegen versehentliche Ueberbreiten. */
+  font-size: var(--font-size-base);
 }
 
 body {
@@ -46,19 +79,30 @@ body {
   min-height: 100vh;
   margin: 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: column;  /* Footer bleibt unten, aber nie fixed ueber Inhalt. */
   overflow-x: hidden;
-  background: var(--color-page);
+  background:
+    linear-gradient(180deg, var(--color-page-soft) 0, var(--color-page) 28rem);
   color: var(--color-text);
   font-family: var(--font-sans);
-  line-height: 1.6;
+  line-height: var(--line-height-base);
 }
 
 img,
-svg {
-  max-width: 100%;
+svg,
+video,
+canvas {
+  max-width: 100%;         /* Medien duerfen schmale Viewports nicht sprengen. */
   height: auto;
 }
+
+[x-cloak] {
+  display: none !important; /* Alpine-Elemente bleiben verborgen, bis Alpine bereit ist. */
+}
+
+/* ==========================================================================
+   Typografie
+   ========================================================================== */
 
 a {
   color: var(--color-primary-dark);
@@ -73,7 +117,7 @@ a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid rgba(63, 122, 80, 0.35);
+  outline: 3px solid rgba(63, 122, 80, 0.34); /* Fokus: deutlich sichtbar, aber weich. */
   outline-offset: 3px;
 }
 
@@ -82,31 +126,35 @@ h2,
 h3 {
   margin: 0 0 var(--space-3);
   color: var(--color-heading);
-  line-height: 1.2;
+  line-height: 1.16;       /* Headlines bleiben kompakt und hochwertig. */
 }
 
 h1 {
-  font-size: clamp(2rem, 8vw, 3rem);
+  font-size: clamp(2rem, 7vw, 3.35rem); /* Schriftgroesse: mobil stark, Desktop gedeckelt. */
+  letter-spacing: 0;
 }
 
 h2 {
-  font-size: clamp(1.45rem, 5vw, 2rem);
+  font-size: clamp(1.35rem, 4.5vw, 2rem);
+  letter-spacing: 0;
 }
 
 h3 {
-  font-size: 1.15rem;
+  font-size: 1.08rem;
+  letter-spacing: 0;
 }
 
 p,
 ul,
 ol,
-address {
+address,
+dl {
   margin: 0 0 var(--space-4);
 }
 
 ul,
 ol {
-  padding-left: 1.25rem;
+  padding-left: 1.25rem;   /* Listen behalten Struktur, ohne mobil breit zu werden. */
 }
 
 address {
@@ -119,17 +167,35 @@ textarea {
   font: inherit;
 }
 
+.lead {
+  color: var(--color-muted);
+  font-size: 1.05rem;      /* Lead-Text: leicht groesser fuer klare Seitenhierarchie. */
+}
+
+.eyebrow {
+  margin-bottom: var(--space-2);
+  color: var(--color-accent);
+  font-size: 0.78rem;      /* Kleine Labelgroesse statt lauter Ueberschrift. */
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Layout
+   ========================================================================== */
+
 .container {
   width: 100%;
   max-width: var(--container-max);
   margin-inline: auto;
-  padding-inline: var(--space-4);
+  padding-inline: var(--space-4); /* Mobile: ca. 1rem Rand nach Vorgabe. */
 }
 
 .main-wrapper {
   flex: 1;
-  padding-top: 5.25rem;
-  padding-bottom: var(--space-6);
+  padding-top: calc(var(--nav-height-mobile) + var(--space-5)); /* Positionierung: Content startet unter fixed Header. */
+  padding-bottom: var(--space-7);
 }
 
 .content,
@@ -139,7 +205,7 @@ textarea {
 
 .content-wrapper {
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-7);     /* Abstand: klare Trennung ohne riesige Leerraeume. */
 }
 
 .section {
@@ -147,23 +213,15 @@ textarea {
 }
 
 .section-header {
-  max-width: 720px;
-  margin-bottom: var(--space-4);
+  max-width: var(--content-readable);
+  margin-bottom: var(--space-5);
 }
 
 .section-header > :last-child,
 .section > :last-child,
-.card > :last-child {
+.card > :last-child,
+.hero-content > :last-child {
   margin-bottom: 0;
-}
-
-.card {
-  min-width: 0;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-  padding: var(--space-4);
 }
 
 .grid {
@@ -171,60 +229,226 @@ textarea {
   gap: var(--space-4);
 }
 
+.feature-grid,
+.dogs-grid,
+.puppies-grid,
+.info-grid {
+  grid-template-columns: 1fr; /* Grid-Verhalten: mobile einspaltig und stabil. */
+}
+
+/* ==========================================================================
+   Hero und Panels
+   ========================================================================== */
+
 .hero {
   display: grid;
   gap: var(--space-5);
   align-items: center;
-  padding-block: var(--space-4) var(--space-5);
+  padding: var(--space-5);
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
 }
 
 .hero-content {
-  max-width: 680px;
+  max-width: var(--content-narrow);
 }
 
-.hero-media img,
-.media-card img,
-.dog-card img,
-.puppy-card img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  border-radius: var(--radius-md);
+.hero-media {
+  margin: 0;
 }
 
 .hero-media img {
+  width: 100%;
+  max-height: clamp(320px, 55vh, 620px); /* Bildgroesse: starkes Hero-Bild ohne endlose Hoehe. */
+  display: block;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;       /* Bilder werden nie verzerrt, nur sinnvoll zugeschnitten. */
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
 }
 
-.eyebrow {
-  margin-bottom: var(--space-2);
-  color: var(--color-accent);
-  font-weight: 700;
+.cta-panel {
+  display: grid;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-5);
+  background: var(--color-surface-warm); /* Farbe: warmer CTA-Fond statt schwerer Banner. */
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
-.button-row,
-.cta-row,
-.form-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  align-items: center;
+/* ==========================================================================
+   Karten
+   ========================================================================== */
+
+.card {
+  min-width: 0;
+  padding: var(--space-5);
+  background: var(--color-surface); /* Karten weiss/hell fuer klare Inhalte. */
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
 }
+
+.feature-card {
+  border-top: 4px solid var(--color-primary); /* Akzent: ruhiges Gruen gibt Karten Struktur. */
+}
+
+.highlight-box {
+  padding: var(--space-4);
+  margin-block: var(--space-5);
+  background: var(--color-primary-soft);
+  border-left: 5px solid var(--color-primary); /* Positionierung/Farbe: dezenter Hinweisanker im Textfluss. */
+  border-radius: var(--radius-md);
+}
+
+/* ==========================================================================
+   Bilder und Medien
+   ========================================================================== */
+
+.media-card {
+  margin: 0;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.media-card img,
+.dog-card img,
+.puppy-card img {
+  width: 100%;
+  display: block;
+  aspect-ratio: 4 / 3;
+  max-height: 420px;       /* Bildgroesse: Galeriebilder bleiben kontrolliert. */
+  object-fit: cover;       /* Kein Verzerren bei unterschiedlichen Originalformaten. */
+  border-radius: var(--radius-md);
+}
+
+.about-media img,
+.legal-media img {
+  max-height: 560px;       /* Bildgroesse: Seitenbild darf praesenter sein, aber nicht riesig werden. */
+}
+
+.media-card figcaption {
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-muted);
+  font-size: 0.94rem;
+}
+
+.image-button {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dog-card,
+.puppy-card {
+  overflow: hidden;
+}
+
+.dog-card {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-3);
+}
+
+.dog-content {
+  padding: 0 var(--space-2) var(--space-2);
+}
+
+.dog-content h2 {
+  font-size: 1.35rem;
+}
+
+.puppy-card {
+  padding: 0;
+}
+
+.puppy-card img {
+  max-height: 300px;       /* Bildgroesse: Welpenraster bleibt gleichmaessig und scanbar. */
+}
+
+/* ==========================================================================
+   Inhaltsseiten
+   ========================================================================== */
+
+.about-layout,
+.legal-layout,
+.contact-layout {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.about-content,
+.legal-content {
+  max-width: var(--content-readable);
+}
+
+.legal-single {
+  max-width: var(--content-readable);
+  margin-inline: auto;
+}
+
+.legal-content h2 {
+  margin-top: var(--space-5);
+  font-size: 1.2rem;
+}
+
+.puppies-intro {
+  max-width: 100%;
+}
+
+.intro-card {
+  max-width: 920px;
+}
+
+.info-grid {
+  gap: var(--space-4);
+  margin-block: var(--space-5);
+}
+
+.info-grid > div {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border); /* Trennung: leichte Linien statt zusaetzlicher schwerer Karten. */
+}
+
+.help-text,
+.contact-meta {
+  color: var(--color-muted);
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
 
 .button,
 .btn {
-  min-height: 44px;
+  min-height: 44px;        /* Touchziel: Buttons bleiben auf Mobilgeraeten bequem. */
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1rem;
+  padding: 0.78rem 1.05rem;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.2;
+  text-align: center;
   text-decoration: none;
   cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.button:hover,
+.btn:hover {
+  transform: translateY(-1px);
 }
 
 .button-primary,
@@ -242,83 +466,33 @@ textarea {
 .button-secondary {
   background: #ffffff;
   color: var(--color-primary-dark);
-  border-color: var(--color-primary);
+  border-color: rgba(63, 122, 80, 0.45);
 }
 
 .button-secondary:hover {
   background: var(--color-primary-soft);
 }
 
-.feature-grid,
-.dogs-grid,
-.puppies-grid {
-  grid-template-columns: 1fr;
+.button-row,
+.cta-row,
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
 }
 
-.highlight-box {
-  background: var(--color-primary-soft);
-  border-left: 5px solid var(--color-primary);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
+/* ==========================================================================
+   Formulare und Kontakt
+   ========================================================================== */
+
+.contact-page {
+  max-width: 100%;
 }
 
-.about-layout,
-.legal-layout {
-  display: grid;
-  gap: var(--space-5);
-}
-
-.media-card {
-  margin: 0;
-  overflow: hidden;
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
-}
-
-.media-card figcaption {
-  padding: var(--space-3) var(--space-4);
-  color: var(--color-muted);
-  font-size: 0.95rem;
-}
-
-.dog-card,
-.puppy-card {
-  overflow: hidden;
-}
-
-.dog-content {
-  padding-top: var(--space-3);
-}
-
-.image-button {
-  width: 100%;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  text-align: left;
-  cursor: pointer;
-}
-
-.puppy-card {
-  padding: 0;
-}
-
-.puppies-intro {
-  max-width: 820px;
-}
-
-.help-text,
-.contact-meta {
-  color: var(--color-muted);
-}
-
-.contact-wrapper,
-.contact-result {
-  width: 100%;
-  max-width: 680px;
-  margin-inline: auto;
+.contact-card,
+.contact-info-card {
+  align-self: start;
 }
 
 .contact-form {
@@ -331,18 +505,27 @@ textarea {
   gap: var(--space-2);
 }
 
+.form-field label {
+  color: var(--color-heading);
+  font-weight: 800;
+}
+
 .form-control {
   width: 100%;
-  min-height: 44px;
-  padding: 0.75rem;
+  min-height: 44px;        /* Touchziel: Inputs sind gut antippbar. */
+  padding: 0.78rem 0.85rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   background: #ffffff;
   color: var(--color-text);
 }
 
+.form-control:focus {
+  border-color: var(--color-primary);
+}
+
 textarea.form-control {
-  min-height: 9rem;
+  min-height: 11rem;       /* Textarea: genug Raum fuer echte Anfrage, mobil nicht ueberdimensioniert. */
   resize: vertical;
 }
 
@@ -350,11 +533,33 @@ textarea.form-control {
   color: var(--color-danger);
 }
 
+.contact-list {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.contact-list div {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.contact-list dt {
+  color: var(--color-muted);
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.contact-list dd {
+  margin: var(--space-1) 0 0;
+  font-weight: 800;
+}
+
 .alert {
   padding: var(--space-4);
+  margin-bottom: var(--space-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  margin-bottom: var(--space-4);
 }
 
 .alert-danger,
@@ -382,6 +587,10 @@ textarea.form-control {
   white-space: nowrap;
 }
 
+/* ==========================================================================
+   Lightbox
+   ========================================================================== */
+
 .lightbox,
 .image-modal {
   position: fixed;
@@ -389,16 +598,19 @@ textarea.form-control {
   z-index: 9999;
   align-items: center;
   justify-content: center;
-  padding: var(--space-4);
+  padding: var(--space-4); /* Abstand: Bedienelemente kleben nicht am Bildschirmrand. */
   background: rgba(0, 0, 0, 0.86);
+}
+
+.lightbox {
+  display: flex;
 }
 
 .image-modal {
   display: none;
 }
 
-.image-modal.is-open,
-.lightbox {
+.image-modal.is-open {
   display: flex;
 }
 
@@ -416,7 +628,7 @@ textarea.form-control {
   min-width: 44px;
   min-height: 44px;
   border: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.42);
   color: #ffffff;
   cursor: pointer;
   line-height: 1;
@@ -429,7 +641,7 @@ textarea.form-control {
 }
 
 .lightbox-control {
-  top: 50%;
+  top: 50%;                /* Positionierung: vertikale Mitte ist fuer Galerie-Navigation erwartbar. */
   transform: translateY(-50%);
   border-radius: 999px;
   font-size: 2rem;
@@ -443,40 +655,63 @@ textarea.form-control {
   right: var(--space-3);
 }
 
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
 @media (min-width: 48rem) {
   .container {
-    padding-inline: var(--space-5);
+    padding-inline: var(--space-5); /* Abstand: Tablet/Desktop bekommen mehr Randruhe. */
   }
 
   .main-wrapper {
-    padding-top: 6rem;
+    padding-top: calc(var(--nav-height-desktop) + var(--space-6));
   }
 
   .section {
     padding-block: var(--space-5);
   }
 
-  .card {
-    padding: var(--space-5);
-  }
-
-  .hero,
-  .about-layout,
-  .legal-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.75fr);
+  .hero {
+    grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr); /* Grid: Text und Bild stehen hochwertig nebeneinander. */
+    padding: var(--space-6);
   }
 
   .feature-grid,
   .dogs-grid,
   .puppies-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* Grid: Tablet nutzt zwei Spalten ohne Enge. */
+  }
+
+  .info-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)); /* Grid: kurze Fakten scannen sich nebeneinander besser. */
+  }
+
+  .about-layout,
+  .legal-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.72fr); /* Grid: Text priorisiert, Bild bleibt kontrolliert. */
+    align-items: start;
+  }
+
+  .contact-layout {
+    grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr); /* Grid: Formular ist primaer, Info sekundär. */
+    align-items: start;
+  }
+
+  .cta-panel {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: var(--space-6);
   }
 }
 
 @media (min-width: 64rem) {
+  .content-wrapper {
+    gap: var(--space-7);
+  }
+
   .feature-grid,
   .dogs-grid,
   .puppies-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr)); /* Grid: Desktop zeigt Galerien professionell dreispaltig. */
   }
 }

@@ -5,14 +5,15 @@
 {{ define "content" }}
 <section class="section">
   <div class="section-header">
-    <h1>Unsere Hunde</h1>
-    <p>Ruhige Charaktere, Familienanschluss und viel Bewegung prägen unsere Labradorgruppe.</p>
+    <p class="eyebrow">Unsere Hunde</p>
+    <h1>Ruhige Charaktere mit Familienanschluss</h1>
+    <p>Unsere Labradorgruppe lebt nah bei uns, bekommt viel Bewegung und prägt die Welpen vom ersten Tag an.</p>
   </div>
 
   <div class="grid dogs-grid">
     <article class="card dog-card">
       <button class="image-button dog-image" type="button" aria-label="Gandalf groß anzeigen">
-        <img src="/static/images/generated/Gandalf_001_-1600.jpg" alt="Gandalf">
+        <img src="/static/images/generated/Gandalf_001_-1600.jpg" alt="Gandalf" loading="lazy" decoding="async">
       </button>
       <div class="dog-content">
         <h2>Gandalf</h2>
@@ -24,7 +25,7 @@
 
     <article class="card dog-card">
       <button class="image-button dog-image" type="button" aria-label="Anna groß anzeigen">
-        <img src="/static/images/generated/Anna_002_-1600.jpg" alt="Anna">
+        <img src="/static/images/generated/Anna_002_-1600.jpg" alt="Anna" loading="lazy" decoding="async">
       </button>
       <div class="dog-content">
         <h2>Anna</h2>
@@ -36,7 +37,7 @@
 
     <article class="card dog-card">
       <button class="image-button dog-image" type="button" aria-label="Brina groß anzeigen">
-        <img src="/static/images/generated/Brina_001_-1600.jpg" alt="Brina">
+        <img src="/static/images/generated/Brina_001_-1600.jpg" alt="Brina" loading="lazy" decoding="async">
       </button>
       <div class="dog-content">
         <h2>Brina</h2>
@@ -48,7 +49,7 @@
   </div>
 </section>
 
-<div id="dog-image-modal" class="image-modal">
+<div id="dog-image-modal" class="image-modal" aria-hidden="true">
   <img id="dog-image-modal-img" src="" alt="Großansicht">
 </div>
 <script>
@@ -58,19 +59,21 @@ document.addEventListener('DOMContentLoaded', function() {
       var modal = document.getElementById('dog-image-modal');
       var modalImg = document.getElementById('dog-image-modal-img');
       modalImg.src = img.src;
-      modalImg.alt = img.alt + " Groß";
+      modalImg.alt = img.alt + ' groß';
       modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
     });
   });
 
   document.getElementById('dog-image-modal').addEventListener('click', function(e) {
     if (e.target === this || e.target === document.getElementById('dog-image-modal-img')) {
       this.classList.remove('is-open');
-      document.getElementById('dog-image-modal-img').src = "";
+      this.setAttribute('aria-hidden', 'true');
+      document.getElementById('dog-image-modal-img').src = '';
     }
   });
 });
 </script>
 {{ end }}
 
-{{ define "year" }}2025{{ end }}
+{{ define "year" }}2026{{ end }}

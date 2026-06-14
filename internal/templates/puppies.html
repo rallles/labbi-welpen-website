@@ -4,23 +4,29 @@
 
 {{ define "content" }}
 <div class="content-wrapper">
-  <section class="section card puppies-intro">
-    <div class="section-header">
+  <section class="section puppies-intro">
+    <div class="intro-card card">
+      <p class="eyebrow">Aktueller Wurf</p>
       <h1>Unsere aktuellen Welpen</h1>
-      <p><strong>Geburtsdatum:</strong> 26. Januar 2025<br>
-        <span>Ab sofort suchen wir nach einem passenden Zuhause.</span>
-      </p>
+      <p class="lead">Geboren am 26. Januar 2025 und bereit für Familien, die sich bewusst für einen Labrador entscheiden.</p>
+
+      <div class="info-grid">
+        <div>
+          <h3>Farben &amp; Geschlecht</h3>
+          <p>Unsere Welpen gibt es in Schwarz und Blond. Sowohl Rüden als auch Hündinnen sind dabei.</p>
+        </div>
+        <div>
+          <h3>Aufzucht</h3>
+          <p>Die Kleinen wachsen mit ihren Eltern, anderen Hunden und weiteren Tieren auf einem großzügigen Grundstück auf.</p>
+        </div>
+        <div>
+          <h3>Gesundheit</h3>
+          <p>Alle Welpen sind geimpft, gechipt und mehrfach entwurmt. Ein EU-Heimtierausweis ist vorhanden.</p>
+        </div>
+      </div>
+
+      <p class="help-text">Klicken Sie auf ein Bild, um es in voller Größe anzusehen.</p>
     </div>
-    <p><strong>Farben &amp; Geschlecht:</strong><br>
-      Unsere Welpen gibt es in den Farben Schwarz und Blond - sowohl Rüden als auch Hündinnen sind dabei.
-    </p>
-    <p><strong>Aufzucht:</strong><br>
-      Unsere Kleinen wachsen gemeinsam mit ihren Eltern, anderen Hunden und weiteren Tieren auf einem großzügigen Grundstück in ländlicher Umgebung auf - ganz ohne Zwingerhaltung.
-    </p>
-    <p><strong>Gesundheit:</strong><br>
-      Alle Welpen sind geimpft, gechipt und mehrfach entwurmt. Sie besitzen außerdem einen EU-Heimtierausweis.
-    </p>
-    <p class="help-text">Klicken Sie auf ein Bild, um es in voller Größe anzusehen.</p>
   </section>
 
   <section
@@ -45,24 +51,25 @@
     }"
   >
     <div class="section-header">
-      <h2>Bildergalerie</h2>
+      <p class="eyebrow">Galerie</p>
+      <h2>Einblicke in den Wurf</h2>
     </div>
     <div class="grid puppies-grid">
       <template x-for="(img, i) in images" :key="i">
         <button type="button" class="card image-button puppy-card" @click="current = i; show = true">
-          <img :src="img.thumb" alt="Welpe" loading="lazy" decoding="async">
+          <img :src="img.thumb" alt="Labradorwelpe" loading="lazy" decoding="async">
         </button>
       </template>
     </div>
 
-    <div class="lightbox" x-show="show" @click="show = false" x-transition>
+    <div class="lightbox" x-show="show" x-cloak @click="show = false" x-transition>
       <button type="button" class="lightbox-close close-btn" @click.stop="show=false" aria-label="Großansicht schließen">&times;</button>
       <button type="button" class="lightbox-control prev-btn" @click.stop="prev()" aria-label="Vorheriges Bild">&#8592;</button>
-      <img :src="images[current].full" alt="Welpe Groß" class="lightbox-image">
+      <img :src="images[current].full" alt="Labradorwelpe groß" class="lightbox-image">
       <button type="button" class="lightbox-control next-btn" @click.stop="next()" aria-label="Nächstes Bild">&#8594;</button>
     </div>
   </section>
 </div>
 {{ end }}
 
-{{ define "year" }}2025{{ end }}
+{{ define "year" }}2026{{ end }}
