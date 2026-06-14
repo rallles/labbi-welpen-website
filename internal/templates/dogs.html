@@ -3,67 +3,69 @@
 {{ define "header" }}Unsere Hunde{{ end }}
 
 {{ define "content" }}
-<div class="dogs-wrapper" style="display:flex; flex-direction:column; gap:40px;">
-  <!-- Hund #1: Gandalf -->
-  <div class="dog" style="display:flex; flex-wrap:wrap; gap:20px; align-items:start;">
-    <div class="dog-image" style="flex:0 0 300px;">
-      <img src="/static/images/generated/Gandalf_001_-1600.jpg" alt="Gandalf" style="width:100%; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.2);">
-    </div>
-    <div class="dog-content" style="flex:1 1 300px;">
-      <h2>Gandalf</h2>
-      <p><strong>Rolle:</strong> Big Boss und Alphatier unserer Zucht.</p>
-      <p><strong>Wesen:</strong> Ruhig, aufmerksam und sou­ve­rän beschützend. Gandalf leitet unsere Hundegruppe mit sanfter Pfote.</p>
-      <p><strong>Lieblingsbeschäftigung:</strong> Lange Spaziergänge im Wald und Apportieren.</p>
-    </div>
+<section class="section">
+  <div class="section-header">
+    <h1>Unsere Hunde</h1>
+    <p>Ruhige Charaktere, Familienanschluss und viel Bewegung prägen unsere Labradorgruppe.</p>
   </div>
 
-  <!-- Hund #2: Anna -->
-  <div class="dog" style="display:flex; flex-wrap:wrap; gap:20px; align-items:start;">
-    <div class="dog-image" style="flex:0 0 300px;">
-      <img src="/static/images/generated/Anna_002_-1600.jpg" alt="Anna" style="width:100%; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.2);">
-    </div>
-    <div class="dog-content" style="flex:1 1 300px;">
-      <h2>Anna</h2>
-      <p><strong>Rolle:</strong> Sanfte Mutter unserer Welpen.</p>
-      <p><strong>Wesen:</strong> Liebevoll, geduldig und fürsorglich gegenüber Jung und Alt.</p>
-      <p><strong>Lieblingsbeschäftigung:</strong> Kuschelstunden und Suchspiele im Garten.</p>
-    </div>
-  </div>
+  <div class="grid dogs-grid">
+    <article class="card dog-card">
+      <button class="image-button dog-image" type="button" aria-label="Gandalf groß anzeigen">
+        <img src="/static/images/generated/Gandalf_001_-1600.jpg" alt="Gandalf">
+      </button>
+      <div class="dog-content">
+        <h2>Gandalf</h2>
+        <p><strong>Rolle:</strong> Big Boss und Alphatier unserer Zucht.</p>
+        <p><strong>Wesen:</strong> Ruhig, aufmerksam und souverän beschützend.</p>
+        <p><strong>Lieblingsbeschäftigung:</strong> Lange Spaziergänge im Wald und Apportieren.</p>
+      </div>
+    </article>
 
-  <!-- Hund #3: Brina -->
-  <div class="dog" style="display:flex; flex-wrap:wrap; gap:20px; align-items:start;">
-    <div class="dog-image" style="flex:0 0 300px;">
-      <img src="/static/images/generated/Brina_001_-1600.jpg" alt="Brina" style="width:100%; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.2);">
-    </div>
-    <div class="dog-content" style="flex:1 1 300px;">
-      <h2>Brina</h2>
-      <p><strong>Rolle:</strong> Energiegeladene Sportskanone.</p>
-      <p><strong>Wesen:</strong> Lebhaft, verspielt und immer für ein Abenteuer zu haben.</p>
-      <p><strong>Lieblingsbeschäftigung:</strong> Agility-Training und Ballspiele.</p>
-    </div>
+    <article class="card dog-card">
+      <button class="image-button dog-image" type="button" aria-label="Anna groß anzeigen">
+        <img src="/static/images/generated/Anna_002_-1600.jpg" alt="Anna">
+      </button>
+      <div class="dog-content">
+        <h2>Anna</h2>
+        <p><strong>Rolle:</strong> Sanfte Mutter unserer Welpen.</p>
+        <p><strong>Wesen:</strong> Liebevoll, geduldig und fürsorglich.</p>
+        <p><strong>Lieblingsbeschäftigung:</strong> Kuschelstunden und Suchspiele im Garten.</p>
+      </div>
+    </article>
+
+    <article class="card dog-card">
+      <button class="image-button dog-image" type="button" aria-label="Brina groß anzeigen">
+        <img src="/static/images/generated/Brina_001_-1600.jpg" alt="Brina">
+      </button>
+      <div class="dog-content">
+        <h2>Brina</h2>
+        <p><strong>Rolle:</strong> Energiegeladene Sportskanone.</p>
+        <p><strong>Wesen:</strong> Lebhaft, verspielt und immer für ein Abenteuer zu haben.</p>
+        <p><strong>Lieblingsbeschäftigung:</strong> Agility-Training und Ballspiele.</p>
+      </div>
+    </article>
   </div>
-</div>
-<!-- Modal für Großbildanzeige -->
-<div id="dog-image-modal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.75); align-items:center; justify-content:center;">
-  <img id="dog-image-modal-img" src="" alt="Großansicht" style="max-width:90vw; max-height:90vh; box-shadow:0 0 32px #000; border-radius:12px;">
+</section>
+
+<div id="dog-image-modal" class="image-modal">
+  <img id="dog-image-modal-img" src="" alt="Großansicht">
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Alle Hundebilder markieren (hier: alle dog-image img)
   document.querySelectorAll('.dog-image img').forEach(function(img) {
-    img.style.cursor = "zoom-in";
     img.addEventListener('click', function() {
       var modal = document.getElementById('dog-image-modal');
       var modalImg = document.getElementById('dog-image-modal-img');
       modalImg.src = img.src;
       modalImg.alt = img.alt + " Groß";
-      modal.style.display = 'flex';
+      modal.classList.add('is-open');
     });
   });
-  // Modal schließt sich beim Klicken außerhalb des Bildes oder auf das Bild
+
   document.getElementById('dog-image-modal').addEventListener('click', function(e) {
     if (e.target === this || e.target === document.getElementById('dog-image-modal-img')) {
-      this.style.display = 'none';
+      this.classList.remove('is-open');
       document.getElementById('dog-image-modal-img').src = "";
     }
   });

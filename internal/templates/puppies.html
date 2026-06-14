@@ -3,87 +3,65 @@
 {{ define "header" }}Unsere aktuellen Welpen{{ end }}
 
 {{ define "content" }}
-<div class="container main-wrapper">
-  <div class="content-wrapper">
-    <div class="puppies-intro">
-      <h2>Unsere aktuellen Welpen</h2>
+<div class="content-wrapper">
+  <section class="section card puppies-intro">
+    <div class="section-header">
+      <h1>Unsere aktuellen Welpen</h1>
       <p><strong>Geburtsdatum:</strong> 26. Januar 2025<br>
-        <span>Ab sofort suchen wir nach einem passenden Zuhause!</span>
-      </p>
-      <p><strong>Farben &amp; Geschlecht:</strong><br>
-        Unsere Welpen gibt es in den Farben Schwarz und Blond – sowohl Rüden als auch Hündinnen sind dabei. Für jeden ist das Richtige dabei!
-      </p>
-      <p><strong>Aufzucht:</strong><br>
-        Unsere Kleinen wachsen gemeinsam mit ihren Eltern, anderen Hunden und weiteren Tieren auf einem großzügigen Grundstück in ländlicher Umgebung auf – ganz ohne Zwingerhaltung. Im täglichen Familienleben erleben sie viele verschiedene Alltagssituationen und sind an zahlreiche Geräusche und Tiere gewöhnt.
-      </p>
-      <p><strong>Gesundheit:</strong><br>
-        Alle Welpen sind selbstverständlich geimpft, gechipt und mehrfach entwurmt. Sie besitzen außerdem einen EU-Heimtierausweis.
-      </p>
-      <p>
-        Wir freuen uns darauf, Sie und Ihre Familie kennenzulernen!<br>
-        Gerne können Sie uns bei Interesse kontaktieren und die Welpen persönlich besuchen.
-      </p>
-      <p style="font-style:italic; margin-top:2em;">
-        Klicken Sie auf ein Bild, um es in voller Größe anzusehen.
+        <span>Ab sofort suchen wir nach einem passenden Zuhause.</span>
       </p>
     </div>
+    <p><strong>Farben &amp; Geschlecht:</strong><br>
+      Unsere Welpen gibt es in den Farben Schwarz und Blond - sowohl Rüden als auch Hündinnen sind dabei.
+    </p>
+    <p><strong>Aufzucht:</strong><br>
+      Unsere Kleinen wachsen gemeinsam mit ihren Eltern, anderen Hunden und weiteren Tieren auf einem großzügigen Grundstück in ländlicher Umgebung auf - ganz ohne Zwingerhaltung.
+    </p>
+    <p><strong>Gesundheit:</strong><br>
+      Alle Welpen sind geimpft, gechipt und mehrfach entwurmt. Sie besitzen außerdem einen EU-Heimtierausweis.
+    </p>
+    <p class="help-text">Klicken Sie auf ein Bild, um es in voller Größe anzusehen.</p>
+  </section>
 
-    <div
-      class="puppies-gallery"
-      x-data="{
-        images: [
-          { thumb: '/static/images/generated/welpe_001_-480.jpg', full: '/static/images/generated/welpe_001_-1600.jpg' },
-          { thumb: '/static/images/generated/welpe_002_-480.jpg', full: '/static/images/generated/welpe_002_-1600.jpg' },
-          { thumb: '/static/images/generated/welpe_003_-480.jpg', full: '/static/images/generated/welpe_003_-1600.jpg' },
-          { thumb: '/static/images/generated/welpe_004_-480.jpg', full: '/static/images/generated/welpe_004_-1600.jpg' },
-          { thumb: '/static/images/generated/welpe_005_-480.jpg', full: '/static/images/generated/welpe_005_-1600.jpg' },
-          { thumb: '/static/images/generated/welpe_006_-480.jpg', full: '/static/images/generated/welpe_006_-1600.jpg' },
-          { thumb: '/static/images/generated/welpe_007_-480.jpg', full: '/static/images/generated/welpe_007_-1600.jpg' },
-          { thumb: '/static/images/generated/welpe_008_-480.jpg', full: '/static/images/generated/welpe_008_-1600.jpg' },
-          { thumb: '/static/images/generated/welpe_009_-480.jpg', full: '/static/images/generated/welpe_009_-1600.jpg' },
-          { thumb: '/static/images/generated/welpe_010_-480.jpg', full: '/static/images/generated/welpe_010_-1600.jpg' }
-        ],
-        show: false,
-        current: 0,
-        next() { this.current = (this.current < this.images.length - 1) ? this.current + 1 : 0 },
-        prev() { this.current = (this.current > 0) ? this.current - 1 : this.images.length - 1 }
-      }"
-      style="margin-top: 40px;"
-    >
-      <div style="display: flex; flex-direction: column; gap: 18px;">
-        <template x-for="(img, i) in images" :key="i">
-          <img
-            :src="img.thumb"
-            class="gallery-thumb"
-            alt="Welpe"
-            loading="lazy"
-            decoding="async"
-            @click="current = i; show = true"
-            style="max-width: 420px; width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.13); cursor: pointer; align-self: center;"
-          >
-        </template>
-      </div>
-
-      <div class="lightbox"
-        x-show="show"
-        @click="show = false"
-        x-transition
-        style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-              background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 999;">
-        <span class="close-btn"
-            @click.stop="show=false"
-            style="position: absolute; top: 20px; right: 30px; font-size: 40px; color: #fff; cursor: pointer;">&times;</span>
-        <button class="prev-btn"
-              @click.stop="prev()"
-              style="position: absolute; left: 20px; font-size: 40px; color: #fff; background: none; border: none; cursor: pointer;">&#8592;</button>
-        <img :src="images[current].full" alt="Welpe Groß"
-            style="display: block; margin: auto; max-width: 90vw; max-height: 90vh; border-radius: 8px;">
-        <button class="next-btn"
-              @click.stop="next()"
-              style="position: absolute; right: 20px; font-size: 40px; color: #fff; background: none; border: none; cursor: pointer;">&#8594;</button>
-      </div>
+  <section
+    class="section puppies-gallery"
+    x-data="{
+      images: [
+        { thumb: '/static/images/generated/welpe_001_-480.jpg', full: '/static/images/generated/welpe_001_-1600.jpg' },
+        { thumb: '/static/images/generated/welpe_002_-480.jpg', full: '/static/images/generated/welpe_002_-1600.jpg' },
+        { thumb: '/static/images/generated/welpe_003_-480.jpg', full: '/static/images/generated/welpe_003_-1600.jpg' },
+        { thumb: '/static/images/generated/welpe_004_-480.jpg', full: '/static/images/generated/welpe_004_-1600.jpg' },
+        { thumb: '/static/images/generated/welpe_005_-480.jpg', full: '/static/images/generated/welpe_005_-1600.jpg' },
+        { thumb: '/static/images/generated/welpe_006_-480.jpg', full: '/static/images/generated/welpe_006_-1600.jpg' },
+        { thumb: '/static/images/generated/welpe_007_-480.jpg', full: '/static/images/generated/welpe_007_-1600.jpg' },
+        { thumb: '/static/images/generated/welpe_008_-480.jpg', full: '/static/images/generated/welpe_008_-1600.jpg' },
+        { thumb: '/static/images/generated/welpe_009_-480.jpg', full: '/static/images/generated/welpe_009_-1600.jpg' },
+        { thumb: '/static/images/generated/welpe_010_-480.jpg', full: '/static/images/generated/welpe_010_-1600.jpg' }
+      ],
+      show: false,
+      current: 0,
+      next() { this.current = (this.current < this.images.length - 1) ? this.current + 1 : 0 },
+      prev() { this.current = (this.current > 0) ? this.current - 1 : this.images.length - 1 }
+    }"
+  >
+    <div class="section-header">
+      <h2>Bildergalerie</h2>
     </div>
-  </div>
+    <div class="grid puppies-grid">
+      <template x-for="(img, i) in images" :key="i">
+        <button type="button" class="card image-button puppy-card" @click="current = i; show = true">
+          <img :src="img.thumb" alt="Welpe" loading="lazy" decoding="async">
+        </button>
+      </template>
+    </div>
+
+    <div class="lightbox" x-show="show" @click="show = false" x-transition>
+      <button type="button" class="lightbox-close close-btn" @click.stop="show=false" aria-label="Großansicht schließen">&times;</button>
+      <button type="button" class="lightbox-control prev-btn" @click.stop="prev()" aria-label="Vorheriges Bild">&#8592;</button>
+      <img :src="images[current].full" alt="Welpe Groß" class="lightbox-image">
+      <button type="button" class="lightbox-control next-btn" @click.stop="next()" aria-label="Nächstes Bild">&#8594;</button>
+    </div>
+  </section>
 </div>
 {{ end }}
 

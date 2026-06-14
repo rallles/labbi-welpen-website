@@ -11,7 +11,7 @@
 
 .admin-puppies-table th,
 .admin-puppies-table td {              /* Selektoren: Tabellenkopf und Tabellenzellen */
-  border: 1px solid hwb(0 41% 32%);  /* Definiert einen 1px breiten, durchgezogenen Rand in der HWB-Farbe */
+  border: 1px solid #a66969;  /* Definiert einen 1px breiten, durchgezogenen Rand */
   padding: 0.75rem;                    /* Fügt einen Innenabstand von 0.75rem in allen Richtungen hinzu */
   vertical-align: top;                 /* Richtet den Inhalt der Zellen oben aus */
 }

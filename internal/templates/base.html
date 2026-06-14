@@ -8,22 +8,16 @@
   <link rel="stylesheet" href="/static/css/styles.css">
   <link rel="stylesheet" href="/static/css/nav.css">
   <link rel="stylesheet" href="/static/css/footer.css">
-  <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/static/images/Favicon.ico">
-
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body>
-  <!-- Fixed Top Navigation -->
   <header class="top-nav">
     <div class="nav-container">
       <div class="nav-icon">
-        <!-- Platz für Logo/Icon LINKS -->
-        <a href="/"><img src="/static/images/labbi3.svg" alt="Labbi-App Logo" class="logo" style="border: 5px solid transparent;"></a>
-         <!-- 
-        <span class="hobby-text">... liebevolle Hobbyzucht</span>  -->
+        <a href="/"><img src="/static/images/labbi3.svg" alt="Labbi-App Logo" class="logo"></a>
       </div>
-      <nav class="nav-links">
+      <nav class="nav-links" id="primary-navigation">
         <a href="/">Startseite</a>
         <a href="/about">Über uns</a>
         <a href="/dogs">Unsere Hunde</a>
@@ -32,29 +26,18 @@
         <a href="/impressum">Impressum</a>
         <a href="/datenschutz">Datenschutz</a>
       </nav>
-       <!--  <div class="nav-icon">
-       Platz für Logo/Icon RECHTS 
-          <a href="/"><img src="/static/images/labbi4.svg" alt="Labbi-App Logo" class="logo" style="border: 5px solid transparent;"></a>
-        <span class="hobby-text">... liebevolle Hobbyzucht</span>  
-      </div>-->
-      <!-- Hamburger Menübutton für Mobilgeräte -->
-      <button class="hamburger" onclick="toggleMobileMenu()">
+      <button class="hamburger" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="Menü öffnen" onclick="toggleMobileMenu(this)">
         <span></span><span></span><span></span>
       </button>
     </div>
   </header>
 
-  <!-- Sidebar für Desktop verschwindet, über mobile Menü aufgerufen -->
-  <!-- Main Content Wrapper -->
   <div class="container main-wrapper">
     <main class="content">
-      <div style="height: 50px;"></div>
-
       {{ block "content" . }}{{ end }}
     </main>
   </div>
 
-    <!-- Secondary Footer Navigation -->
   <footer class="footer-nav">
     <div class="container">
       <nav class="footer-links">
@@ -69,8 +52,12 @@
   </footer>
 
   <script>
-    function toggleMobileMenu() {
-      document.body.classList.toggle('mobile-menu-open');
+    function toggleMobileMenu(button) {
+      var isOpen = document.body.classList.toggle('mobile-menu-open');
+      if (button) {
+        button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        button.setAttribute('aria-label', isOpen ? 'Menü schließen' : 'Menü öffnen');
+      }
     }
   </script>
 </body>

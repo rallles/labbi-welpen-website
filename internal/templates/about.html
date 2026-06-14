@@ -1,46 +1,33 @@
-{{ define "title" }}Über uns | Labbi-Welepn{{ end }}
+{{ define "title" }}Über uns | Labbi-Welpen{{ end }}
 
 {{ define "header" }}Über uns{{ end }}
 
 {{ define "content" }}
-<div class="about-wrapper" style="display:flex; flex-wrap:wrap; gap:20px; align-items:start;">
-  <!-- Textbereich links -->
-  <div class="about-content" style="flex:1; min-width:300px;">
-    <h2>Willkommen bei unserer kleinen, liebevollen Labradorzucht!</h2>
-    <p>Wir sind eine herzliche Familie mit einer großen Leidenschaft für Hunde. Was als Traum begann, ist heute unser Herzensprojekt, das wir mit viel Hingabe & Verantwortung betreiben.</p>
-    <p>Unsere Labradore wachsen bei uns zu Hause auf, umgeben von Wiesen, Wald und viel Platz zum Toben. Jeder Hund gehört dabei fest zur Familie, bekommt viel Aufmerksamkeit, Zuneigung und Pflege.</p> 
-    <p>Uns ist besonderes wichtig, dass die Welpen in einer sicheren, liebevollen Umgebung aufwachsen und bestens sozialisiert werden.</p>
+<section class="section about-layout">
+  <div class="about-content">
+    <p class="eyebrow">Über uns</p>
+    <h1>Eine kleine Labradorzucht mit viel Familienanschluss</h1>
+    <p>Wir sind eine herzliche Familie mit einer großen Leidenschaft für Hunde. Was als Traum begann, ist heute unser Herzensprojekt, das wir mit viel Hingabe und Verantwortung betreiben.</p>
+    <p>Unsere Labradore wachsen bei uns zu Hause auf, umgeben von Wiesen, Wald und viel Platz zum Toben. Jeder Hund gehört fest zur Familie, bekommt Aufmerksamkeit, Zuneigung und Pflege.</p>
+    <p>Uns ist besonders wichtig, dass die Welpen in einer sicheren, liebevollen Umgebung aufwachsen und gut sozialisiert werden.</p>
 
-    <div class="highlight-box" style="background-color:#eef6f3; border-left:5px solid #5cb85c; padding:15px 20px; margin:30px 0; border-radius:4px;">
-      <p><strong>Unsere Philosophie:</strong> Liebe, Verantwortung und artgerechte Haltung stehen bei uns an erster Stelle. Jeder Welpe soll mit einem guten Start ins Leben beginnen!</p>
+    <div class="highlight-box">
+      <p><strong>Unsere Philosophie:</strong> Liebe, Verantwortung und artgerechte Haltung stehen bei uns an erster Stelle. Jeder Welpe soll mit einem guten Start ins Leben beginnen.</p>
     </div>
 
     <p>Wir nehmen uns viel Zeit für jeden einzelnen Wurf und begleiten die Kleinen mit großer Sorgfalt, bis sie in ihre neuen Familien ziehen.</p>
-    <p>Die Zucht wird bewußt klein gehalten, denn Fürsorge steht für uns weit über Quantität, weshalb es auch nur einen Wurf pro Jahr gibt.</p>
-    <p>Klingt das nach dem, was Sie sich für Ihren zukünftigen Hund wünschen?</p>
-    <p>Dann freuen wir uns über jede ernstgemeinte Anfrage und laden Sie herzlich ein, uns und unsere Hunde kennenzulernen!</p>
-    <p></p>
-    <p>... zögern Sie nicht, uns zu kontaktieren. Wir freuen uns auf Sie!</p>
-     <p>
-      <span class="icon">📞</span> Telefon: +49 (0)171 1033661<br>
-      <span class="icon">✉️</span> E‑Mail: <a href="mailto:kontakt@labbi-welpen.de">kontakt@labbi-welpen.de</a>
+    <p>Klingt das nach dem, was Sie sich für Ihren zukünftigen Hund wünschen? Dann freuen wir uns über jede ernstgemeinte Anfrage.</p>
+    <p>
+      Telefon: +49&nbsp;(0)171&nbsp;1033661<br>
+      E-Mail: <a href="mailto:kontakt@labbi-welpen.de">kontakt@labbi-welpen.de</a>
     </p>
   </div>
-   <!--  <div>
-    <div class="contact-phone" style="margin:20px;">
-      <a href="tel:+491234567890" style="display:inline-block; background-color:#5cb85c; color:#fff; padding:10px 20px; border-radius:4px; text-decoration:none; font-size:16px;">
-        Gleich anrufen, wir warten drauf: +49 123 4567890
-      </a>
-    </div>
-  </div>-->
-  <!-- Bildbereich rechts -->
-  <div class="right-image" style="flex:0 0 400px; position:relative;">
-    <img src="/static/images/generated/zucht-hof-1600.jpg" alt="Unser Hof mit Auslauf" style="width:100%; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.2);">
-    <div class="overlay-text" style="position:absolute; bottom:20px; left:20px; right:20px; background-color:rgba(0,0,0,0.6); color:#fff; padding:15px; border-radius:6px; text-align:center; font-size:1rem;">
-      Unser großzügiges Gelände bietet den Hunden Freiheit, Bewegung und Natur pur.
-    </div>
-  </div>
-</div>
+
+  <figure class="media-card">
+    <img src="/static/images/generated/zucht-hof-1600.jpg" alt="Unser Hof mit Auslauf">
+    <figcaption>Unser Gelände bietet den Hunden Bewegung, Ruhe und Natur.</figcaption>
+  </figure>
+</section>
 {{ end }}
 
 {{ define "year" }}2025{{ end }}

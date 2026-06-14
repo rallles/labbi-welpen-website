@@ -3,11 +3,14 @@
 {{ define "header" }}Kontakt{{ end }}
 
 {{ define "content" }}
-<div class="contact-wrapper" style="max-width:600px; margin:0 auto;">
-  <p>Wir freuen uns auf Ihre Nachricht! Bitte füllen Sie das folgende Formular aus und klicken Sie auf <strong>Absenden</strong>.</p>
+<section class="section contact-wrapper">
+  <div class="section-header">
+    <h1>Kontakt</h1>
+    <p>Wir freuen uns auf Ihre Nachricht. Füllen Sie das Formular aus, wir melden uns so schnell wie möglich.</p>
+  </div>
 
   {{ if .Errors }}
-    <div class="form-errors" role="alert" style="border:1px solid #c0392b; background:#fdecea; color:#922b21; padding:1rem; margin-bottom:1rem;">
+    <div class="alert alert-danger form-errors" role="alert">
       <strong>Bitte prüfen Sie Ihre Eingaben:</strong>
       <ul>
         {{ range .Errors }}<li>{{ . }}</li>{{ end }}
@@ -15,31 +18,41 @@
     </div>
   {{ end }}
 
-  <form action="/contact" method="post" class="contact-form" style="display:flex; flex-direction:column; gap:1rem;">
-    <div style="position:absolute; left:-10000px; top:auto; width:1px; height:1px; overflow:hidden;" aria-hidden="true">
+  <form action="/contact" method="post" class="contact-form">
+    <div class="honeypot" aria-hidden="true">
       <label for="website">Website</label>
       <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
     </div>
 
-    <label for="name">Name <span style="color:#e74c3c;">*</span></label>
-    <input type="text" id="name" name="name" value="{{ .Form.Name }}" required maxlength="120" placeholder="Ihr Name" style="padding:0.5rem; border:1px solid #ccc; border-radius:4px;">
+    <div class="form-field">
+      <label for="name">Name <span class="required">*</span></label>
+      <input type="text" id="name" name="name" value="{{ .Form.Name }}" required maxlength="120" placeholder="Ihr Name" class="form-control">
+    </div>
 
-    <label for="email">E-Mail <span style="color:#e74c3c;">*</span></label>
-    <input type="email" id="email" name="email" value="{{ .Form.Email }}" required placeholder="ihre@adresse.de" style="padding:0.5rem; border:1px solid #ccc; border-radius:4px;">
+    <div class="form-field">
+      <label for="email">E-Mail <span class="required">*</span></label>
+      <input type="email" id="email" name="email" value="{{ .Form.Email }}" required placeholder="ihre@adresse.de" class="form-control">
+    </div>
 
-    <label for="phone">Telefon</label>
-    <input type="tel" id="phone" name="phone" value="{{ .Form.Phone }}" maxlength="40" placeholder="optional: +49 123 456789" style="padding:0.5rem; border:1px solid #ccc; border-radius:4px;">
+    <div class="form-field">
+      <label for="phone">Telefon</label>
+      <input type="tel" id="phone" name="phone" value="{{ .Form.Phone }}" maxlength="40" placeholder="optional: +49 123 456789" class="form-control">
+    </div>
 
-    <label for="message">Nachricht <span style="color:#e74c3c;">*</span></label>
-    <textarea id="message" name="message" rows="6" required maxlength="3000" placeholder="Ihre Nachricht..." style="padding:0.5rem; border:1px solid #ccc; border-radius:4px;">{{ .Form.Message }}</textarea>
+    <div class="form-field">
+      <label for="message">Nachricht <span class="required">*</span></label>
+      <textarea id="message" name="message" rows="6" required maxlength="3000" placeholder="Ihre Nachricht..." class="form-control">{{ .Form.Message }}</textarea>
+    </div>
 
-    <button type="submit" style="align-self:flex-start; padding:0.75rem 1.5rem; background:#3498db; color:#fff; border:none; border-radius:4px; cursor:pointer; transition:background 0.3s;">Absenden</button>
+    <div class="form-actions">
+      <button type="submit" class="button button-primary">Absenden</button>
+    </div>
   </form>
-  <p>
-    <span class="icon">📞</span> Telefon: +49 (0)171 1033661<br>
-    <span class="icon">✉️</span> E‑Mail: <a href="mailto:kontakt@labbi-welpen.de">kontakt@labbi-welpen.de</a>
+  <p class="contact-meta">
+    Telefon: +49&nbsp;(0)171&nbsp;1033661<br>
+    E-Mail: <a href="mailto:kontakt@labbi-welpen.de">kontakt@labbi-welpen.de</a>
   </p>
-</div>
+</section>
 {{ end }}
 
 {{ define "year" }}2025{{ end }}
