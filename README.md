@@ -64,7 +64,6 @@ Produktionsnah:
 
 Noch offen:
 
-- Go-Toolchain ist in dieser Arbeitsumgebung aktuell nicht installiert; `go test ./...` konnte hier nicht ausgefuehrt werden.
 - Backup-/Restore-Prozess fuer Neo4j und Upload-Volume sollte regelmaessig getestet werden.
 - TLS-Zertifikate muessen auf der AWS-Instanz fuer alle Nginx-Servernamen vorhanden sein oder als Multi-Domain-Zertifikat eingerichtet werden.
 - Admin-Login ist Basic Auth; fuer wenige Admins okay, aber nicht mit Rollen/Sessions vergleichbar.
@@ -119,23 +118,27 @@ Danach:
 
 ## Schnellstart mit Docker Compose
 
-```bash
+Unter Windows/Docker Desktop wird der lokale Override per Semikolon aktiviert:
+
+```powershell
 cp .env.example .env
+$env:COMPOSE_FILE="docker-compose.yml;docker-compose.local.yml"
 docker compose config
-docker compose build
-docker compose up -d
+docker compose up -d --build
 docker compose logs -f web nginx neo4j
 ```
 
 Wichtige Checks:
 
-```bash
+```powershell
 docker compose ps
 docker compose logs --tail=100 web
 docker compose logs --tail=100 neo4j
 docker compose logs --tail=100 nginx
-curl -i http://localhost/healthz
+curl -i http://localhost:8081/healthz
 ```
+
+Lokale Website: `http://localhost:8081`
 
 Hinweis: `docker compose config` interpoliert Werte aus `.env`. Ausgabe nicht in Issues, Logs oder Dokumentation kopieren, wenn echte Secrets enthalten sind.
 
@@ -147,16 +150,16 @@ Typischer Ablauf auf der AWS-Instanz per VSCode SSH:
 cd /pfad/zur/labbi-app
 git status
 git pull
+export COMPOSE_FILE=docker-compose.yml:docker-compose.aws.yml
 docker compose config
-docker compose build
-docker compose up -d
+docker compose up -d --build
 docker compose ps
 docker compose logs -f web nginx neo4j
 ```
 
 Auf der Instanz muessen vorhanden sein:
 
-- Repository mit `Dockerfile`, `docker-compose.yml`, `nginx.conf`
+- Repository mit `Dockerfile`, `docker-compose.yml`, `docker-compose.aws.yml` und `nginx.aws.conf`
 - `.env` mit echten Produktionswerten, nicht committed
 - `/etc/letsencrypt/...` mit Zertifikaten fuer alle konfigurierten Domains oder Multi-Domain-Zertifikat
 - Docker und Docker Compose Plugin
@@ -183,7 +186,7 @@ docker compose logs -f neo4j
 | Variable | Pflicht | Beispielwert ohne echte Secrets | Beschreibung |
 |---|---:|---|---|
 | `SERVER_ADDRESS` | Optional | `0.0.0.0:8080` oder `:8080` | Adresse, auf der die Go-App lauscht. Default im Code: `:8080`. |
-| `NEO4J_URI` | Ja | `bolt://neo4j:7687` | Neo4j Bolt URI. Lokal oft `bolt://localhost:7687`. |
+| `NEO4J_URI` | Ja fuer App-Start ohne Compose | `bolt://neo4j:7687` | Neo4j Bolt URI. Docker Compose setzt den Wert gezielt nur fuer `web`; lokal ohne Docker oft `bolt://localhost:7687`. |
 | `NEO4J_USER` | Ja | `neo4j` | Neo4j Benutzer. |
 | `NEO4J_PASSWORD` | Ja | `change_me_strong_neo4j_password` | Neo4j Passwort. Niemals committen. |
 | `ADMIN_USER` | Ja | `admin_user` | Benutzer fuer Basic Auth im Adminbereich. |
@@ -314,6 +317,22 @@ Wichtig: Fehlende Bilder in einem ZIP- oder Arbeitsstand sind kein Grund, Templa
 
 ## Tests und Qualitaet
 
+Alles lokal mit einem Befehl pruefen:
+
+```powershell
+.\scripts\check-local.ps1
+```
+
+Unter Linux, AWS oder Git Bash:
+
+```bash
+sh scripts/check-local.sh
+```
+
+Die Skripte pruefen Formatierung, Tests, Vet und die Docker-Compose-Konfiguration.
+
+Einzelschritte:
+
 ```bash
 gofmt -w $(find . -name '*.go')
 go test ./...
@@ -371,7 +390,7 @@ Dann pruefen:
 - Website laeuft, wenn `/healthz` `ok` liefert und Nginx/Web/Neo4j `healthy` sind:
 
 ```bash
-curl -i http://localhost/healthz
+curl -i http://localhost:8081/healthz
 docker compose ps
 docker compose logs --tail=100 web nginx neo4j
 ```
@@ -380,7 +399,6 @@ docker compose logs --tail=100 web nginx neo4j
 
 Kritisch:
 
-- Go 1.24.1 Toolchain in der lokalen/CI-Umgebung verfuegbar machen und `go test ./...` erneut ausfuehren.
 - Produktions-`.env` auf der AWS-Instanz pruefen, ohne Werte zu committen.
 - Backup/Restore fuer `neo4j_data` und `uploads` dokumentiert testen.
 
@@ -391,7 +409,6 @@ Hoch:
 
 Optional:
 
-- `go vet ./...` in Standard-Checkliste aufnehmen, sobald Toolchain verfuegbar ist.
 - Kleine Integration-/Smoke-Tests fuer Docker-Deployment ergaenzen.
 
 Bewusst verschoben:

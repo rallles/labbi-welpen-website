@@ -1,76 +1,14 @@
 services:
   neo4j:
-    image: neo4j:5.26.1-community
-    container_name: neo4jLabbi
-    environment:
-      NEO4J_AUTH: ${NEO4J_USER:?NEO4J_USER is required}/${NEO4J_PASSWORD:?NEO4J_PASSWORD is required}
-      LABBI_NEO4J_USER: ${NEO4J_USER:?NEO4J_USER is required}
-      LABBI_NEO4J_PASSWORD: ${NEO4J_PASSWORD:?NEO4J_PASSWORD is required}
-    expose:
-      - "7474"
-      - "7687"
-    volumes:
-      - neo4j_data:/data
-    networks:
-      - labbi-net
-    healthcheck:
-      test: ["CMD-SHELL", "cypher-shell -a bolt://localhost:7687 -u \"$${LABBI_NEO4J_USER}\" -p \"$${LABBI_NEO4J_PASSWORD}\" 'RETURN 1' >/dev/null 2>&1"]
-      interval: 10s
-      timeout: 10s
-      retries: 12
-      start_period: 40s
-
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: labbi-web
-    env_file:
-      - .env
-    environment:
-      NEO4J_URI: bolt://neo4j:7687
-      SERVER_ADDRESS: 0.0.0.0:8080
-      UPLOAD_DIR: /app/data/uploads
-      STATIC_DIR: /app/static
-      TEMPLATE_DIR: /app/templates
-      ADMIN_USER: ${ADMIN_USER:?ADMIN_USER is required}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}
-    expose:
-      - "8080"
-    volumes:
-      - uploads:/app/data/uploads
-    depends_on:
-      neo4j:
-        condition: service_healthy
-    networks:
-      - labbi-net
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/healthz >/dev/null 2>&1"]
-      interval: 10s
-      timeout: 5s
-      retries: 6
-      start_period: 10s
+    ports:
+      - "7474:7474"
+      - "7687:7687"
 
   nginx:
-    image: nginx:1.27.4-alpine
-    container_name: labbi-nginx
     ports:
       - "8081:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.local.conf:/etc/nginx/nginx.conf:ro
       - ./internal/public:/var/www/html:ro
       - ./static:/var/www/static:ro
       - uploads:/var/www/uploads:ro
-    depends_on:
-      web:
-        condition: service_healthy
-    networks:
-      - labbi-net
-
-volumes:
-  neo4j_data:
-  uploads:
-
-networks:
-  labbi-net:
-    driver: bridge

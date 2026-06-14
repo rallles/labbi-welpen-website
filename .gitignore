@@ -2,43 +2,56 @@
 .vscode/
 .idea/
 .DS_Store
+Thumbs.db
+desktop.ini
 
 # Build
 /bin/
 /build/
 /*.exe
-
-# Go
 *.log
 *.out
-
-# Docker
-docker-compose.yml
-nginx.conf
-.env
-.env.*
-!.env.example
-neo4j_data/
-
 *.swp
 *.swo
 
-Thumbs.db
-desktop.ini
-# generierte/vertrauliche Dateien
+# Secrets / machine specific env files
+.env
+.env.local
+.env.aws
+.env.*
+!.env.example
 
+# Versioned deployment configuration
+!docker-compose.yml
+!docker-compose.local.yml
+!docker-compose.aws.yml
+!nginx.conf
+!nginx.local.conf
+!nginx.aws.conf
+
+# Runtime data / local generated folders
+neo4j_data/
+certs/
+secrets/
+secret/
 node_modules/
 dist/
 venv/
 __pycache__/
 
-# Docker
+# Docker artifacts
 *.tar
 *.pid
 
-# certbot / letsencrypt
-/etc/letsencrypt
-/var/lib/letsencrypt
+# Keys / certificates
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
 
 # Optimierte Web-Derivate werden bewusst versioniert.
 !static/images/generated/
