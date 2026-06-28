@@ -7,10 +7,10 @@
 
 :root {
   /* Farben: warme Labrador-Palette mit gutem Kontrast und ohne harte Reinweiss-Flaechen. */
-  --color-page: #f6efe3;          /* Hintergrund: warm hell, damit die Seite freundlich und hochwertig wirkt. */
-  --color-page-soft: #fbf6ed;     /* Heller Verlaufston fuer grosszuegige Sektionen. */
+  --color-page: #f4eadb;          /* Hintergrund: warm hell, etwas satter fuer mehr Labrador-Atmosphaere. */
+  --color-page-soft: #fbf4e9;     /* Heller Verlaufston fuer grosszuegige Sektionen. */
   --color-surface: #fffdf8;       /* Karten: fast weiss fuer klare Lesbarkeit. */
-  --color-surface-warm: #fff7ea;  /* Warme Flaeche fuer CTA/Footer ohne Dominanz. */
+  --color-surface-warm: #fff4e4;  /* Warme Flaeche fuer CTA/Footer ohne Dominanz. */
   --color-text: #2d2923;          /* Text: dunkles Braun statt Schwarz, angenehmer auf Beige. */
   --color-muted: #665f55;         /* Sekundaertext: gedimmt, aber noch gut lesbar. */
   --color-heading: #1f3328;       /* Headlines: tiefes Gruenbraun fuer ruhige Autoritaet. */
@@ -18,7 +18,8 @@
   --color-primary-dark: #2f6040;  /* Hover: dunkler fuer klare Rueckmeldung. */
   --color-primary-soft: #e4efe5;  /* Sanfter Fokus-/Hinweisfond. */
   --color-accent: #b4833f;        /* Akzent: warmes Goldbraun fuer Eyebrows und Details. */
-  --color-border: #ddd0bd;        /* Linien: weich genug fuer ruhige Karten. */
+  --color-border: #dac9b2;        /* Linien: weich genug fuer ruhige Karten. */
+  --color-border-strong: #c9b28f; /* Staerkere Kontur fuer Hover und wichtige Flaechen. */
   --color-danger: #a9362a;        /* Fehler: gedecktes Rot statt grell. */
   --color-danger-bg: #fff0ec;     /* Fehlerfond: sichtbar, aber nicht laut. */
   --color-success: #21784c;
@@ -36,13 +37,13 @@
   --space-4: 1rem;                /* Mobile Innenabstaende: verhindert Randkleben bei 360px. */
   --space-5: 1.5rem;
   --space-6: 2rem;
-  --space-7: 3rem;
+  --space-7: 2.5rem;              /* Abstand: weniger Leere zwischen kurzen Sektionen. */
 
   /* Formen: Karten bleiben hochwertig, aber nicht verspielt. */
   --radius-sm: 5px;
   --radius-md: 8px;
-  --shadow-sm: 0 2px 10px rgba(45, 41, 35, 0.08);
-  --shadow-md: 0 14px 34px rgba(45, 41, 35, 0.12);
+  --shadow-sm: 0 4px 16px rgba(45, 41, 35, 0.08);
+  --shadow-md: 0 18px 42px rgba(45, 41, 35, 0.14);
 
   /* Breiten: Desktop bleibt professionell zentriert, Textzeilen bleiben lesbar. */
   --container-max: 1120px;
@@ -82,7 +83,8 @@ body {
   flex-direction: column;  /* Footer bleibt unten, aber nie fixed ueber Inhalt. */
   overflow-x: hidden;
   background:
-    linear-gradient(180deg, var(--color-page-soft) 0, var(--color-page) 28rem);
+    radial-gradient(circle at 50% -10%, rgba(180, 131, 63, 0.16), transparent 24rem),
+    linear-gradient(180deg, var(--color-page-soft) 0, var(--color-page) 26rem); /* Farbe: warmer Seitenanfang gibt mehr Tiefe ohne Dekokitsch. */
   color: var(--color-text);
   font-family: var(--font-sans);
   line-height: var(--line-height-base);
@@ -130,7 +132,7 @@ h3 {
 }
 
 h1 {
-  font-size: clamp(2rem, 7vw, 3.35rem); /* Schriftgroesse: mobil stark, Desktop gedeckelt. */
+  font-size: clamp(2rem, 6.5vw, 3.15rem); /* Schriftgroesse: harmonischer Umbruch, Desktop nicht ueberlaut. */
   letter-spacing: 0;
 }
 
@@ -169,7 +171,8 @@ textarea {
 
 .lead {
   color: var(--color-muted);
-  font-size: 1.05rem;      /* Lead-Text: leicht groesser fuer klare Seitenhierarchie. */
+  font-size: 1.04rem;      /* Lead-Text: leicht groesser fuer klare Seitenhierarchie. */
+  line-height: 1.72;
 }
 
 .eyebrow {
@@ -194,8 +197,8 @@ textarea {
 
 .main-wrapper {
   flex: 1;
-  padding-top: calc(var(--nav-height-mobile) + var(--space-5)); /* Positionierung: Content startet unter fixed Header. */
-  padding-bottom: var(--space-7);
+  padding-top: calc(var(--nav-height-mobile) + var(--space-4)); /* Positionierung: Content startet unter fixed Header, aber ohne unnoetige Leere. */
+  padding-bottom: var(--space-6);
 }
 
 .content,
@@ -205,16 +208,21 @@ textarea {
 
 .content-wrapper {
   display: grid;
-  gap: var(--space-7);     /* Abstand: klare Trennung ohne riesige Leerraeume. */
+  gap: var(--space-6);     /* Abstand: klare Trennung ohne riesige Leerraeume. */
 }
 
 .section {
-  padding-block: var(--space-4);
+  padding-block: var(--space-3); /* Abstand: kurze Seiten wirken dichter und weniger verloren. */
 }
 
 .section-header {
   max-width: var(--content-readable);
-  margin-bottom: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+
+.section-header-centered {
+  margin-inline: auto;
+  text-align: center;
 }
 
 .section-header > :last-child,
@@ -246,8 +254,9 @@ textarea {
   align-items: center;
   padding: var(--space-5);
   overflow: hidden;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background:
+    linear-gradient(135deg, rgba(255, 253, 248, 0.98), rgba(255, 244, 228, 0.94)); /* Farbe: warmer Hero-Fond fuer hochwertigeren ersten Eindruck. */
+  border: 1px solid rgba(201, 178, 143, 0.75);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
 }
@@ -262,12 +271,32 @@ textarea {
 
 .hero-media img {
   width: 100%;
-  max-height: clamp(320px, 55vh, 620px); /* Bildgroesse: starkes Hero-Bild ohne endlose Hoehe. */
+  max-height: clamp(340px, 58vh, 640px); /* Bildgroesse: emotionaler, aber kontrollierter Hero. */
   display: block;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 5 / 4;
   object-fit: cover;       /* Bilder werden nie verzerrt, nur sinnvoll zugeschnitten. */
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
+}
+
+.trust-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-4) 0;
+}
+
+.trust-row span {
+  min-height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  background: rgba(63, 122, 80, 0.09); /* Farbe: gruene Vertrauensmarker statt lauter Badges. */
+  border: 1px solid rgba(63, 122, 80, 0.18);
+  border-radius: 999px;
+  color: var(--color-primary-dark);
+  font-size: 0.9rem;       /* Schriftgroesse: kleine Meta-Info, nicht zweiter Claim. */
+  font-weight: 800;
 }
 
 .cta-panel {
@@ -275,9 +304,11 @@ textarea {
   gap: var(--space-4);
   align-items: center;
   padding: var(--space-5);
-  background: var(--color-surface-warm); /* Farbe: warmer CTA-Fond statt schwerer Banner. */
+  background:
+    linear-gradient(135deg, var(--color-surface-warm), #fffdf8); /* Farbe: ruhiger Abschluss mit etwas Waerme. */
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ==========================================================================
@@ -294,15 +325,46 @@ textarea {
 }
 
 .feature-card {
+  position: relative;
   border-top: 4px solid var(--color-primary); /* Akzent: ruhiges Gruen gibt Karten Struktur. */
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.feature-card:hover,
+.dog-card:hover,
+.puppy-card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.card-kicker {
+  margin-bottom: var(--space-2);
+  color: var(--color-accent);
+  font-size: 0.78rem;      /* Schriftgroesse: kleine Ordnungs-/Rolleninfo fuer mehr Redaktion. */
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .highlight-box {
   padding: var(--space-4);
-  margin-block: var(--space-5);
+  margin-block: var(--space-4);
   background: var(--color-primary-soft);
   border-left: 5px solid var(--color-primary); /* Positionierung/Farbe: dezenter Hinweisanker im Textfluss. */
   border-radius: var(--radius-md);
+}
+
+.soft-list {
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  background: rgba(255, 253, 248, 0.72); /* Farbe: leichter Textblock statt weiterer schwerer Karte. */
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.soft-list ul {
+  margin-bottom: 0;
 }
 
 /* ==========================================================================
@@ -324,14 +386,14 @@ textarea {
   width: 100%;
   display: block;
   aspect-ratio: 4 / 3;
-  max-height: 420px;       /* Bildgroesse: Galeriebilder bleiben kontrolliert. */
+  max-height: 380px;       /* Bildgroesse: Galeriebilder bleiben kontrolliert und dichter. */
   object-fit: cover;       /* Kein Verzerren bei unterschiedlichen Originalformaten. */
   border-radius: var(--radius-md);
 }
 
 .about-media img,
 .legal-media img {
-  max-height: 560px;       /* Bildgroesse: Seitenbild darf praesenter sein, aber nicht riesig werden. */
+  max-height: 520px;       /* Bildgroesse: Seitenbild darf praesent sein, ohne kurze Seiten zu strecken. */
 }
 
 .media-card figcaption {
@@ -356,12 +418,13 @@ textarea {
 
 .dog-card {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-3);
   padding: var(--space-3);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
 .dog-content {
-  padding: 0 var(--space-2) var(--space-2);
+  padding: 0 var(--space-2) var(--space-3);
 }
 
 .dog-content h2 {
@@ -370,10 +433,13 @@ textarea {
 
 .puppy-card {
   padding: 0;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
 .puppy-card img {
-  max-height: 300px;       /* Bildgroesse: Welpenraster bleibt gleichmaessig und scanbar. */
+  aspect-ratio: 1 / 1;
+  max-height: 320px;       /* Bildgroesse: quadratische Galerie wirkt hochwertiger und scanbar. */
+  border-radius: var(--radius-md);
 }
 
 /* ==========================================================================
@@ -384,7 +450,7 @@ textarea {
 .legal-layout,
 .contact-layout {
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-5);     /* Abstand: klare Spalten, aber nicht leer. */
 }
 
 .about-content,
@@ -397,9 +463,13 @@ textarea {
   margin-inline: auto;
 }
 
+.legal-compact {
+  padding-block: 0 var(--space-4); /* Abstand: kurze Rechtstexte schweben nicht verloren im Viewport. */
+}
+
 .legal-content h2 {
-  margin-top: var(--space-5);
-  font-size: 1.2rem;
+  margin-top: var(--space-4);
+  font-size: 1.14rem;      /* Schriftgroesse: Rechtstexte bleiben hierarchisch, aber kompakt. */
 }
 
 .puppies-intro {
@@ -410,14 +480,20 @@ textarea {
   max-width: 920px;
 }
 
+.intro-card-wide {
+  max-width: 100%;
+}
+
 .info-grid {
   gap: var(--space-4);
-  margin-block: var(--space-5);
+  margin-block: var(--space-4);
 }
 
 .info-grid > div {
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--color-border); /* Trennung: leichte Linien statt zusaetzlicher schwerer Karten. */
+  padding: var(--space-3);
+  background: rgba(255, 244, 228, 0.58); /* Farbe: warme Faktenflaechen geben dem Intro mehr Substanz. */
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
 }
 
 .help-text,
@@ -435,7 +511,7 @@ textarea {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.78rem 1.05rem;
+  padding: 0.82rem 1.12rem;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   font-weight: 800;
@@ -495,25 +571,35 @@ textarea {
   align-self: start;
 }
 
+.contact-card {
+  padding: var(--space-5);
+}
+
+.contact-info-card {
+  background:
+    linear-gradient(180deg, var(--color-surface), var(--color-surface-warm)); /* Farbe: Direktkontakt wirkt warm und vertrauensvoll. */
+}
+
 .contact-form {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-3);     /* Abstand: Formular dichter, ohne gedrungen zu werden. */
 }
 
 .form-field {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-1);
 }
 
 .form-field label {
   color: var(--color-heading);
+  font-size: 0.95rem;      /* Schriftgroesse: Labels klar, aber nicht schwer. */
   font-weight: 800;
 }
 
 .form-control {
   width: 100%;
   min-height: 44px;        /* Touchziel: Inputs sind gut antippbar. */
-  padding: 0.78rem 0.85rem;
+  padding: 0.75rem 0.85rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   background: #ffffff;
@@ -525,7 +611,7 @@ textarea {
 }
 
 textarea.form-control {
-  min-height: 11rem;       /* Textarea: genug Raum fuer echte Anfrage, mobil nicht ueberdimensioniert. */
+  min-height: 10rem;       /* Textarea: genug Raum fuer echte Anfrage, mobil nicht ueberdimensioniert. */
   resize: vertical;
 }
 
@@ -535,12 +621,21 @@ textarea.form-control {
 
 .contact-list {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-3);
 }
 
 .contact-list div {
   padding-top: var(--space-3);
   border-top: 1px solid var(--color-border);
+}
+
+.trust-note {
+  padding: var(--space-3);
+  margin: 0;
+  background: rgba(63, 122, 80, 0.08); /* Farbe: sanfter Vertrauenshinweis passend zur Primaerfarbe. */
+  border: 1px solid rgba(63, 122, 80, 0.16);
+  border-radius: var(--radius-sm);
+  color: var(--color-muted);
 }
 
 .contact-list dt {
@@ -665,15 +760,15 @@ textarea.form-control {
   }
 
   .main-wrapper {
-    padding-top: calc(var(--nav-height-desktop) + var(--space-6));
+    padding-top: calc(var(--nav-height-desktop) + var(--space-5)); /* Abstand: Desktop startet sichtbar unter Header, aber weniger leer. */
   }
 
   .section {
-    padding-block: var(--space-5);
+    padding-block: var(--space-4);
   }
 
   .hero {
-    grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr); /* Grid: Text und Bild stehen hochwertig nebeneinander. */
+    grid-template-columns: minmax(0, 0.82fr) minmax(340px, 1.18fr); /* Grid: Bild bekommt mehr emotionale Flaeche auf Desktop. */
     padding: var(--space-6);
   }
 
@@ -700,18 +795,26 @@ textarea.form-control {
 
   .cta-panel {
     grid-template-columns: minmax(0, 1fr) auto;
-    padding: var(--space-6);
+    padding: var(--space-5) var(--space-6);
   }
 }
 
 @media (min-width: 64rem) {
   .content-wrapper {
-    gap: var(--space-7);
+    gap: var(--space-6);
   }
 
   .feature-grid,
   .dogs-grid,
   .puppies-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr)); /* Grid: Desktop zeigt Galerien professionell dreispaltig. */
+  }
+
+  .hero {
+    margin-inline: calc(var(--space-4) * -1); /* Positionierung: Hero wirkt auf Desktop breiter, Container bleibt kontrolliert. */
+  }
+
+  .hero-media img {
+    min-height: 430px;     /* Bildgroesse: Desktop-Hero bekommt mehr emotionale Wirkung. */
   }
 }

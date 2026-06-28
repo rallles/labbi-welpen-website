@@ -8,7 +8,8 @@
 .footer-nav {
   margin-top: auto;
   padding: var(--space-5) 0; /* Abstand: bewusst moderat, damit der Footer nicht schwer wirkt. */
-  background: var(--color-surface-warm); /* Farbe: warmer Sandton, passend zur Labrador-Bildwelt und den Basisfarben. */
+  background:
+    linear-gradient(180deg, var(--color-surface-warm), #f8eddd); /* Farbe: warmer professioneller Abschluss statt flacher Flaeche. */
   border-top: 1px solid var(--color-border);
 }
 
@@ -34,8 +35,8 @@
 }
 
 .footer-logo .logo {
-  width: 2rem; /* Bildgroesse: kleiner als Headerlogo, Footer bleibt sekundaer. */
-  height: 2rem;
+  width: 2.15rem; /* Bildgroesse: sichtbar, aber klar sekundaer zum Header. */
+  height: 2.15rem;
   display: block;
   flex: 0 0 auto;
 }
@@ -49,7 +50,15 @@
 
 .footer-links {
   display: grid;
-  gap: var(--space-2); /* Abstand: klare Linkliste statt enger Linkwolke. */
+  gap: var(--space-1); /* Abstand: kompakte Linkgruppen statt schwerem Footerblock. */
+}
+
+.footer-links h2 {
+  margin: 0 0 var(--space-2);
+  color: var(--color-heading);
+  font-size: 0.9rem; /* Schriftgroesse: Gruppenlabel hilft Orientierung, bleibt aber sekundaer. */
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .footer-links a {
@@ -58,7 +67,7 @@
   align-items: center;
   width: fit-content;
   max-width: 100%;
-  padding: 0.35rem 0;
+  padding: 0.25rem 0;
   color: var(--color-muted);
   font-weight: 700;
   line-height: 1.25;
@@ -75,7 +84,7 @@
 
 @media (min-width: 48rem) {
   .footer-nav {
-    padding: var(--space-6) 0; /* Breakpoint: Desktop bekommt etwas mehr Atemraum ohne fixed Verhalten. */
+    padding: var(--space-5) 0; /* Breakpoint: Desktop bleibt kompakt und hochwertig. */
   }
 
   .footer-grid {

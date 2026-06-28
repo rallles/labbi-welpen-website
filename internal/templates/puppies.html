@@ -5,7 +5,7 @@
 {{ define "content" }}
 <div class="content-wrapper">
   <section class="section puppies-intro">
-    <div class="intro-card card">
+    <div class="intro-card card intro-card-wide">
       <p class="eyebrow">Aktueller Wurf</p>
       <h1>Unsere aktuellen Welpen</h1>
       <p class="lead">Geboren am 26. Januar 2025 und bereit für Familien, die sich bewusst für einen Labrador entscheiden.</p>
@@ -50,9 +50,10 @@
       prev() { this.current = (this.current > 0) ? this.current - 1 : this.images.length - 1 }
     }"
   >
-    <div class="section-header">
+    <div class="section-header section-header-centered">
       <p class="eyebrow">Galerie</p>
       <h2>Einblicke in den Wurf</h2>
+      <p>Ruhige Momente, neugierige Blicke und viel Labrador-Charme aus unserem Alltag.</p>
     </div>
     <div class="grid puppies-grid">
       <template x-for="(img, i) in images" :key="i">
