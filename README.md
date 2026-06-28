@@ -96,14 +96,15 @@ go test ./...
 go run ./cmd
 ```
 
-Wenn du lokal ohne Docker startest, passe `.env` typischerweise so an:
+Die `.env.example` ist fuer den direkten lokalen Start vorbereitet. Sie verwendet
+`NEO4J_URI=bolt://localhost:7687`; passe bei Bedarf insbesondere die Platzhalter-Passwoerter an:
 
 ```env
 SERVER_ADDRESS=:8080
 NEO4J_URI=bolt://localhost:7687
 NEO4J_USER=neo4j
 NEO4J_PASSWORD=change_me_strong_neo4j_password
-ADMIN_USER=admin_user
+ADMIN_USER=admin
 ADMIN_PASSWORD=change_me_strong_admin_password
 UPLOAD_DIR=data/uploads
 STATIC_DIR=static
@@ -115,6 +116,10 @@ Danach:
 - Website: `http://localhost:8080/`
 - Healthcheck: `http://localhost:8080/healthz`
 - Admin: `http://localhost:8080/admin`
+
+Beim Docker-Start ueberschreibt `docker-compose.yml` die App-interne URI im `web`-Service
+mit `NEO4J_URI=bolt://neo4j:7687`. Auch Serveradresse sowie Upload-, Static- und
+Template-Verzeichnisse werden dort auf Containerpfade gesetzt.
 
 ## Schnellstart mit Docker Compose
 
@@ -150,6 +155,23 @@ Die `.dockerignore` schliesst Markdown-Dokumentation aus dem Runtime-Build-Konte
 Ausserdem bleiben `.env`, `.env.*`, Schluesseldateien und Secret-Verzeichnisse ausgeschlossen;
 nur die versionierte `.env.example` mit Platzhaltern ist ausdruecklich erlaubt.
 
+### Routine nach lokalem Deployment
+
+```bash
+git status
+git pull
+docker compose config
+docker compose build --no-cache
+docker compose up -d
+docker compose ps
+docker compose logs --tail=100 web nginx neo4j
+./scripts/smoke-local.sh
+```
+
+Das Smoke-Script prueft nur lesend Healthcheck, Startseite, Welpenseite, `robots.txt`
+und Sitemap auf `http://localhost:8081`. Unter Windows kann es mit
+`sh scripts/smoke-local.sh` gestartet werden.
+
 ## AWS-Deployment
 
 Typischer Ablauf auf der AWS-Instanz per VSCode SSH:
@@ -183,10 +205,14 @@ Auf der Instanz muessen vorhanden sein:
 Healthchecks:
 
 ```bash
-curl -i http://localhost/healthz
+curl -i https://labbi-welpen.de/healthz
 curl -I https://labbi-welpen.de/healthz
-docker compose ps
+curl -I https://labbi-welpen.de/static/css/styles.css
+curl -I https://labbi-welpen.de/robots.txt
+curl -I https://labbi-welpen.de/sitemap.xml
 ```
+
+Diese Produktions-Checks sind rein lesend und werden bewusst nicht vom lokalen Script ausgefuehrt.
 
 Logs:
 
@@ -201,7 +227,7 @@ docker compose logs -f neo4j
 | Variable | Pflicht | Beispielwert ohne echte Secrets | Beschreibung |
 |---|---:|---|---|
 | `SERVER_ADDRESS` | Optional | `0.0.0.0:8080` oder `:8080` | Adresse, auf der die Go-App lauscht. Default im Code: `:8080`. |
-| `NEO4J_URI` | Ja fuer App-Start ohne Compose | `bolt://neo4j:7687` | Neo4j Bolt URI. Docker Compose setzt den Wert gezielt nur fuer `web`; lokal ohne Docker oft `bolt://localhost:7687`. |
+| `NEO4J_URI` | Ja fuer App-Start ohne Compose | `bolt://localhost:7687` | URI fuer `go run ./cmd`; Docker Compose ueberschreibt sie im `web`-Service mit `bolt://neo4j:7687`. |
 | `NEO4J_USER` | Ja | `neo4j` | Neo4j Benutzer. |
 | `NEO4J_PASSWORD` | Ja | `change_me_strong_neo4j_password` | Neo4j Passwort. Niemals committen. |
 | `ADMIN_USER` | Ja | `admin_user` | Benutzer fuer Basic Auth im Adminbereich. |
@@ -261,7 +287,7 @@ SMTP ist optional. Wenn SMTP nicht vollstaendig konfiguriert ist, wird die Konta
 | `/uploads/...` | GET | Admin-Uploads | Nein | Go FileServer / Nginx Alias |
 | `/robots.txt` | GET | Robots-Datei | Nein | `RobotsHandler` |
 | `/sitemap.xml` | GET | Sitemap | Nein | `SitemapHandler` |
-| `/healthz` | GET | Healthcheck | Nein | `HealthHandler` |
+| `/healthz` | GET, HEAD | Healthcheck (`HEAD` ohne Body) | Nein | `HealthHandler` |
 
 Mehr Details: [docs/ROUTES.md](docs/ROUTES.md).
 
@@ -348,6 +374,9 @@ sh scripts/check-local.sh
 Die Skripte pruefen Formatierung, Tests, Vet und die Docker-Compose-Konfiguration.
 `docker compose config` validiert nur und startet keine Container.
 
+Die bestehende GitHub-Actions-CI unter `.github/workflows/ci.yml` prueft ebenfalls
+`gofmt`, `go test ./...`, `go vet ./...` und `docker compose config`.
+
 Einzelschritte:
 
 ```bash
@@ -417,16 +446,13 @@ docker compose logs --tail=100 web nginx neo4j
 Kritisch:
 
 - Produktions-`.env` auf der AWS-Instanz pruefen, ohne Werte zu committen.
-- Backup/Restore fuer `neo4j_data` und `uploads` dokumentiert testen.
+- `neo4j_data` und `uploads` gemeinsam in einen Testordner sichern, in einem frischen
+  Compose-Projekt wiederherstellen und erst danach einen produktiven Runbook-Befehl festlegen.
 
 Hoch:
 
 - Nginx-Zertifikate fuer alle vier Servernamen pruefen.
-- Admin-Delete-Verhalten fuer Upload-Dateien bewusst entscheiden: Dateien behalten oder beim Delete entfernen.
-
-Optional:
-
-- Kleine Integration-/Smoke-Tests fuer Docker-Deployment ergaenzen.
+- Lokalen Smoke-Test nach Deployments und die dokumentierten AWS-Checks konsequent ausfuehren.
 
 Bewusst verschoben:
 

@@ -24,6 +24,7 @@ import (
 )
 
 const (
+	maxContactFormSize              = 64 << 10
 	contactRateLimitWindow          = 10 * time.Minute
 	contactRateLimitCleanupInterval = 5 * time.Minute
 	contactRateLimitMax             = 5
@@ -63,7 +64,13 @@ func ContactHandler(w http.ResponseWriter, r *http.Request, cfg config.Config, d
 }
 
 func handleContactPost(w http.ResponseWriter, r *http.Request, cfg config.Config, driver neo4j.DriverWithContext) {
+	r.Body = http.MaxBytesReader(w, r.Body, maxContactFormSize)
 	if err := r.ParseForm(); err != nil {
+		var maxBytesError *http.MaxBytesError
+		if errors.As(err, &maxBytesError) {
+			http.Error(w, "Kontaktformular ist zu groß", http.StatusRequestEntityTooLarge)
+			return
+		}
 		http.Error(w, "Ungültige Eingaben", http.StatusBadRequest)
 		return
 	}

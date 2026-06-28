@@ -71,6 +71,11 @@ Relationship:
 
 Beim Update werden alte `HAS_PARENT`-Beziehungen geloescht und neu gesetzt.
 
+Beim Loeschen liefert `PuppyRepository.Delete` `ErrPuppyNotFound`, wenn kein passender
+Knoten geloescht wurde. Der Handler loescht zuerst den Neo4j-Knoten und versucht erst
+danach, die zuvor geladenen Upload-Dateien zu entfernen. Fehler beim Upload-Cleanup
+werden geloggt und als Warnung angezeigt; der erfolgreiche DB-Delete wird nicht rueckgaengig gemacht.
+
 `PuppyRepository.List` liest diese Knoten fuer die oeffentliche Route `/puppies` und die
 Admin-Tabelle `/admin/puppies`. Die feste Galerie in `puppies.html` ist kein Datenbankinhalt.
 

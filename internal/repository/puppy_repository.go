@@ -144,14 +144,38 @@ func (r *PuppyRepository) Delete(ctx context.Context, id string) error {
 	defer session.Close(ctx)
 
 	_, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
-		result, err := tx.Run(ctx, `MATCH (p:Puppy {id: $id}) DETACH DELETE p`, map[string]any{"id": id})
+		result, err := tx.Run(ctx, `
+			MATCH (p:Puppy {id: $id})
+			WITH p, p.id AS deletedID
+			DETACH DELETE p
+			RETURN deletedID`, map[string]any{"id": id})
 		if err != nil {
 			return nil, err
 		}
-		_, err = result.Consume(ctx)
-		return nil, err
+		if err := requirePuppyDeleteResult(ctx, result, id); err != nil {
+			return nil, err
+		}
+		if _, err := result.Consume(ctx); err != nil {
+			return nil, err
+		}
+		return nil, nil
 	})
 	return err
+}
+
+type puppyDeleteCursor interface {
+	Next(context.Context) bool
+	Err() error
+}
+
+func requirePuppyDeleteResult(ctx context.Context, result puppyDeleteCursor, id string) error {
+	if result.Next(ctx) {
+		return nil
+	}
+	if err := result.Err(); err != nil {
+		return fmt.Errorf("read puppy %q delete result: %w", id, err)
+	}
+	return fmt.Errorf("%w: %s", ErrPuppyNotFound, id)
 }
 
 func replaceParentRelationships(ctx context.Context, tx neo4j.ManagedTransaction, puppyID string, parents []string) error {

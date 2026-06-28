@@ -1,5 +1,36 @@
 # Betrieb
 
+## Routine nach lokalem Deployment
+
+Die Routine validiert und baut die lokale Compose-Umgebung neu. Der anschliessende
+Smoke-Test fuehrt ausschliesslich lesende GET-/HEAD-Requests aus und veraendert keine Daten:
+
+```bash
+git status
+git pull
+docker compose config
+docker compose build --no-cache
+docker compose up -d
+docker compose ps
+docker compose logs --tail=100 web nginx neo4j
+./scripts/smoke-local.sh
+```
+
+Falls das Executable-Bit in einer Windows-Arbeitskopie fehlt, ist derselbe Test mit
+`sh scripts/smoke-local.sh` ausfuehrbar. Der lokale Nginx muss auf Port 8081 erreichbar sein.
+
+Auf AWS danach zusaetzlich die oeffentlichen, rein lesenden Endpunkte pruefen:
+
+```bash
+curl -i https://labbi-welpen.de/healthz
+curl -I https://labbi-welpen.de/healthz
+curl -I https://labbi-welpen.de/static/css/styles.css
+curl -I https://labbi-welpen.de/robots.txt
+curl -I https://labbi-welpen.de/sitemap.xml
+```
+
+Das lokale Script nicht ungeprueft gegen die Produktionsdomain umkonfigurieren.
+
 ## Container pruefen
 
 ```bash
@@ -21,7 +52,10 @@ Go-App:
 
 ```bash
 curl -i http://localhost/healthz
+curl -I http://localhost/healthz
 ```
+
+`GET` liefert `ok`; `HEAD` liefert denselben Status 200 ohne Response-Body.
 
 Ueber Nginx/TLS:
 
@@ -72,7 +106,7 @@ Debug-Queries stehen in [DATABASE.md](DATABASE.md).
 
 ## Backups
 
-Mindestens sichern:
+Als zusammengehoerigen Sicherungsstand sichern:
 
 - Neo4j Volume `neo4j_data`
 - Upload Volume `uploads`
@@ -86,16 +120,16 @@ docker volume ls | grep labbi
 docker compose config --volumes
 ```
 
-Einfache Backup-Idee fuer Uploads:
+`neo4j_data` und `uploads` muessen gemeinsam und aus demselben Wartungsfenster gesichert
+werden, damit Datenbank-Bildreferenzen und Dateien zusammenpassen. Es gibt bewusst noch
+keinen produktiven Backup-Befehl, solange das Verfahren nicht end-to-end getestet ist.
 
-```bash
-docker run --rm \
-  -v labbi-app_uploads:/data:ro \
-  -v "$PWD/backups":/backup \
-  alpine tar czf /backup/uploads-$(date +%Y%m%d).tar.gz -C /data .
-```
+Vor Aufnahme in das Produktions-Runbook:
 
-Neo4j-Backups sollten konsistent erstellt werden. Fuer Community-Edition im Zweifel Container stoppen oder Neo4j-Dump/Export-Prozess separat festlegen und testen.
+1. Backup beider Volumes in einen isolierten Testordner erstellen.
+2. Beide Sicherungen in einem frischen Compose-Projekt wiederherstellen.
+3. Neo4j-Daten, Upload-Dateien und deren Referenzen gemeinsam pruefen.
+4. Erst den erfolgreich getesteten Ablauf als produktiven Runbook-Befehl dokumentieren.
 
 ## Upload-Volume sichern
 

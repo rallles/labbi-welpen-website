@@ -4,26 +4,23 @@ Diese Liste ist aus dem aktuellen Code- und Betriebsstand abgeleitet. Keine Fant
 
 ## Kritisch
 
-- Go 1.24.1 Toolchain lokal/CI verfuegbar machen und `gofmt -w $(find . -name '*.go')` sowie `go test ./...` ausfuehren.
 - Produktions-`.env` auf der AWS-Instanz pruefen: Pflichtwerte gesetzt, starke Passwoerter, keine Secrets im Git.
-- Backup- und Restore-Prozess fuer `neo4j_data` und `uploads` testen und dokumentiert ablegen.
+- Backup von `neo4j_data` und `uploads` gemeinsam in einen isolierten Testordner erstellen,
+  in einem frischen Compose-Projekt wiederherstellen und Daten plus Bildreferenzen pruefen.
+  Erst danach den getesteten Ablauf als produktiven Runbook-Befehl uebernehmen.
 - TLS-Zertifikate fuer alle vier Nginx-Servernamen pruefen oder Multi-Domain-Zertifikat einrichten.
 
 ## Hoch
 
-- Deployment-Smoke-Test nach jedem Build konsequent ausfuehren: `/healthz`, `/static/...`, `/uploads/...`, Admin Login.
-- Testlauf in echter Go-Umgebung nachholen, weil diese Arbeitsumgebung zuletzt keine Go-Toolchain hatte.
+- `scripts/smoke-local.sh` nach lokalen Deployments konsequent ausfuehren; AWS-Endpunkte
+  nach dem dokumentierten, rein lesenden Ablauf pruefen.
 
 ## Mittel
 
-- Backup-Befehle fuer Neo4j Community finalisieren und Restore einmal in Testumgebung ueben.
 - Admin-Bildverwaltung fuer bestehende Welpen planen, falls Bilder nachtraeglich geaendert oder geloescht werden sollen.
-- Kleine Integrationstests oder Smoke-Scripts fuer Docker Compose ergaenzen.
-- `go vet ./...` in den Standard-Workflow aufnehmen, sobald die Toolchain vorhanden ist.
 
 ## Optional
 
-- CI einrichten, die `gofmt`, `go test`, `go vet` und `docker compose config --no-interpolate` ausfuehrt.
 - CSP planen, falls externe Skripte wie Alpine CDN ersetzt oder explizit freigegeben werden.
 - Admin Auth langfristig durch Session-/Rollenmodell ersetzen, falls mehrere Benutzer oder Audit-Anforderungen entstehen.
 

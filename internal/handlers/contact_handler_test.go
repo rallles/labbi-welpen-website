@@ -237,6 +237,19 @@ func TestContactRateLimiterRemovesExpiredIPKeys(t *testing.T) {
 	}
 }
 
+func TestContactHandlerRejectsOversizedPostBody(t *testing.T) {
+	body := "message=" + strings.Repeat("x", maxContactFormSize)
+	request := httptest.NewRequest(http.MethodPost, "/contact", strings.NewReader(body))
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	response := httptest.NewRecorder()
+
+	ContactHandler(response, request, config.Config{}, nil)
+
+	if response.Code != http.StatusRequestEntityTooLarge {
+		t.Fatalf("status = %d, want %d; body = %q", response.Code, http.StatusRequestEntityTooLarge, response.Body.String())
+	}
+}
+
 func splitMailMessage(t *testing.T, message []byte) (string, string) {
 	t.Helper()
 

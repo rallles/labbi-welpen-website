@@ -120,8 +120,9 @@ Flow:
 Nginx und Go-App koennen `/uploads/` ausliefern. Im Produktivbetrieb liefert Nginx direkt aus dem Volume.
 
 Beim Loeschen eines Welpen laedt der Handler zuerst dessen Bildpfade, loescht danach den
-Neo4j-Knoten und entfernt anschliessend nur Dateien mit einem oeffentlichen `/uploads/`-Pfad.
-Dateinamen werden dabei mit `filepath.Base` auf das konfigurierte `UPLOAD_DIR` begrenzt.
+Neo4j-Knoten und entfernt anschliessend nur flache Dateien im Format `/uploads/<dateiname>`.
+Unterordner- und Traversal-Pfade werden abgelehnt; Dateinamen werden zusaetzlich mit
+`filepath.Base` auf das konfigurierte `UPLOAD_DIR` begrenzt.
 Fehlschlaegt nur die Dateibereinigung, bleibt der DB-Delete bestehen und der Admin sieht eine Warnung.
 
 ## Request Flow

@@ -11,8 +11,10 @@ func TestRemovePuppyUploadFilesOnlyRemovesSafeUploadTargets(t *testing.T) {
 	outsideDir := t.TempDir()
 
 	insideImage := filepath.Join(uploadDir, "puppy.jpg")
+	nestedNameInUploadRoot := filepath.Join(uploadDir, "nested.jpg")
+	traversalNameInUploadRoot := filepath.Join(uploadDir, "outside.jpg")
 	outsideImage := filepath.Join(outsideDir, "outside.jpg")
-	for _, path := range []string{insideImage, outsideImage} {
+	for _, path := range []string{insideImage, nestedNameInUploadRoot, traversalNameInUploadRoot, outsideImage} {
 		if err := os.WriteFile(path, []byte("image"), 0600); err != nil {
 			t.Fatalf("os.WriteFile(%q) error = %v", path, err)
 		}
@@ -20,6 +22,7 @@ func TestRemovePuppyUploadFilesOnlyRemovesSafeUploadTargets(t *testing.T) {
 
 	paths := []string{
 		"/uploads/puppy.jpg",
+		"/uploads/subdir/nested.jpg",
 		"/static/outside.jpg",
 		"/uploads/../../outside.jpg",
 		"/uploads/missing.jpg",
@@ -33,6 +36,12 @@ func TestRemovePuppyUploadFilesOnlyRemovesSafeUploadTargets(t *testing.T) {
 	}
 	if _, err := os.Stat(outsideImage); err != nil {
 		t.Errorf("file outside upload directory was affected: %v", err)
+	}
+	if _, err := os.Stat(nestedNameInUploadRoot); err != nil {
+		t.Errorf("nested upload path unexpectedly selected a root file: %v", err)
+	}
+	if _, err := os.Stat(traversalNameInUploadRoot); err != nil {
+		t.Errorf("traversal upload path unexpectedly selected a root file: %v", err)
 	}
 }
 

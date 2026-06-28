@@ -49,7 +49,11 @@ func DeletePuppyHandler(w http.ResponseWriter, r *http.Request, driver neo4j.Dri
 	}
 
 	if err := repo.Delete(ctx, id); err != nil {
-		log.Printf("Fehler beim Löschen des Welpen: %v", err)
+		if errors.Is(err, repository.ErrPuppyNotFound) {
+			log.Printf("Zu loeschender Welpe %q wurde nicht gefunden: %v", id, err)
+		} else {
+			log.Printf("Fehler beim Löschen des Welpen: %v", err)
+		}
 		http.Redirect(w, r, "/admin/puppies?error=delete_failed", http.StatusSeeOther)
 		return
 	}
@@ -74,8 +78,10 @@ func removePuppyUploadFiles(uploadDir string, publicPaths []string) error {
 			continue
 		}
 
+		relativeName := strings.TrimPrefix(publicPath, "/uploads/")
 		name := filepath.Base(publicPath)
-		if name == "" || name == "." || name == string(filepath.Separator) {
+		if name == "" || name == "." || name == string(filepath.Separator) ||
+			relativeName != name || strings.ContainsAny(relativeName, `/\`) {
 			continue
 		}
 

@@ -24,7 +24,8 @@ Im Projektroot:
 cp .env.example .env
 ```
 
-Dann `.env` bearbeiten. Keine echten Secrets committen.
+Die Vorlage ist fuer den direkten lokalen Start vorbereitet. Platzhalter-Passwoerter
+bei Bedarf lokal aendern, aber keine echten Secrets committen.
 
 Fuer lokalen Go-Start ohne Docker sind diese Werte typisch:
 
@@ -33,22 +34,18 @@ SERVER_ADDRESS=:8080
 NEO4J_URI=bolt://localhost:7687
 NEO4J_USER=neo4j
 NEO4J_PASSWORD=change_me_strong_neo4j_password
-ADMIN_USER=admin_user
+ADMIN_USER=admin
 ADMIN_PASSWORD=change_me_strong_admin_password
 UPLOAD_DIR=data/uploads
 STATIC_DIR=static
 TEMPLATE_DIR=internal/templates
 ```
 
-Fuer Docker Compose passt `.env.example` grob zur Containerstruktur:
-
-```env
-SERVER_ADDRESS=0.0.0.0:8080
-NEO4J_URI=bolt://neo4j:7687
-UPLOAD_DIR=/app/data/uploads
-STATIC_DIR=/app/static
-TEMPLATE_DIR=/app/templates
-```
+Beim direkten Start mit `go run ./cmd` wird aus `.env`
+`NEO4J_URI=bolt://localhost:7687` verwendet. Beim Docker-Start ueberschreibt
+`docker-compose.yml` diesen Wert im `web`-Service mit `bolt://neo4j:7687` und setzt
+auch Serveradresse, Upload-, Static- und Template-Verzeichnisse auf Containerwerte.
+Die Zugangsdaten werden weiterhin aus `.env` interpoliert.
 
 ## Lokaler Start ohne Docker
 

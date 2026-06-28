@@ -27,7 +27,8 @@ go vet ./...
 |---|---|
 | `internal/config/config_test.go` | Pflicht-Config, keine Secret-Leaks in Fehlern, SMTP optional |
 | `internal/handlers/add_puppy_handler_test.go` | Upload-Typen, Limits, leere Liste, sichere Dateinamen |
-| `internal/handlers/contact_handler_test.go` | Mail-Header-Sanitizing, Reply-To, IP-Auswertung, Rate-Limiter-Cleanup |
+| `internal/handlers/contact_handler_test.go` | Mail-Header-Sanitizing, Reply-To, IP-Auswertung, Rate-Limiter-Cleanup, POST-Body-Limit |
+| `internal/handlers/health_handler_test.go` | GET-, HEAD- und Method-Not-Allowed-Verhalten |
 | `internal/security/csrf_test.go` | Token Generate, Valid, Consume, Single-Use |
 | `internal/validation/contact_validation_test.go` | Kontaktformular-Validation |
 | `internal/validation/puppy_validation_test.go` | Puppy-Validation, Eltern-Normalisierung, Deduplizierung |
@@ -102,13 +103,7 @@ docker compose ps
 docker compose logs --tail=100 web nginx neo4j
 ```
 
-## Bekannte Umgebungseinschraenkung
+## Umgebungsvoraussetzungen
 
-In dieser Arbeitsumgebung fehlte zuletzt die Go-Toolchain:
-
-```text
-gofmt: command not found
-go: command not found
-```
-
-Tests muessen in einer Umgebung mit Go 1.24.1 erneut ausgefuehrt werden.
+Die Checks benoetigen die zu `go.mod` passende Go-Toolchain und fuer Compose-Pruefungen
+das Docker-Compose-Plugin. Bei fehlenden Werkzeugen schlagen die Befehle unmittelbar fehl.

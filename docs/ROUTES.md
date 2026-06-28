@@ -15,7 +15,7 @@ Die Routen werden in `internal/router/router.go` registriert.
 | `/datenschutz` | GET | `DatenschutzHandler` | `datenschutz.html` | Nein | Datenschutzseite |
 | `/robots.txt` | GET | `RobotsHandler` | Datei `robots.txt` | Nein | Crawler-Metadaten |
 | `/sitemap.xml` | GET | `SitemapHandler` | Datei `sitemap.xml` | Nein | Sitemap |
-| `/healthz` | GET | `HealthHandler` | keins | Nein | Healthcheck, Antwort `ok` |
+| `/healthz` | GET, HEAD | `HealthHandler` | keins | Nein | Healthcheck; GET antwortet `ok`, HEAD ohne Body |
 | `/admin` | GET | `AdminDashboardHandler` | `admin/admin_dashboard.html` | Basic Auth | Admin-Dashboard |
 | `/admin/puppies` | GET | `ListPuppiesAdminHandler` | `admin/admin_puppies_table.html` | Basic Auth | Welpen im Adminbereich |
 | `/admin/puppies/add` | GET | `AddPuppyFormHandler` | `admin/add_puppy.html` | Basic Auth | Formular fuer neuen Welpen |
