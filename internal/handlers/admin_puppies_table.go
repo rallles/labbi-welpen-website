@@ -61,6 +61,8 @@ func adminSuccessMessage(code string) string {
 	switch code {
 	case "deleted":
 		return "Der Welpe wurde gelöscht."
+	case "deleted_with_upload_warning":
+		return "Der Welpe wurde gelöscht, aber mindestens eine Bilddatei konnte nicht entfernt werden."
 	case "updated":
 		return "Der Welpe wurde gespeichert."
 	default:

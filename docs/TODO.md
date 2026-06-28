@@ -11,8 +11,6 @@ Diese Liste ist aus dem aktuellen Code- und Betriebsstand abgeleitet. Keine Fant
 
 ## Hoch
 
-- Entscheiden, ob Upload-Dateien beim Loeschen eines Welpen entfernt werden sollen. Aktuell loescht `DeletePuppyHandler` nur den Neo4j-Knoten.
-- Contact-ID-Constraint in Neo4j pruefen/ergaenzen, falls Kontaktanfragen langfristig verwaltet werden.
 - Deployment-Smoke-Test nach jedem Build konsequent ausfuehren: `/healthz`, `/static/...`, `/uploads/...`, Admin Login.
 - Testlauf in echter Go-Umgebung nachholen, weil diese Arbeitsumgebung zuletzt keine Go-Toolchain hatte.
 

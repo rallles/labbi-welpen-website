@@ -7,8 +7,8 @@ Die Routen werden in `internal/router/router.go` registriert.
 | `/` | GET | `HomeHandler` | `index.html` | Nein | Startseite |
 | `/about` | GET | `AboutHandler` | `about.html` | Nein | Ueber uns |
 | `/dogs` | GET | `DogsHandler` | `dogs.html` | Nein | Hunde/Elternhunde |
-| `/puppies` | GET | `PuppiesHandler` | `puppies.html` | Nein | Oeffentliche Welpenliste |
-| `/list-puppies` | GET | `ListPuppiesHandler` | je nach Handler | Nein | Weitere Welpenliste |
+| `/puppies` | GET | `MakePuppiesHandler(driver)` | `puppies.html` | Nein | Oeffentliche Welpenliste aus Neo4j plus feste Galerie |
+| `/list-puppies` | GET | `ListPuppiesHandler` | keins | Nein | Permanenter Redirect auf `/puppies` |
 | `/contact` | GET | `ContactHandler` | `contact.html` | Nein | Kontaktformular anzeigen |
 | `/contact` | POST | `ContactHandler` | `contact_result.html` oder `contact.html` | Nein | Kontakt speichern, optional Mail |
 | `/impressum` | GET | `ImpressumHandler` | `impressum.html` | Nein | Impressum |
@@ -22,7 +22,7 @@ Die Routen werden in `internal/router/router.go` registriert.
 | `/admin/puppies/add` | POST | `AddPuppyHandler` | Redirect oder Formular | Basic Auth + CSRF | Welpe mit Bildern speichern |
 | `/admin/puppies/edit` | GET | `EditPuppyFormHandler` | `admin/admin_puppies_edit.html` | Basic Auth | Welpe bearbeiten |
 | `/admin/puppies/edit` | POST | `EditPuppySaveHandler` | Redirect oder Formular | Basic Auth + CSRF | Welpe aktualisieren |
-| `/admin/puppies/delete` | POST | `DeletePuppyHandler` | Redirect | Basic Auth + CSRF | Welpe loeschen |
+| `/admin/puppies/delete` | POST | `DeletePuppyHandler` | Redirect | Basic Auth + CSRF | Welpe und zugehoerige Upload-Dateien loeschen |
 | `/static/...` | GET | `http.FileServer` oder Nginx Alias | Datei | Nein | CSS, Icons, feste Bilder |
 | `/uploads/...` | GET | `http.FileServer` oder Nginx Alias | Datei | Nein | Admin-Uploads |
 

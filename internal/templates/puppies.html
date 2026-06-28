@@ -8,7 +8,7 @@
     <div class="intro-card card intro-card-wide">
       <p class="eyebrow">Aktueller Wurf</p>
       <h1>Unsere aktuellen Welpen</h1>
-      <p class="lead">Geboren am 26. Januar 2025 und bereit für Familien, die sich bewusst für einen Labrador entscheiden.</p>
+      <p class="lead">Hier stellen wir die Welpen vor, die aktuell bei uns eingetragen sind.</p>
 
       <div class="info-grid">
         <div>
@@ -21,12 +21,53 @@
         </div>
         <div>
           <h3>Gesundheit</h3>
-          <p>Alle Welpen sind geimpft, gechipt und mehrfach entwurmt. Ein EU-Heimtierausweis ist vorhanden.</p>
+          <p>Angaben zu Gesundheit und Entwicklung werden für jeden Welpen sorgfältig gepflegt.</p>
         </div>
       </div>
 
       <p class="help-text">Klicken Sie auf ein Bild, um es in voller Größe anzusehen.</p>
     </div>
+  </section>
+
+  <section class="section" aria-labelledby="puppies-list-heading">
+    <div class="section-header section-header-centered">
+      <p class="eyebrow">Unsere Welpen</p>
+      <h2 id="puppies-list-heading">Welpen im Überblick</h2>
+    </div>
+
+    {{ if .Puppies }}
+    <div class="puppies-container">
+      {{ range .Puppies }}
+      {{ $puppy := . }}
+      <article class="puppy-entry">
+        <div class="puppy-info">
+          <h3>{{ .Name }}</h3>
+          <ul>
+            <li><strong>Geburtsdatum:</strong> {{ .Geburtsdatum }}</li>
+            <li><strong>Geschlecht:</strong> {{ .Geschlecht }}</li>
+            <li><strong>Farbe:</strong> {{ .Farbe }}</li>
+            <li><strong>Gewicht:</strong> {{ .Gewicht }} kg</li>
+            {{ if .Charakter }}<li><strong>Charakter:</strong> {{ .Charakter }}</li>{{ end }}
+          </ul>
+          {{ if .Notizen }}<p>{{ .Notizen }}</p>{{ end }}
+        </div>
+        {{ if .Bilder }}
+        <div class="puppy-images" aria-label="Bilder von {{ .Name }}">
+          {{ range .Bilder }}
+          <a href="{{ . }}">
+            <img src="{{ . }}" alt="Welpe {{ $puppy.Name }}" class="puppy-thumb" loading="lazy" decoding="async">
+          </a>
+          {{ end }}
+        </div>
+        {{ end }}
+      </article>
+      {{ end }}
+    </div>
+    {{ else }}
+    <div class="card puppies-empty">
+      <p>Aktuell sind keine Welpen eingetragen. Schauen Sie gern später wieder vorbei oder nehmen Sie Kontakt mit uns auf.</p>
+    </div>
+    {{ end }}
   </section>
 
   <section
@@ -51,7 +92,7 @@
     }"
   >
     <div class="section-header section-header-centered">
-      <p class="eyebrow">Galerie</p>
+      <p class="eyebrow">Feste Galerie</p>
       <h2>Einblicke in den Wurf</h2>
       <p>Ruhige Momente, neugierige Blicke und viel Labrador-Charme aus unserem Alltag.</p>
     </div>

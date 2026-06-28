@@ -71,7 +71,7 @@ Neo4j speichert:
 - `(:Contact)` fuer Kontaktanfragen
 - `(:Puppy)-[:HAS_PARENT]->(:Dog)`
 
-Beim Start werden Constraints fuer `Puppy.id` und `Dog.id` erstellt. Parent-Dogs werden per `MERGE` geseedet.
+Beim Start werden Constraints fuer `Puppy.id`, `Dog.id` und `Contact.id` erstellt. Parent-Dogs werden per `MERGE` geseedet.
 
 ## Docker Compose
 
@@ -119,6 +119,11 @@ Flow:
 
 Nginx und Go-App koennen `/uploads/` ausliefern. Im Produktivbetrieb liefert Nginx direkt aus dem Volume.
 
+Beim Loeschen eines Welpen laedt der Handler zuerst dessen Bildpfade, loescht danach den
+Neo4j-Knoten und entfernt anschliessend nur Dateien mit einem oeffentlichen `/uploads/`-Pfad.
+Dateinamen werden dabei mit `filepath.Base` auf das konfigurierte `UPLOAD_DIR` begrenzt.
+Fehlschlaegt nur die Dateibereinigung, bleibt der DB-Delete bestehen und der Admin sieht eine Warnung.
+
 ## Request Flow
 
 Oeffentliche Seite:
@@ -132,6 +137,10 @@ Welpenliste:
 ```text
 Browser -> Nginx -> Go Handler -> PuppyRepository -> Neo4j -> Template
 ```
+
+`/puppies` rendert die mit `PuppyRepository.List` geladenen Welpen. Die bestehende feste
+Wurfgalerie im selben Template ist davon getrennt und bleibt statischer Website-Content.
+`/list-puppies` leitet permanent auf `/puppies` um.
 
 Admin-POST:
 

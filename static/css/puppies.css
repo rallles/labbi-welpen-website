@@ -8,6 +8,13 @@
   padding: 1rem;
 }
 
+.puppies-empty {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  text-align: center;
+}
+
 /* Einzelner Welpen-Eintrag als Grid: Info links, Bilder rechts */
 .puppy-entry {
   display: grid;
@@ -38,6 +45,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+.puppy-images a {
+  display: contents;
 }
 .puppy-thumb {
   width: calc(33.333% - 0.5rem);

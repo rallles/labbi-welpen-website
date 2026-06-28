@@ -31,9 +31,17 @@ git pull
 4. Compose-Konfiguration pruefen.
 
 ```bash
+test -f .env
+grep '^COMPOSE_FILE=' .env || true
 export COMPOSE_FILE=docker-compose.yml:docker-compose.aws.yml
 docker compose config
 ```
+
+Windows trennt mehrere Compose-Dateien mit Semikolon, Linux und AWS mit Doppelpunkt.
+Auf AWS darf daher keine lokale Windows-Angabe wie
+`docker-compose.yml;docker-compose.local.yml` aktiv sein. Falls erforderlich, in `.env`
+`COMPOSE_FILE=docker-compose.yml:docker-compose.aws.yml` setzen oder den Wert fuer den
+Deployment-Lauf exportieren. Die uebrigen `.env`-Werte nicht ausgeben oder dokumentieren.
 
 Vorsicht: Die Ausgabe kann Secrets aus `.env` enthalten. Nicht in Tickets oder Chat kopieren.
 

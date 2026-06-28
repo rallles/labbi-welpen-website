@@ -15,7 +15,7 @@ func SetupRoutes(mux *http.ServeMux, driver neo4j.DriverWithContext, cfg config.
 	// 1) Spezifische Seiten zuerst
 	mux.HandleFunc("/about", handlers.AboutHandler)
 	mux.HandleFunc("/dogs", handlers.DogsHandler)
-	mux.HandleFunc("/puppies", handlers.PuppiesHandler)
+	mux.HandleFunc("/puppies", handlers.MakePuppiesHandler(driver))
 	mux.HandleFunc("/list-puppies", handlers.ListPuppiesHandler)
 	mux.HandleFunc("/healthz", handlers.HealthHandler)
 
@@ -39,7 +39,7 @@ func SetupRoutes(mux *http.ServeMux, driver neo4j.DriverWithContext, cfg config.
 	// Admin: Welpen löschen (POST), per BasicAuth geschützt
 	mux.HandleFunc("/admin/puppies/delete",
 		middleware.AuthMiddleware(cfg, func(w http.ResponseWriter, r *http.Request) {
-			handlers.DeletePuppyHandler(w, r, driver)
+			handlers.DeletePuppyHandler(w, r, driver, cfg)
 		}),
 	)
 

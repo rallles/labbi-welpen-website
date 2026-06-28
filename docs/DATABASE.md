@@ -24,9 +24,10 @@ FOR (p:Puppy) REQUIRE p.id IS UNIQUE;
 
 CREATE CONSTRAINT dog_id IF NOT EXISTS
 FOR (d:Dog) REQUIRE d.id IS UNIQUE;
-```
 
-Es gibt aktuell keinen Contact-ID-Constraint im Code.
+CREATE CONSTRAINT contact_id IF NOT EXISTS
+FOR (c:Contact) REQUIRE c.id IS UNIQUE;
+```
 
 ## Seed-Daten
 
@@ -69,6 +70,9 @@ Relationship:
 ```
 
 Beim Update werden alte `HAS_PARENT`-Beziehungen geloescht und neu gesetzt.
+
+`PuppyRepository.List` liest diese Knoten fuer die oeffentliche Route `/puppies` und die
+Admin-Tabelle `/admin/puppies`. Die feste Galerie in `puppies.html` ist kein Datenbankinhalt.
 
 ## Dog
 

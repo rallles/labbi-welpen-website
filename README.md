@@ -43,7 +43,7 @@ Detaildokumente:
 Was funktioniert aktuell:
 
 - Oeffentliche Seiten werden ueber `internal/templates` gerendert.
-- `/puppies` und `/list-puppies` laden Welpen aus Neo4j.
+- `/puppies` laedt Welpen aus Neo4j; `/list-puppies` leitet dauerhaft auf diese kanonische Route um.
 - Adminbereich ist per Basic Auth geschuetzt.
 - Admin-POST-Routen fuer Add/Edit/Delete nutzen Single-Use-CSRF-Tokens.
 - Welpen werden in Neo4j als `(:Puppy)` gespeichert.
@@ -76,7 +76,7 @@ Bewusst statisch:
 
 Dynamisch aus Neo4j:
 
-- Welpenlisten und Admin-Welpentabelle.
+- Oeffentliche Welpenliste unter `/puppies` und Admin-Welpentabelle.
 - Einzelne Welpen beim Bearbeiten.
 - Kontaktanfragen und Mailstatus.
 - Eltern-Beziehungen zwischen Welpen und Parent-Dogs.
@@ -140,7 +140,15 @@ curl -i http://localhost:8081/healthz
 
 Lokale Website: `http://localhost:8081`
 
+`COMPOSE_FILE` verwendet betriebssystemabhaengige Trennzeichen: Windows nutzt ein
+Semikolon (`docker-compose.yml;docker-compose.local.yml`), Linux und AWS einen
+Doppelpunkt (`docker-compose.yml:docker-compose.local.yml`).
+
 Hinweis: `docker compose config` interpoliert Werte aus `.env`. Ausgabe nicht in Issues, Logs oder Dokumentation kopieren, wenn echte Secrets enthalten sind.
+
+Die `.dockerignore` schliesst Markdown-Dokumentation aus dem Runtime-Build-Kontext aus.
+Ausserdem bleiben `.env`, `.env.*`, Schluesseldateien und Secret-Verzeichnisse ausgeschlossen;
+nur die versionierte `.env.example` mit Platzhaltern ist ausdruecklich erlaubt.
 
 ## AWS-Deployment
 
@@ -150,12 +158,19 @@ Typischer Ablauf auf der AWS-Instanz per VSCode SSH:
 cd /pfad/zur/labbi-app
 git status
 git pull
+test -f .env
+grep '^COMPOSE_FILE=' .env || true
 export COMPOSE_FILE=docker-compose.yml:docker-compose.aws.yml
 docker compose config
 docker compose up -d --build
 docker compose ps
 docker compose logs -f web nginx neo4j
 ```
+
+Auf AWS vor jedem Deployment pruefen, dass `.env` vorhanden ist und keine Windows-
+`COMPOSE_FILE`-Angabe mit Semikolon aktiv ist. Falls noetig, in `.env`
+`COMPOSE_FILE=docker-compose.yml:docker-compose.aws.yml` setzen oder den Wert wie oben
+fuer den Deployment-Lauf exportieren. Keine Produktionswerte in Git oder Dokumentation uebernehmen.
 
 Auf der Instanz muessen vorhanden sein:
 
@@ -229,8 +244,8 @@ SMTP ist optional. Wenn SMTP nicht vollstaendig konfiguriert ist, wird die Konta
 | `/` | GET | Startseite | Nein | `HomeHandler`, `index.html` |
 | `/about` | GET | Ueber uns | Nein | `AboutHandler`, `about.html` |
 | `/dogs` | GET | Eltern-/Hunde-Seite | Nein | `DogsHandler`, `dogs.html` |
-| `/puppies` | GET | Oeffentliche Welpenliste aus Neo4j | Nein | `PuppiesHandler`, `puppies.html` |
-| `/list-puppies` | GET | Alternative Welpenliste | Nein | `ListPuppiesHandler` |
+| `/puppies` | GET | Oeffentliche Welpenliste aus Neo4j plus feste Galerie | Nein | `MakePuppiesHandler(driver)`, `puppies.html` |
+| `/list-puppies` | GET | Permanenter Redirect auf `/puppies` | Nein | `ListPuppiesHandler` |
 | `/contact` | GET | Kontaktformular | Nein | `ContactHandler`, `contact.html` |
 | `/contact` | POST | Kontakt absenden, speichern, optional mailen | Nein | `ContactHandler`, `contact_result.html` |
 | `/impressum` | GET | Impressum | Nein | `ImpressumHandler`, `impressum.html` |
@@ -267,6 +282,7 @@ Constraints beim Start:
 ```cypher
 CREATE CONSTRAINT puppy_id IF NOT EXISTS FOR (p:Puppy) REQUIRE p.id IS UNIQUE;
 CREATE CONSTRAINT dog_id IF NOT EXISTS FOR (d:Dog) REQUIRE d.id IS UNIQUE;
+CREATE CONSTRAINT contact_id IF NOT EXISTS FOR (c:Contact) REQUIRE c.id IS UNIQUE;
 ```
 
 Parent-Dogs werden beim Start geseedet:
@@ -330,6 +346,7 @@ sh scripts/check-local.sh
 ```
 
 Die Skripte pruefen Formatierung, Tests, Vet und die Docker-Compose-Konfiguration.
+`docker compose config` validiert nur und startet keine Container.
 
 Einzelschritte:
 

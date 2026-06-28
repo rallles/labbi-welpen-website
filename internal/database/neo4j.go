@@ -3,7 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
-	"log"
+	"strings"
 	"time"
 
 	"labbi-app/internal/config"
@@ -14,11 +14,10 @@ import (
 
 // NewNeo4jDriver erstellt einen Neo4j-Driver basierend auf der Konfiguration.
 func NewNeo4jDriver(cfg config.Config) (neo4j.DriverWithContext, error) {
-	if cfg.Neo4jUri == "" {
-		log.Println("WARN: Neo4j URI ist leer, verwende Default neo4j://localhost:7687")
-		cfg.Neo4jUri = "neo4j://localhost:7687"
+	if strings.TrimSpace(cfg.Neo4jUri) == "" {
+		return nil, fmt.Errorf("neo4j URI is not configured")
 	}
-	if cfg.Neo4jUser == "" || cfg.Neo4jPassword == "" {
+	if strings.TrimSpace(cfg.Neo4jUser) == "" || strings.TrimSpace(cfg.Neo4jPassword) == "" {
 		return nil, fmt.Errorf("neo4j credentials are not configured")
 	}
 
@@ -27,7 +26,7 @@ func NewNeo4jDriver(cfg config.Config) (neo4j.DriverWithContext, error) {
 		neo4j.BasicAuth(cfg.Neo4jUser, cfg.Neo4jPassword, ""),
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("create neo4j driver: %w", err)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -55,6 +54,10 @@ func EnsureConstraints(ctx context.Context, driver neo4j.DriverWithContext) erro
 		{
 			name:  "dog id constraint",
 			query: "CREATE CONSTRAINT dog_id IF NOT EXISTS FOR (d:Dog) REQUIRE d.id IS UNIQUE",
+		},
+		{
+			name:  "contact id constraint",
+			query: "CREATE CONSTRAINT contact_id IF NOT EXISTS FOR (c:Contact) REQUIRE c.id IS UNIQUE",
 		},
 	}
 

@@ -1,12 +1,15 @@
 **/*.swp
 **/*.swo
 *.log
+# Dokumentation wird fuer das Runtime-Image nicht benoetigt.
 *.md
 .idea
 .vscode
 bin/
+# Lokale Konfiguration und Secrets duerfen nicht in den Build-Kontext.
 .env
 .env.*
+# Die versionierte Vorlage enthaelt ausschliesslich Platzhalter.
 !.env.example
 .git
 .gitignore

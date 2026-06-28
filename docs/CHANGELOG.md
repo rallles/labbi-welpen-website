@@ -35,12 +35,13 @@
 
 ### Datenmodell
 
-- Neo4j-Constraints fuer `Puppy.id` und `Dog.id`.
+- Neo4j-Constraints fuer `Puppy.id`, `Dog.id` und `Contact.id`.
 - Parent-Dogs `gandalf`, `anna`, `brina` werden beim Start geseedet.
 - `Puppy`-Knoten pflegen `HAS_PARENT`-Relationships zu `Dog`.
+- `UpdateMailStatus` meldet fehlende Contact-Knoten mit `ErrContactNotFound`.
+- Admin Delete entfernt zugehoerige Dateien sicher aus `UPLOAD_DIR` und meldet Cleanup-Fehler als Warnung.
 
 ### Bekannte Einschraenkungen
 
 - In dieser Arbeitsumgebung fehlen `go` und `gofmt`; Tests und Formatierung muessen in einer Umgebung mit Go 1.24.1 nachgeholt werden.
-- Admin Delete entfernt aktuell keine Upload-Dateien vom Volume.
 - SMTP ist optional; ohne vollstaendige SMTP-Konfiguration wird gespeichert, aber keine Kontaktmail versendet.
