@@ -8,6 +8,21 @@ Nicht vermischen:
 - `uploads/` ist fuer dynamische Admin-Uploads und liegt nicht im Git.
 - `static/images/generated/` sind optimierte, versionierte Bildderivate.
 
+Konkrete Zuordnung:
+
+- `static/images/generated/` enthaelt optimierte Website-Bilder (Derivate fuer das Webdesign).
+- `static/images/` enthaelt feste Website-Originale sowie Icon-/Favicon-Dateien.
+- `/uploads/` enthaelt Admin-Uploads und liegt zur Laufzeit im Docker-Volume.
+
+Wichtig:
+
+- Admin-Uploads gehoeren nicht nach `static/images/`. Sie werden ueber den Adminbereich
+  erzeugt und im Upload-Volume unter `/uploads/...` abgelegt.
+- Grosse Originalbilder in `static/images/` erhoehen die Groesse des Docker-Images, da
+  `static/` in das Runtime-Image kopiert wird.
+- Optional spaeter: Originale aus dem Runtime-Image ausschliessen oder in
+  `static/images/originals/` verschieben und nur die `generated/`-Derivate ausliefern.
+
 Fehlende Bilder in einem Arbeitsstand sind bewusst moeglich. Keine Template-Referenzen oder Galerie-Strukturen entfernen, nur weil Dateien lokal fehlen.
 
 ## Static Assets

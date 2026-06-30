@@ -28,13 +28,13 @@
   /* Schrift: Systemfont bleibt schnell, vertraut und gut lesbar. */
   --font-sans: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-size-base: 16px;
-  --font-size-body: clamp(1rem, 0.96rem + 0.18vw, 1.125rem);
-  --font-size-lead: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
-  --font-size-h1: clamp(2.25rem, 1.72rem + 2.65vw, 4.5rem);
-  --font-size-h2: clamp(1.875rem, 1.55rem + 1.65vw, 3.25rem);
+  --font-size-body: clamp(1rem, 0.975rem + 0.12vw, 1.0625rem);
+  --font-size-lead: clamp(1.0625rem, 1.01rem + 0.24vw, 1.1875rem);
+  --font-size-h1: clamp(2.125rem, 1.72rem + 2vw, 3.75rem);
+  --font-size-h2: clamp(1.75rem, 1.5rem + 1.2vw, 2.75rem);
   --font-size-h3: clamp(1.125rem, 1.06rem + 0.3vw, 1.35rem);
   --line-height-base: 1.62;
-  --line-height-heading: 1.04;
+  --line-height-heading: 1.09;
 
   /* Abstaende: mobile-first Skala, damit Layouts kompakt bleiben und trotzdem atmen. */
   --space-1: 0.25rem;
@@ -49,25 +49,25 @@
   --card-padding: clamp(1.25rem, 1vw + 1rem, 1.875rem);
 
   /* Formen: Karten bleiben hochwertig, aber nicht verspielt. */
-  --radius-sm: 0.625rem;
-  --radius-md: 1rem;
-  --radius-lg: 1.375rem;
-  --shadow-sm: 0 5px 18px rgba(39, 55, 46, 0.07);
-  --shadow-md: 0 16px 38px rgba(39, 55, 46, 0.11);
+  --radius-sm: 0.75rem;
+  --radius-md: 1.125rem;
+  --radius-lg: 1.5rem;
+  --shadow-sm: 0 5px 20px rgba(39, 55, 46, 0.065);
+  --shadow-md: 0 18px 44px rgba(39, 55, 46, 0.105);
 
   /* Breiten: Desktop bleibt professionell zentriert, Textzeilen bleiben lesbar. */
-  --container-max: 1200px;
+  --container-max: 1180px;
   --content-narrow: 42rem;
   --content-readable: 48rem;
 
   /* Navigation: feste Werte verhindern Ueberdeckung durch den fixed Header. */
-  --nav-height-mobile: 4.75rem;
-  --nav-height-desktop: 6rem;
+  --nav-height-mobile: 4.25rem;
+  --nav-height-desktop: 5.25rem;
   --control-height: 3rem;
 
   /* Breakpoints: mobile-first; Grids wachsen erst, wenn genug Platz da ist. */
   --breakpoint-md: 48rem;
-  --breakpoint-nav: 60rem;
+  --breakpoint-nav: 64rem;
   --breakpoint-lg: 64rem;
 }
 
@@ -230,7 +230,7 @@ textarea {
 
 .section-header {
   max-width: var(--content-readable);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
 }
 
 .section-header-centered {
@@ -271,7 +271,7 @@ textarea {
     linear-gradient(135deg, rgba(255, 253, 248, 0.98), rgba(255, 244, 228, 0.94)); /* Farbe: warmer Hero-Fond fuer hochwertigeren ersten Eindruck. */
   border: 1px solid rgba(201, 178, 143, 0.75);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 20px 52px rgba(52, 62, 49, 0.1);
 }
 
 .hero-content {
@@ -280,7 +280,7 @@ textarea {
 
 .hero-content h1 {
   max-width: 17ch;
-  font-size: clamp(2.375rem, 1.8rem + 2.1vw, 4rem);
+  font-size: clamp(2.25rem, 1.82rem + 1.75vw, 3.625rem);
 }
 
 .hero-home .hero-content h1 {
@@ -293,11 +293,12 @@ textarea {
 
 .hero-media img {
   width: 100%;
-  max-height: clamp(260px, 48vh, 560px);
+  max-height: clamp(260px, 46vh, 500px);
   display: block;
   aspect-ratio: 5 / 4;
   object-fit: cover;       /* Bilder werden nie verzerrt, nur sinnvoll zugeschnitten. */
-  border-radius: var(--radius-md);
+  border: 1px solid rgba(24, 56, 42, 0.1);
+  border-radius: calc(var(--radius-lg) - 0.25rem);
   box-shadow: var(--shadow-sm);
 }
 
@@ -318,7 +319,7 @@ textarea {
   border-radius: 999px;
   color: var(--color-primary-dark);
   font-size: 0.9rem;       /* Schriftgroesse: kleine Meta-Info, nicht zweiter Claim. */
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .cta-panel {
@@ -374,6 +375,40 @@ textarea {
   text-align: center;
 }
 
+.home-dogs-panel {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--card-padding);
+  background: linear-gradient(135deg, rgba(255, 253, 248, 0.96), rgba(248, 237, 219, 0.72));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.home-dogs-panel__heading h2 {
+  max-width: 19ch;
+}
+
+.home-dogs-panel__copy {
+  align-self: center;
+}
+
+.home-dogs-panel__copy > p {
+  max-width: 38rem;
+  color: var(--color-muted);
+}
+
+.text-link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--space-1);
+  color: var(--color-primary-dark);
+  font-weight: 700;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+}
+
 .home-puppies-panel {
   display: grid;
   gap: var(--space-4);
@@ -405,8 +440,23 @@ textarea {
 
 .feature-card {
   position: relative;
-  border-top: 4px solid var(--color-primary); /* Akzent: ruhiges Gruen gibt Karten Struktur. */
+  padding-top: calc(var(--card-padding) + 0.25rem);
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.feature-card::before {
+  content: "";
+  position: absolute;
+  top: var(--card-padding);
+  left: var(--card-padding);
+  width: 2.75rem;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--color-primary);
+}
+
+.feature-card .card-kicker {
+  padding-top: var(--space-3);
 }
 
 .feature-card:hover,
@@ -467,7 +517,11 @@ textarea {
   aspect-ratio: 4 / 3;
   max-height: 380px;       /* Bildgroesse: Galeriebilder bleiben kontrolliert und dichter. */
   object-fit: cover;       /* Kein Verzerren bei unterschiedlichen Originalformaten. */
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--radius-md) - 0.25rem);
+}
+
+.media-card > img {
+  border-radius: 0;
 }
 
 .about-media img,
@@ -497,6 +551,7 @@ textarea {
 
 .dog-card {
   display: grid;
+  grid-template-rows: auto 1fr;
   gap: var(--space-3);
   padding: var(--space-3);
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
@@ -593,7 +648,7 @@ textarea {
   padding: 0.72rem 1.15rem;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.2;
   text-align: center;
   text-decoration: none;
@@ -642,6 +697,32 @@ textarea {
   .cta-panel > .button,
   .home-puppies-panel > .button {
     width: 100%;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .hero-home {
+    gap: var(--space-4);
+    padding: var(--space-4);
+  }
+
+  .hero-home .lead {
+    line-height: 1.5;
+  }
+
+  .hero-home .trust-row {
+    margin-block: var(--space-3);
+  }
+
+  .hero-home .trust-row span {
+    min-height: 1.75rem;
+    padding: 0.28rem 0.55rem;
+    font-size: 0.82rem;
+  }
+
+  .hero-home .hero-media img {
+    max-height: 250px;
+    object-position: center 42%;
   }
 }
 
@@ -877,13 +958,19 @@ textarea.form-control {
     gap: var(--space-6);
   }
 
+  .home-dogs-panel {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: var(--space-6);
+    padding: var(--space-5) var(--space-6);
+  }
+
   .home-puppies-panel {
     grid-template-columns: minmax(0, 1fr) auto;
     padding: var(--space-5) var(--space-6);
   }
 }
 
-@media (min-width: 60rem) {
+@media (min-width: 64rem) {
   .main-wrapper {
     padding-top: calc(var(--nav-height-desktop) + var(--space-5));
   }
@@ -901,12 +988,21 @@ textarea.form-control {
   }
 
   .hero {
-    grid-template-columns: minmax(0, 0.9fr) minmax(22rem, 1.1fr);
+    grid-template-columns: minmax(0, 0.94fr) minmax(22rem, 1.06fr);
     gap: var(--space-6);
     padding: clamp(1.5rem, 2vw, 2.25rem);
   }
 
   .hero-media img {
-    min-height: 360px;
+    min-height: 350px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

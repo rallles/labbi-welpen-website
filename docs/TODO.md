@@ -18,6 +18,11 @@ Diese Liste ist aus dem aktuellen Code- und Betriebsstand abgeleitet. Keine Fant
 ## Mittel
 
 - Admin-Bildverwaltung fuer bestehende Welpen planen, falls Bilder nachtraeglich geaendert oder geloescht werden sollen.
+- Zwei UUID-benannte JPGs in `static/images/` pruefen, die aktuell nirgends referenziert werden:
+  - `static/images/0ef00736-349c-41f6-bdd1-407ba2cb05f1_1751210248413534949.jpg`
+  - `static/images/986fa9f4-26c0-485f-881e-b82520448925_1751219019634248891.jpg`
+  Vermutlich alte Upload-Artefakte (UUID-Namensschema wie bei Admin-Uploads). Pruefen, ob sie noch gebraucht werden;
+  ggf. nach `/uploads` migrieren oder entfernen. Nicht voreilig loeschen.
 
 ## Optional
 

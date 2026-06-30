@@ -6,14 +6,14 @@
 <div class="content-wrapper">
   <section class="section puppies-intro">
     <div class="intro-card card intro-card-wide puppies-hero">
-      <p class="eyebrow">Aktueller Wurf</p>
-      <h1>Unsere aktuellen Welpen</h1>
-      <p class="lead">Hier stellen wir die Welpen vor, die aktuell bei uns eingetragen sind.</p>
+      <p class="eyebrow">Welpen &amp; Aufzucht</p>
+      <h1>Unsere Welpen im Überblick</h1>
+      <p class="lead">Hier lernen Sie die Welpen kennen, die aktuell bei uns eingetragen sind – mit ihren wichtigsten Daten, ihrem Charakter und persönlichen Bildern.</p>
 
       <div class="info-grid">
         <div>
-          <h3>Farben &amp; Geschlecht</h3>
-          <p>Unsere Welpen gibt es in Schwarz und Blond. Sowohl Rüden als auch Hündinnen sind dabei.</p>
+          <h3>Persönlichkeiten</h3>
+          <p>Jeder Welpe wird mit seinen eigenen Merkmalen und seiner bisherigen Entwicklung vorgestellt.</p>
         </div>
         <div>
           <h3>Aufzucht</h3>
@@ -25,21 +25,23 @@
         </div>
       </div>
 
-      <p class="help-text">Klicken Sie auf ein Bild, um es in voller Größe anzusehen.</p>
+      <p class="help-text">Ein Klick auf ein Bild öffnet die größere Ansicht.</p>
     </div>
   </section>
 
-  <section class="section" aria-labelledby="puppies-list-heading">
+  <section class="section puppies-list-section" aria-labelledby="puppies-list-heading">
     <div class="section-header section-header-centered">
-      <p class="eyebrow">Unsere Welpen</p>
-      <h2 id="puppies-list-heading">Welpen im Überblick</h2>
+      <p class="eyebrow">Aktuell eingetragen</p>
+      <h2 id="puppies-list-heading">Welpenprofile</h2>
+      <p>Alle verfügbaren Angaben auf einen Blick – ruhig gegliedert und persönlich beschrieben.</p>
     </div>
 
     {{ if .LoadError }}
     <div class="card puppies-empty puppies-warning" role="status">
-      <p class="eyebrow">Vorübergehend nicht verfügbar</p>
-      <h3>Die Welpenliste macht gerade eine kleine Pause</h3>
-      <p>{{ .LoadError }}</p>
+      <p class="eyebrow">Kurz nicht erreichbar</p>
+      <h3>Die Welpenprofile sind vorübergehend nicht verfügbar</h3>
+      <p>Die aktuellen Welpendaten konnten gerade nicht geladen werden. Bitte versuchen Sie es später noch einmal oder schreiben Sie uns direkt.</p>
+      <a href="/contact" class="button button-secondary">Kontakt aufnehmen</a>
     </div>
     {{ else if .Puppies }}
     <div class="puppies-container">
@@ -50,13 +52,15 @@
           <header class="puppy-entry__header">
             <p class="eyebrow">Welpenprofil</p>
             <h3>{{ .Name }}</h3>
-            <div class="puppy-tags" aria-label="Kurzprofil">
-              {{ if .Geschlecht }}<span>{{ .Geschlecht }}</span>{{ end }}
-              {{ if .Farbe }}<span>{{ .Farbe }}</span>{{ end }}
-            </div>
           </header>
 
           <dl class="puppy-meta">
+            {{ if .Geschlecht }}
+            <div><dt>Geschlecht</dt><dd>{{ .Geschlecht }}</dd></div>
+            {{ end }}
+            {{ if .Farbe }}
+            <div><dt>Farbe</dt><dd>{{ .Farbe }}</dd></div>
+            {{ end }}
             {{ if .Geburtsdatum }}
             <div><dt>Geboren</dt><dd>{{ .Geburtsdatum }}</dd></div>
             {{ end }}
@@ -76,7 +80,9 @@
           <div class="puppy-parents">
             <h4>Eltern</h4>
             <div class="puppy-parent-list">
-              {{ range .Eltern }}<span>{{ . }}</span>{{ end }}
+              {{ range .Eltern }}
+              <span>{{ if eq . "gandalf" }}Gandalf{{ else if eq . "anna" }}Anna{{ else if eq . "brina" }}Brina{{ else }}{{ . }}{{ end }}</span>
+              {{ end }}
             </div>
           </div>
           {{ end }}
@@ -104,14 +110,15 @@
     <div class="card puppies-empty">
       <p class="eyebrow">Im Moment ist es ruhig</p>
       <h3>Aktuell sind keine Welpen eingetragen</h3>
-      <p>Schauen Sie gern später wieder vorbei oder lernen Sie uns schon jetzt persönlich kennen.</p>
-      <a href="/contact" class="button button-secondary">Kontakt aufnehmen</a>
+      <p>Wenn Sie unsere Zucht kennenlernen oder sich über zukünftige Würfe informieren möchten, schreiben Sie uns gern persönlich.</p>
+      <a href="/contact" class="button button-secondary">Mit uns Kontakt aufnehmen</a>
     </div>
     {{ end }}
   </section>
 
   <section
     class="section puppies-gallery"
+    aria-label="Feste Galerie: Momente aus der Aufzucht"
     x-data="{
       images: [
         { thumb: '/static/images/generated/welpe_001_-480.jpg', full: '/static/images/generated/welpe_001_-1600.jpg' },
@@ -132,9 +139,9 @@
     }"
   >
     <div class="section-header section-header-centered">
-      <p class="eyebrow">Feste Galerie</p>
-      <h2>Einblicke in den Wurf</h2>
-      <p>Ruhige Momente, neugierige Blicke und viel Labrador-Charme aus unserem Alltag.</p>
+      <p class="eyebrow">Aus unserem Alltag</p>
+      <h2>Momente aus der Aufzucht</h2>
+      <p>Die Galerie ergänzt die einzelnen Profile mit Eindrücken vom gemeinsamen Aufwachsen und Entdecken.</p>
     </div>
     <div class="grid puppies-grid">
       <template x-for="(img, i) in images" :key="i">

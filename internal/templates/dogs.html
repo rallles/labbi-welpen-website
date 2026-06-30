@@ -13,7 +13,7 @@
   <div class="grid dogs-grid">
     <article class="card dog-card">
       <button class="image-button dog-image" type="button" aria-label="Gandalf groß anzeigen">
-        <img src="/static/images/generated/Gandalf_001_-1600.jpg" alt="Gandalf" loading="lazy" decoding="async">
+        <img src="/static/images/generated/Gandalf_001_-480.jpg" srcset="/static/images/generated/Gandalf_001_-480.jpg 480w, /static/images/generated/Gandalf_001_-1600.jpg 1600w" sizes="(min-width: 64rem) 22rem, (min-width: 48rem) 45vw, calc(100vw - 4rem)" data-full="/static/images/generated/Gandalf_001_-1600.jpg" width="1600" height="1066" alt="Gandalf" loading="lazy" decoding="async">
       </button>
       <div class="dog-content">
         <p class="card-kicker">Rüde</p>
@@ -26,7 +26,7 @@
 
     <article class="card dog-card">
       <button class="image-button dog-image" type="button" aria-label="Anna groß anzeigen">
-        <img src="/static/images/generated/Anna_002_-1600.jpg" alt="Anna" loading="lazy" decoding="async">
+        <img src="/static/images/generated/Anna_002_-480.jpg" srcset="/static/images/generated/Anna_002_-480.jpg 480w, /static/images/generated/Anna_002_-1600.jpg 1600w" sizes="(min-width: 64rem) 22rem, (min-width: 48rem) 45vw, calc(100vw - 4rem)" data-full="/static/images/generated/Anna_002_-1600.jpg" width="1600" height="1065" alt="Anna" loading="lazy" decoding="async">
       </button>
       <div class="dog-content">
         <p class="card-kicker">Hündin</p>
@@ -39,7 +39,7 @@
 
     <article class="card dog-card">
       <button class="image-button dog-image" type="button" aria-label="Brina groß anzeigen">
-        <img src="/static/images/generated/Brina_001_-1600.jpg" alt="Brina" loading="lazy" decoding="async">
+        <img src="/static/images/generated/Brina_001_-480.jpg" srcset="/static/images/generated/Brina_001_-480.jpg 480w, /static/images/generated/Brina_001_-1600.jpg 1600w" sizes="(min-width: 64rem) 22rem, (min-width: 48rem) 45vw, calc(100vw - 4rem)" data-full="/static/images/generated/Brina_001_-1600.jpg" width="1600" height="1066" alt="Brina" loading="lazy" decoding="async">
       </button>
       <div class="dog-content">
         <p class="card-kicker">Hündin</p>
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
     img.addEventListener('click', function() {
       var modal = document.getElementById('dog-image-modal');
       var modalImg = document.getElementById('dog-image-modal-img');
-      modalImg.src = img.src;
+      modalImg.src = img.dataset.full || img.currentSrc || img.src;
       modalImg.alt = img.alt + ' groß';
       modal.classList.add('is-open');
       modal.setAttribute('aria-hidden', 'false');

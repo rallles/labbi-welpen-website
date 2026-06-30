@@ -6,24 +6,32 @@
 <div class="content-wrapper">
   <section class="hero hero-home">
     <div class="hero-content">
-      <p class="eyebrow">Liebevolle Labradorzucht in Niederbayern</p>
-      <h1>Labradorwelpen, familiär und liebevoll aufgezogen</h1>
+      <p class="eyebrow">Kleine Labradorzucht in Niederbayern</p>
+      <h1>Labradorwelpen, die mit Ruhe und Familienanschluss aufwachsen</h1>
       <p class="lead">
-        Unsere Labradore wachsen nah bei uns, mit viel Platz, Ruhe und Alltagserfahrung auf.
-        Wir begleiten jeden Wurf sorgfältig und nehmen uns Zeit für Familien, die wirklich passen.
+        Unsere Welpen wachsen nah bei uns auf und lernen behutsam den Familienalltag kennen.
+        Wir begleiten jeden Wurf sorgfältig und beraten Interessierte persönlich.
       </p>
       <div class="trust-row" aria-label="Kurzprofil unserer Zucht">
-        <span>Familienanschluss</span>
-        <span>Viel Auslauf</span>
-        <span>Persönliche Beratung</span>
+        <span>Mitten im Familienalltag</span>
+        <span>Platz und Auslauf</span>
+        <span>Ehrliche Beratung</span>
       </div>
       <div class="button-row">
-        <a href="/puppies" class="button button-primary">Welpen ansehen</a>
-        <a href="/contact" class="button button-secondary">Kontakt aufnehmen</a>
+        <a href="/puppies" class="button button-primary">Aktuelle Welpen kennenlernen</a>
+        <a href="/contact" class="button button-secondary">Persönlich anfragen</a>
       </div>
     </div>
     <figure class="hero-media">
-      <img src="/static/images/generated/tittel-1600.jpg" alt="Labradorwelpen auf einer Wiese">
+      <img
+        src="/static/images/generated/tittel-480.jpg"
+        srcset="/static/images/generated/tittel-480.jpg 480w, /static/images/generated/tittel-1600.jpg 1600w"
+        sizes="(min-width: 64rem) 34rem, calc(100vw - 4rem)"
+        width="1600"
+        height="1066"
+        alt="Schwarzer Labrador im Grünen"
+        fetchpriority="high"
+        decoding="async">
     </figure>
   </section>
 
@@ -51,36 +59,50 @@
 
   <section class="section home-principles" aria-labelledby="home-principles-heading">
     <div class="section-header">
-      <p class="eyebrow">Warum unsere Zucht</p>
-      <h2 id="home-principles-heading">Ruhig, verantwortungsvoll und nah am Tier</h2>
-      <p>Eine kleine Zucht bedeutet für uns: Zeit, Nähe und klare Verantwortung für jedes Tier.</p>
+      <p class="eyebrow">Was uns wichtig ist</p>
+      <h2 id="home-principles-heading">Ein guter Start braucht Nähe, Ruhe und Verantwortung</h2>
+      <p>Eine kleine Zucht bedeutet für uns, jedes Tier aufmerksam zu begleiten und Entwicklung nicht zu überstürzen.</p>
     </div>
     <div class="grid feature-grid">
       <article class="card feature-card">
         <p class="card-kicker">01</p>
-        <h3>Familiäre Aufzucht</h3>
+        <h3>Mitten im Alltag</h3>
         <p>Die Welpen lernen Menschen, Alltagsgeräusche und andere Tiere in einem geschützten Umfeld kennen.</p>
       </article>
       <article class="card feature-card">
         <p class="card-kicker">02</p>
-        <h3>Gesundheit &amp; Ruhe</h3>
+        <h3>Gesundheit und Ruhe</h3>
         <p>Wir achten auf sorgfältige Pflege, tierärztliche Begleitung und stabile Abläufe ohne Hektik.</p>
       </article>
       <article class="card feature-card">
         <p class="card-kicker">03</p>
-        <h3>Begleitung</h3>
+        <h3>Ehrliche Begleitung</h3>
         <p>Wir beraten ehrlich vor dem Einzug und bleiben auch danach für Fragen ansprechbar.</p>
       </article>
+    </div>
+  </section>
+
+  <section class="section home-dogs-panel" aria-labelledby="home-dogs-heading">
+    <div class="home-dogs-panel__heading">
+      <p class="eyebrow">Unsere Hunde &amp; Aufzucht</p>
+      <h2 id="home-dogs-heading">Die Welpen wachsen dort auf, wo unsere Hunde zu Hause sind</h2>
+    </div>
+    <div class="home-dogs-panel__copy">
+      <p>Gandalf, Anna und Brina gehören fest zu unserem Familienalltag. Ihre unterschiedlichen Charaktere und das gemeinsame Leben mit ihnen prägen auch die Umgebung, in der die Welpen aufwachsen.</p>
+      <div class="button-row">
+        <a href="/dogs" class="button button-secondary">Unsere Hunde kennenlernen</a>
+        <a href="/about" class="text-link">Mehr über unsere Zucht</a>
+      </div>
     </div>
   </section>
 
   <section class="section home-puppies-panel" aria-labelledby="home-puppies-heading">
     <div>
       <p class="eyebrow">Aktuelle Welpen</p>
-      <h2 id="home-puppies-heading">Lernen Sie unsere kleinen Persönlichkeiten kennen</h2>
-      <p>Auf der Welpenseite finden Sie aktuelle Informationen zu den eingetragenen Welpen, ihrem Charakter und ihrer Entwicklung.</p>
+      <h2 id="home-puppies-heading">Lernen Sie die aktuell eingetragenen Welpen kennen</h2>
+      <p>Die Welpenprofile zeigen Name, wichtige Eckdaten, Charakter, Eltern und – sofern vorhanden – persönliche Notizen.</p>
     </div>
-    <a href="/puppies" class="button button-secondary">Zur Welpenseite</a>
+    <a href="/puppies" class="button button-secondary">Welpenprofile ansehen</a>
   </section>
 
   <section class="section cta-panel">
@@ -89,7 +111,7 @@
       <h2>Ein guter Platz beginnt mit einem ehrlichen Gespräch</h2>
       <p>Erzählen Sie uns kurz von Ihrem Zuhause und Ihren Vorstellungen. Wir beraten ruhig, persönlich und ohne Druck.</p>
     </div>
-    <a href="/contact" class="button button-primary">Anfrage senden</a>
+    <a href="/contact" class="button button-primary">Kennenlernen anfragen</a>
   </section>
 </div>
 {{ end }}

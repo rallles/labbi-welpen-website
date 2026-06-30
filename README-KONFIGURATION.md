@@ -18,11 +18,14 @@ NEO4J_USER=neo4j
 NEO4J_PASSWORD=change_me_local_neo4j_password
 ADMIN_USER=admin
 ADMIN_PASSWORD=change_me_local_admin_password
-SMTP_HOST=smtp.invalid
-SMTP_PORT=587
-SMTP_USER=sender@example.invalid
-SMTP_PASSWORD=change_me_local_smtp_password
-CONTACT_MAIL_TO=contact@example.invalid
+# SMTP ist optional. Ohne SMTP werden Kontaktanfragen nur in Neo4j gespeichert
+# und es wird keine E-Mail versendet. Zum Aktivieren die folgenden Zeilen
+# einkommentieren und mit echten Werten des eigenen SMTP-Servers fuellen.
+# SMTP_HOST=
+# SMTP_PORT=587
+# SMTP_USER=
+# SMTP_PASSWORD=
+# CONTACT_MAIL_TO=
 ```
 
 Start:
@@ -55,11 +58,14 @@ NEO4J_USER=neo4j
 NEO4J_PASSWORD=change_me_strong_production_neo4j_password
 ADMIN_USER=admin
 ADMIN_PASSWORD=change_me_strong_production_admin_password
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USER=sender@example.com
-SMTP_PASSWORD=change_me_strong_production_smtp_password
-CONTACT_MAIL_TO=kontakt@example.com
+# SMTP ist optional. Ohne SMTP werden Kontaktanfragen nur in Neo4j gespeichert.
+# Fuer den E-Mail-Versand die folgenden Zeilen einkommentieren und mit den echten
+# Produktionswerten des eigenen SMTP-Servers befuellen.
+# SMTP_HOST=smtp.example.com
+# SMTP_PORT=587
+# SMTP_USER=sender@example.com
+# SMTP_PASSWORD=change_me_strong_production_smtp_password
+# CONTACT_MAIL_TO=kontakt@example.com
 ```
 
 Start:
@@ -86,6 +92,8 @@ HTTP bleibt fuer ACME-Challenges unter `/.well-known/acme-challenge/` erreichbar
 ## Wichtig
 
 In keinem Service steht `env_file: .env`. Die Werte werden in `docker-compose.yml` gezielt in `environment:` an die Container weitergegeben. Dadurch bekommt Neo4j keine App-Variable wie `NEO4J_URI` mehr und startet sauber.
+
+SMTP ist optional und kein Pflichtbestandteil der Konfiguration. Solange die `SMTP_*`-Werte leer bzw. auskommentiert sind, werden Kontaktanfragen ausschliesslich in Neo4j gespeichert und es wird keine E-Mail versendet. Es sollten keine Dummy-Werte wie `smtp.invalid` als aktive Standard-Konfiguration gesetzt werden; entweder echte SMTP-Werte eintragen oder die Zeilen leer/auskommentiert lassen.
 
 Certbot sollte `labbi-sites` erneuern und Nginx danach reloaden:
 

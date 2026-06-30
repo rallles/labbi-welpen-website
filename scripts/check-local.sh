@@ -20,4 +20,11 @@ go vet ./...
 echo "==> docker compose config (validation only; no containers are started)"
 docker compose config >/dev/null
 
+if [ "${SKIP_ASSET_CHECK:-0}" = "1" ]; then
+  echo "==> Asset-Check uebersprungen (SKIP_ASSET_CHECK=1)"
+else
+  echo "==> asset check"
+  sh "$(dirname "$0")/check-assets.sh"
+fi
+
 echo "All local checks passed."

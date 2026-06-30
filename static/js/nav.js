@@ -3,7 +3,7 @@
   var menuButton = document.querySelector('.nav-toggle');
   var navigation = document.getElementById('primary-navigation');
   var navigationLinks = navigation ? navigation.querySelectorAll('.site-nav__link') : [];
-  var desktopQuery = window.matchMedia('(min-width: 60rem)');
+  var desktopQuery = window.matchMedia('(min-width: 64rem)');
 
   if (!menuButton || !navigation) {
     return;
