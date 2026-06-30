@@ -11,7 +11,9 @@
 .puppies-empty {
   max-width: var(--content-readable);
   margin: 0 auto;
-  padding: var(--card-padding);
+  padding: clamp(1.75rem, 3vw, 2.75rem);
+  /* Warmer, einladender Empty-State statt leerer weisser Karte. */
+  background: linear-gradient(160deg, var(--color-surface), rgba(248, 237, 219, 0.8));
   text-align: center;
 }
 

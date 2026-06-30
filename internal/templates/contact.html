@@ -5,13 +5,13 @@
 {{ define "content" }}
 <section class="section contact-page">
   <div class="section-header">
-    <p class="eyebrow">Kontakt</p>
-    <h1>Wir freuen uns auf Ihre Nachricht</h1>
-    <p>Schreiben Sie uns kurz, wer Sie sind und was Sie sich wünschen. Wir melden uns persönlich zurück und nehmen uns Zeit für Ihre Fragen.</p>
+    <p class="eyebrow section-eyebrow">Kontakt</p>
+    <h1 class="section-title">Wir freuen uns auf Ihre Nachricht</h1>
+    <p class="section-lead">Schreiben Sie uns kurz, wer Sie sind und was Sie sich wünschen. Wir melden uns persönlich zurück und nehmen uns Zeit für Ihre Fragen.</p>
   </div>
 
   <div class="contact-layout">
-    <div class="card contact-card">
+    <div class="card content-card contact-card">
       {{ if .Errors }}
         <div class="alert alert-danger form-errors" role="alert">
           <strong>Bitte prüfen Sie Ihre Eingaben:</strong>
@@ -22,6 +22,7 @@
       {{ end }}
 
       <form action="/contact" method="post" class="contact-form">
+        <p class="help-text contact-required-note"><span class="required">*</span> Mit Stern markierte Felder sind Pflichtfelder.</p>
         <div class="honeypot" aria-hidden="true">
           <label for="website">Website</label>
           <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">

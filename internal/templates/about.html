@@ -5,9 +5,9 @@
 {{ define "content" }}
 <section class="section about-layout">
   <div class="about-content">
-    <p class="eyebrow">Über uns</p>
-    <h1>Eine kleine Labradorzucht mit viel Familienanschluss</h1>
-    <p class="lead">Wir sind eine herzliche Familie mit einer großen Leidenschaft für Hunde. Was als Traum begann, ist heute unser Herzensprojekt, das wir mit Hingabe und Verantwortung betreiben.</p>
+    <p class="eyebrow section-eyebrow">Über uns</p>
+    <h1 class="section-title">Eine kleine Labradorzucht mit viel Familienanschluss</h1>
+    <p class="lead section-lead">Wir sind eine herzliche Familie mit einer großen Leidenschaft für Hunde. Was als Traum begann, ist heute unser Herzensprojekt, das wir mit Hingabe und Verantwortung betreiben.</p>
     <p>Unsere Labradore wachsen bei uns zu Hause auf, umgeben von Wiesen, Wald und viel Platz zum Toben. Jeder Hund gehört fest zur Familie, bekommt Aufmerksamkeit, Zuneigung und Pflege.</p>
     <p>Uns ist besonders wichtig, dass die Welpen in einer sicheren, liebevollen Umgebung aufwachsen und gut sozialisiert werden.</p>
 
@@ -24,24 +24,39 @@
       </ul>
     </div>
 
-    <p class="contact-meta">
-      Telefon: +49&nbsp;(0)171&nbsp;1033661<br>
-      E-Mail: <a href="mailto:kontakt@labbi-welpen.de">kontakt@labbi-welpen.de</a>
-    </p>
   </div>
 
-  <figure class="media-card about-media">
-    <img
-      src="/static/images/generated/zucht-hof-480.jpg"
-      srcset="/static/images/generated/zucht-hof-480.jpg 480w, /static/images/generated/zucht-hof-1600.jpg 1188w"
-      sizes="(min-width: 48rem) 34vw, calc(100vw - 2.5rem)"
-      width="1188"
-      height="1879"
-      alt="Unser Hof mit Auslauf"
-      loading="lazy"
-      decoding="async">
-    <figcaption>Unser Gelände bietet den Hunden Bewegung, Ruhe und Natur.</figcaption>
-  </figure>
+  <div class="about-aside">
+    <figure class="media-card about-media">
+      <img
+        src="/static/images/generated/zucht-hof-480.jpg"
+        srcset="/static/images/generated/zucht-hof-480.jpg 480w, /static/images/generated/zucht-hof-1600.jpg 1188w"
+        sizes="(min-width: 48rem) 34vw, calc(100vw - 2.5rem)"
+        width="1188"
+        height="1879"
+        alt="Unser Hof mit Auslauf"
+        loading="lazy"
+        decoding="async">
+      <figcaption>Unser Gelände bietet den Hunden Bewegung, Ruhe und Natur.</figcaption>
+    </figure>
+
+    <aside class="card contact-info-card about-contact-card">
+      <p class="card-kicker">Persönlich</p>
+      <h2>Sprechen Sie uns an</h2>
+      <p>Sie möchten uns kennenlernen oder haben Fragen zur Aufzucht? Melden Sie sich gern direkt – wir nehmen uns Zeit.</p>
+      <dl class="contact-list">
+        <div>
+          <dt>Telefon</dt>
+          <dd><a href="tel:+491711033661">+49&nbsp;(0)171&nbsp;1033661</a></dd>
+        </div>
+        <div>
+          <dt>E-Mail</dt>
+          <dd><a href="mailto:kontakt@labbi-welpen.de">kontakt@labbi-welpen.de</a></dd>
+        </div>
+      </dl>
+      <a href="/contact" class="button button-secondary">Zur Kontaktseite</a>
+    </aside>
+  </div>
 </section>
 {{ end }}
 

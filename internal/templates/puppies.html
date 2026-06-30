@@ -11,15 +11,15 @@
       <p class="lead">Hier lernen Sie die Welpen kennen, die aktuell bei uns eingetragen sind – mit ihren wichtigsten Daten, ihrem Charakter und persönlichen Bildern.</p>
 
       <div class="info-grid">
-        <div>
+        <div class="info-card">
           <h3>Persönlichkeiten</h3>
           <p>Jeder Welpe wird mit seinen eigenen Merkmalen und seiner bisherigen Entwicklung vorgestellt.</p>
         </div>
-        <div>
+        <div class="info-card">
           <h3>Aufzucht</h3>
           <p>Die Kleinen wachsen mit ihren Eltern, anderen Hunden und weiteren Tieren auf einem großzügigen Grundstück auf.</p>
         </div>
-        <div>
+        <div class="info-card">
           <h3>Gesundheit</h3>
           <p>Angaben zu Gesundheit und Entwicklung werden für jeden Welpen sorgfältig gepflegt.</p>
         </div>
@@ -31,9 +31,9 @@
 
   <section class="section puppies-list-section" aria-labelledby="puppies-list-heading">
     <div class="section-header section-header-centered">
-      <p class="eyebrow">Aktuell eingetragen</p>
-      <h2 id="puppies-list-heading">Welpenprofile</h2>
-      <p>Alle verfügbaren Angaben auf einen Blick – ruhig gegliedert und persönlich beschrieben.</p>
+      <p class="eyebrow section-eyebrow">Aktuell eingetragen</p>
+      <h2 id="puppies-list-heading" class="section-title">Welpenprofile</h2>
+      <p class="section-lead">Alle verfügbaren Angaben auf einen Blick – ruhig gegliedert und persönlich beschrieben.</p>
     </div>
 
     {{ if .LoadError }}
@@ -139,9 +139,9 @@
     }"
   >
     <div class="section-header section-header-centered">
-      <p class="eyebrow">Aus unserem Alltag</p>
-      <h2>Momente aus der Aufzucht</h2>
-      <p>Die Galerie ergänzt die einzelnen Profile mit Eindrücken vom gemeinsamen Aufwachsen und Entdecken.</p>
+      <p class="eyebrow section-eyebrow">Aus unserem Alltag</p>
+      <h2 class="section-title">Momente aus der Aufzucht</h2>
+      <p class="section-lead">Die Galerie ergänzt die einzelnen Profile mit Eindrücken vom gemeinsamen Aufwachsen und Entdecken.</p>
     </div>
     <div class="grid puppies-grid">
       <template x-for="(img, i) in images" :key="i">

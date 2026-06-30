@@ -28,13 +28,14 @@
   /* Schrift: Systemfont bleibt schnell, vertraut und gut lesbar. */
   --font-sans: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-size-base: 16px;
-  --font-size-body: clamp(1rem, 0.975rem + 0.12vw, 1.0625rem);
-  --font-size-lead: clamp(1.0625rem, 1.01rem + 0.24vw, 1.1875rem);
-  --font-size-h1: clamp(2.125rem, 1.72rem + 2vw, 3.75rem);
-  --font-size-h2: clamp(1.75rem, 1.5rem + 1.2vw, 2.75rem);
-  --font-size-h3: clamp(1.125rem, 1.06rem + 0.3vw, 1.35rem);
-  --line-height-base: 1.62;
-  --line-height-heading: 1.09;
+  /* Fliesstext und Lead bewusst etwas groesser fuer ruhige, hochwertige Lesbarkeit. */
+  --font-size-body: clamp(1.0625rem, 1.0rem + 0.3vw, 1.1875rem);   /* 17 -> 19px */
+  --font-size-lead: clamp(1.1875rem, 1.11rem + 0.34vw, 1.375rem);  /* 19 -> 22px */
+  --font-size-h1: clamp(2.125rem, 1.6rem + 2.35vw, 3.875rem);      /* 34 -> 62px */
+  --font-size-h2: clamp(1.875rem, 1.5rem + 1.5vw, 2.875rem);       /* 30 -> 46px */
+  --font-size-h3: clamp(1.1875rem, 1.1rem + 0.34vw, 1.4rem);
+  --line-height-base: 1.65;
+  --line-height-heading: 1.12;
 
   /* Abstaende: mobile-first Skala, damit Layouts kompakt bleiben und trotzdem atmen. */
   --space-1: 0.25rem;
@@ -56,13 +57,13 @@
   --shadow-md: 0 18px 44px rgba(39, 55, 46, 0.105);
 
   /* Breiten: Desktop bleibt professionell zentriert, Textzeilen bleiben lesbar. */
-  --container-max: 1180px;
+  --container-max: 1220px;
   --content-narrow: 42rem;
-  --content-readable: 48rem;
+  --content-readable: 47rem;
 
   /* Navigation: feste Werte verhindern Ueberdeckung durch den fixed Header. */
   --nav-height-mobile: 4.25rem;
-  --nav-height-desktop: 5.25rem;
+  --nav-height-desktop: 5.75rem;   /* ~92px: kompakt, aber praesenter und hochwertiger. */
   --control-height: 3rem;
 
   /* Breakpoints: mobile-first; Grids wachsen erst, wenn genug Platz da ist. */
@@ -146,16 +147,19 @@ h3 {
 
 h1 {
   font-size: var(--font-size-h1);
-  letter-spacing: -0.025em;
+  font-weight: 700;          /* Praesenz, aber durch weichere Tracking-Werte nicht brachial. */
+  letter-spacing: -0.018em;
 }
 
 h2 {
   font-size: var(--font-size-h2);
-  letter-spacing: -0.018em;
+  font-weight: 600;          /* Schrift: Semibold wirkt eleganter und schafft klare Hierarchie zu H1. */
+  letter-spacing: -0.012em;
 }
 
 h3 {
   font-size: var(--font-size-h3);
+  font-weight: 600;
   letter-spacing: 0;
 }
 
@@ -182,19 +186,31 @@ textarea {
   font: inherit;
 }
 
-.lead {
+.lead,
+.section-lead {
   color: var(--color-muted);
   font-size: var(--font-size-lead);
-  line-height: 1.6;
+  line-height: 1.55;
+  font-weight: 400;          /* Lead bleibt luftig und erzaehlerisch, nicht fett. */
 }
 
-.eyebrow {
+.eyebrow,
+.section-eyebrow {
   margin-bottom: var(--space-2);
   color: var(--color-accent);
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.11em;
+  font-size: 0.72rem;        /* Schrift: feines, ruhiges Label statt zweiter Headline. */
+  font-weight: 650;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+
+/* Section-Titel: konsistente Ueberschriftenoptik unabhaengig vom Tag (h1/h2),
+   ohne die Tag-Groessen zu ueberschreiben. */
+.section-title {
+  color: var(--color-heading);
+  line-height: var(--line-height-heading);
+  letter-spacing: -0.016em;
+  text-wrap: balance;
 }
 
 /* ==========================================================================
@@ -268,10 +284,10 @@ textarea {
   padding: var(--card-padding);
   overflow: hidden;
   background:
-    linear-gradient(135deg, rgba(255, 253, 248, 0.98), rgba(255, 244, 228, 0.94)); /* Farbe: warmer Hero-Fond fuer hochwertigeren ersten Eindruck. */
-  border: 1px solid rgba(201, 178, 143, 0.75);
+    linear-gradient(135deg, rgba(255, 253, 248, 0.96), rgba(255, 242, 224, 0.9)); /* Farbe: warmer Hero-Fond fuer hochwertigeren ersten Eindruck. */
+  border: 1px solid rgba(214, 194, 160, 0.55);   /* Weichere Kante: wirkt weniger wie harte Box. */
   border-radius: var(--radius-lg);
-  box-shadow: 0 20px 52px rgba(52, 62, 49, 0.1);
+  box-shadow: 0 28px 60px rgba(52, 62, 49, 0.1);
 }
 
 .hero-content {
@@ -280,7 +296,7 @@ textarea {
 
 .hero-content h1 {
   max-width: 17ch;
-  font-size: clamp(2.25rem, 1.82rem + 1.75vw, 3.625rem);
+  font-size: clamp(2.25rem, 1.72rem + 2.1vw, 3.625rem);
 }
 
 .hero-home .hero-content h1 {
@@ -293,13 +309,13 @@ textarea {
 
 .hero-media img {
   width: 100%;
-  max-height: clamp(260px, 46vh, 500px);
+  max-height: clamp(280px, 48vh, 540px);
   display: block;
-  aspect-ratio: 5 / 4;
+  aspect-ratio: 4 / 3;
   object-fit: cover;       /* Bilder werden nie verzerrt, nur sinnvoll zugeschnitten. */
-  border: 1px solid rgba(24, 56, 42, 0.1);
+  border: 1px solid rgba(24, 56, 42, 0.08);
   border-radius: calc(var(--radius-lg) - 0.25rem);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 16px 36px rgba(39, 55, 46, 0.12);
 }
 
 .trust-row {
@@ -313,13 +329,13 @@ textarea {
   min-height: 2rem;
   display: inline-flex;
   align-items: center;
-  padding: 0.35rem 0.65rem;
-  background: rgba(63, 122, 80, 0.09); /* Farbe: gruene Vertrauensmarker statt lauter Badges. */
-  border: 1px solid rgba(63, 122, 80, 0.18);
+  padding: 0.35rem 0.7rem;
+  background: rgba(63, 122, 80, 0.07); /* Farbe: dezente gruene Vertrauensmarker, leise eingebunden. */
+  border: 1px solid rgba(63, 122, 80, 0.16);
   border-radius: 999px;
   color: var(--color-primary-dark);
-  font-size: 0.9rem;       /* Schriftgroesse: kleine Meta-Info, nicht zweiter Claim. */
-  font-weight: 700;
+  font-size: 0.86rem;      /* Schriftgroesse: kleine Meta-Info, nicht zweiter Claim. */
+  font-weight: 600;
 }
 
 .cta-panel {
@@ -349,13 +365,6 @@ textarea {
   display: grid;
   gap: var(--space-3);
   margin: 0;
-}
-
-.home-facts > div {
-  padding: var(--space-4);
-  background: rgba(255, 253, 248, 0.7);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
 }
 
 .home-facts dt {
@@ -427,15 +436,28 @@ textarea {
 
 /* ==========================================================================
    Karten
+   --------------------------------------------------------------------------
+   Zentrale Karten-Komponenten der oeffentlichen Seiten:
+   - .card          generische Karte (Basisflaeche)
+   - .content-card   Textkarte mit lesbarer Zeilenbreite (Rechtstexte, Formular)
+   - .info-card      kompakte, warme Faktenflaeche (Kurzinfos im Raster)
+   - .media-card     Bildkarte mit object-fit: cover
+   Alle teilen Hintergrund, Border, Radius und Schatten als gemeinsame Sprache.
    ========================================================================== */
 
-.card {
+.card,
+.content-card {
   min-width: 0;
   padding: var(--card-padding);
   background: var(--color-surface); /* Karten weiss/hell fuer klare Inhalte. */
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(221, 207, 186, 0.62);  /* Weichere Kante: weniger "Admin-Box", ruhiger Uebergang. */
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
+}
+
+/* Textkarte: ruhige, gut lesbare Zeilenbreite fuer laengere Inhalte. */
+.content-card {
+  max-width: var(--content-readable);
 }
 
 .feature-card {
@@ -470,9 +492,9 @@ textarea {
 .card-kicker {
   margin-bottom: var(--space-2);
   color: var(--color-accent);
-  font-size: 0.78rem;      /* Schriftgroesse: kleine Ordnungs-/Rolleninfo fuer mehr Redaktion. */
-  font-weight: 900;
-  letter-spacing: 0.08em;
+  font-size: 0.74rem;      /* Schriftgroesse: kleine Ordnungs-/Rolleninfo, fein statt laut. */
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -561,8 +583,31 @@ textarea {
   padding: 0 var(--space-2) var(--space-3);
 }
 
+/* Hundeprofil: Rolle als ruhiger Chip - die Karte wirkt wie ein liebevolles
+   Profil statt wie eine technische Produktkarte. */
+.dog-card .card-kicker {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: var(--space-3);
+  padding: 0.25rem 0.65rem;
+  background: var(--color-primary-soft);
+  border: 1px solid rgba(50, 100, 71, 0.16);
+  border-radius: 999px;
+  color: var(--color-primary-dark);
+  letter-spacing: 0.1em;
+}
+
 .dog-content h2 {
-  font-size: 1.35rem;
+  font-size: 1.4rem;
+}
+
+.dog-content p {
+  color: var(--color-text);
+}
+
+.dog-content p strong {
+  color: var(--color-heading);
+  font-weight: 600;        /* Ruhigere Mini-Labels statt fetter Datenzeilen. */
 }
 
 .puppy-card {
@@ -592,6 +637,18 @@ textarea {
   max-width: var(--content-readable);
 }
 
+/* Seitenspalte "Ueber uns": Bild und Direktkontakt stehen ruhig untereinander,
+   damit die Kontaktdaten nicht verloren am Seitenende haengen. */
+.about-aside {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+
+.about-contact-card .contact-list {
+  margin-block: var(--space-4);
+}
+
 .legal-single {
   max-width: var(--content-readable);
   margin-inline: auto;
@@ -599,6 +656,23 @@ textarea {
 
 .legal-compact {
   padding-block: 0 var(--space-4); /* Abstand: kurze Rechtstexte schweben nicht verloren im Viewport. */
+}
+
+/* Kurze Platzhalter-/Rechtsseiten ruhig in der Bildhoehe halten, damit
+   zwischen Inhalt und Footer keine grosse leere Flaeche entsteht. */
+.main-wrapper:has(.legal-single.legal-compact) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.legal-note {
+  margin-top: var(--space-4);
+  color: var(--color-text-muted);
+}
+
+.legal-single .btn {
+  margin-top: var(--space-3);
 }
 
 .legal-content h2 {
@@ -619,13 +693,18 @@ textarea {
 }
 
 .info-grid {
+  display: grid;            /* Faktenraster ist eigenstaendig: Kacheln liegen nebeneinander, nicht gestapelt. */
   gap: var(--space-4);
   margin-block: var(--space-4);
 }
 
-.info-grid > div {
-  padding: var(--space-3);
-  background: rgba(255, 244, 228, 0.58); /* Farbe: warme Faktenflaechen geben dem Intro mehr Substanz. */
+/* Faktenflaeche: kompakte, warme Karte fuer Kurzinfos (Raster auf Start- und
+   Welpenseite). Eine gemeinsame Optik fuer alle Kurzinfo-Kacheln. */
+.info-card,
+.info-grid > div,
+.home-facts > div {
+  padding: var(--space-4);
+  background: rgba(255, 246, 233, 0.72);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
 }
@@ -988,13 +1067,13 @@ textarea.form-control {
   }
 
   .hero {
-    grid-template-columns: minmax(0, 0.94fr) minmax(22rem, 1.06fr);
+    grid-template-columns: minmax(0, 0.92fr) minmax(22rem, 1.08fr);
     gap: var(--space-6);
-    padding: clamp(1.5rem, 2vw, 2.25rem);
+    padding: clamp(1.75rem, 2.2vw, 2.5rem);
   }
 
   .hero-media img {
-    min-height: 350px;
+    min-height: 420px;
   }
 }
 

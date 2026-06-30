@@ -7,10 +7,11 @@
 
 .footer-nav {
   margin-top: auto;
-  padding: var(--space-5) 0; /* Abstand: bewusst moderat, damit der Footer nicht schwer wirkt. */
+  padding: var(--space-6) 0 var(--space-5); /* Abstand: ruhiger Abschluss, oben etwas mehr Luft fuer weichen Uebergang. */
+  /* Farbe: weicher Verlauf aus der Seitenfarbe in einen warmen Abschluss - kein harter Schnitt. */
   background:
-    linear-gradient(180deg, #f7eddd, #f2e4d0); /* Farbe: warmer professioneller Abschluss statt flacher Flaeche. */
-  border-top: 1px solid var(--color-border);
+    linear-gradient(180deg, rgba(243, 236, 223, 0) 0, #f4e7d4 2.5rem, #efe1cd 100%);
+  border-top: 0;
 }
 
 .footer-grid {
@@ -45,7 +46,8 @@
   max-width: 34rem;
   margin: var(--space-3) 0 0;
   color: var(--color-muted);
-  font-size: 0.9rem; /* Schriftgroesse: etwas kleiner als Fliesstext, aber gut lesbar. */
+  font-size: 0.95rem; /* Schriftgroesse: etwas kleiner als Fliesstext, aber gut lesbar. */
+  line-height: 1.6;
 }
 
 .footer-links {
@@ -56,8 +58,9 @@
 .footer-links h2 {
   margin: 0 0 var(--space-2);
   color: var(--color-heading);
-  font-size: 0.9rem; /* Schriftgroesse: Gruppenlabel hilft Orientierung, bleibt aber sekundaer. */
-  letter-spacing: 0.06em;
+  font-size: 0.78rem; /* Schriftgroesse: feines Gruppenlabel, ruhig und sekundaer. */
+  font-weight: 650;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
@@ -69,7 +72,7 @@
   max-width: 100%;
   padding: 0.25rem 0;
   color: var(--color-muted);
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.25;
   overflow-wrap: anywhere;
   text-decoration: none;
