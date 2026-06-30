@@ -43,7 +43,7 @@ Detaildokumente:
 Was funktioniert aktuell:
 
 - Oeffentliche Seiten werden ueber `internal/templates` gerendert.
-- `/puppies` laedt Welpen aus Neo4j; `/list-puppies` leitet dauerhaft auf diese kanonische Route um.
+- `/puppies` laedt Welpen aus Neo4j; bei einem DB-Ausfall bleiben feste Inhalte und Galerie mit einem Ladehinweis erreichbar. `/list-puppies` leitet dauerhaft auf diese kanonische Route um.
 - Adminbereich ist per Basic Auth geschuetzt.
 - Admin-POST-Routen fuer Add/Edit/Delete nutzen Single-Use-CSRF-Tokens.
 - Welpen werden in Neo4j als `(:Puppy)` gespeichert.
@@ -232,16 +232,19 @@ docker compose logs -f neo4j
 | `NEO4J_PASSWORD` | Ja | `change_me_strong_neo4j_password` | Neo4j Passwort. Niemals committen. |
 | `ADMIN_USER` | Ja | `admin_user` | Benutzer fuer Basic Auth im Adminbereich. |
 | `ADMIN_PASSWORD` | Ja | `change_me_strong_admin_password` | Passwort fuer Basic Auth. Niemals committen. |
-| `SMTP_HOST` | Optional | `smtp.invalid` | SMTP Host fuer Kontaktbenachrichtigungen. |
-| `SMTP_PORT` | Optional | `587` | SMTP Port. |
-| `SMTP_USER` | Optional | `sender@example.invalid` | SMTP Benutzer und From-Adresse. |
-| `SMTP_PASSWORD` | Optional | `change_me_smtp_password` | SMTP Passwort. Niemals committen. |
-| `CONTACT_MAIL_TO` | Optional | `contact@example.invalid` | Empfaengeradresse fuer Kontaktmail. |
+| `SMTP_HOST` | Optional | leer | SMTP Host fuer Kontaktbenachrichtigungen. |
+| `SMTP_PORT` | Optional | leer | SMTP Port, typischerweise `587`. |
+| `SMTP_USER` | Optional | leer | SMTP Benutzer und From-Adresse. |
+| `SMTP_PASSWORD` | Optional | leer | SMTP Passwort. Niemals committen. |
+| `CONTACT_MAIL_TO` | Optional | leer | Empfaengeradresse fuer Kontaktmail. |
 | `UPLOAD_DIR` | Optional | `/app/data/uploads` | Speicherort fuer Admin-Uploads. Default: `data/uploads`. |
 | `STATIC_DIR` | Optional | `/app/static` | Verzeichnis fuer `/static/...`. Default: `static`. |
 | `TEMPLATE_DIR` | Optional | `/app/templates` | Template-Verzeichnis. Default: `internal/templates`. |
 
-SMTP ist optional. Wenn SMTP nicht vollstaendig konfiguriert ist, wird die Kontaktanfrage gespeichert, aber keine Benachrichtigung versendet.
+SMTP ist optional und nur aktiv, wenn alle fuenf Werte gesetzt sind. Ohne vollstaendige
+SMTP-Konfiguration wird die Kontaktanfrage in Neo4j gespeichert, aber kein Versand
+versucht (`MailSent=false`, `MailError=smtp_not_configured`). Schlaegt ein konfigurierter
+Versand fehl, bleibt die Anfrage gespeichert und erhaelt `MailError=smtp_send_failed`.
 
 ## Projektstruktur
 
@@ -270,7 +273,7 @@ SMTP ist optional. Wenn SMTP nicht vollstaendig konfiguriert ist, wird die Konta
 | `/` | GET | Startseite | Nein | `HomeHandler`, `index.html` |
 | `/about` | GET | Ueber uns | Nein | `AboutHandler`, `about.html` |
 | `/dogs` | GET | Eltern-/Hunde-Seite | Nein | `DogsHandler`, `dogs.html` |
-| `/puppies` | GET | Oeffentliche Welpenliste aus Neo4j plus feste Galerie | Nein | `MakePuppiesHandler(driver)`, `puppies.html` |
+| `/puppies` | GET | Neo4j-Welpenliste; bei DB-Fehler Hinweis plus feste Galerie | Nein | `MakePuppiesHandler(driver)`, `puppies.html` |
 | `/list-puppies` | GET | Permanenter Redirect auf `/puppies` | Nein | `ListPuppiesHandler` |
 | `/contact` | GET | Kontaktformular | Nein | `ContactHandler`, `contact.html` |
 | `/contact` | POST | Kontakt absenden, speichern, optional mailen | Nein | `ContactHandler`, `contact_result.html` |

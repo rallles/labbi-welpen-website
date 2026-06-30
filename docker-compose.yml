@@ -35,11 +35,11 @@ services:
       TEMPLATE_DIR: /app/templates
       ADMIN_USER: ${ADMIN_USER:?ADMIN_USER is required}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}
-      SMTP_HOST: ${SMTP_HOST:-smtp.invalid}
-      SMTP_PORT: ${SMTP_PORT:-587}
-      SMTP_USER: ${SMTP_USER:-sender@example.invalid}
-      SMTP_PASSWORD: ${SMTP_PASSWORD:-change_me_smtp_password}
-      CONTACT_MAIL_TO: ${CONTACT_MAIL_TO:-contact@example.invalid}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      CONTACT_MAIL_TO: ${CONTACT_MAIL_TO:-}
     expose:
       - "8080"
     volumes:

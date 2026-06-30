@@ -78,6 +78,11 @@ Darf nicht committed werden:
 - `.env.*`
 - echte Passwoerter oder Tokens
 
+SMTP ist fuer den Betrieb optional. Ohne SMTP-Werte speichert das Kontaktformular
+Anfragen ausschliesslich in Neo4j. Eine echte Benachrichtigung wird nur versucht, wenn
+`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` und `CONTACT_MAIL_TO` vollstaendig
+gesetzt sind. Teilkonfigurationen gelten bewusst als deaktiviert; keine Dummy-Werte einsetzen.
+
 ## Zertifikate und Nginx
 
 Auf AWS mounted `docker-compose.aws.yml` die Datei `nginx.aws.conf` nach `/etc/nginx/nginx.conf`.

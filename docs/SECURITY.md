@@ -77,7 +77,6 @@ Upload-Schutz:
 
 Noch bewusst offen:
 
-- Delete entfernt aktuell den Neo4j-Knoten, aber nicht automatisch die Upload-Dateien.
 - Keine Virenscanner-/Content-Moderation-Pipeline.
 
 ## Kontaktformular-Schutz
@@ -89,9 +88,15 @@ Schutzmechanismen:
 - periodischer Cleanup alter IP-Keys
 - serverseitige Validation
 - Header-Sanitizing gegen CRLF-Injection
+- POST-Body-Limit von 64 KiB vor `ParseForm`
 - `clientIP` akzeptiert nur einzelne gueltige IPs aus `X-Real-IP` oder `X-Forwarded-For`
 
 Nginx setzt `X-Real-IP` und `X-Forwarded-For` auf `$remote_addr`, damit Forwarded-Header nicht als freie Client-Eingabe durchgereicht werden.
+
+SMTP ist optional und nur bei vollstaendiger Konfiguration aktiv. Ohne SMTP wird die
+Anfrage in Neo4j gespeichert, ohne einen Netzwerkversand zu versuchen. Versandfehler
+werden als `smtp_send_failed` gespeichert und ohne Credentials oder rohe Providerfehler
+zu loggen behandelt.
 
 ## Nginx Security Header
 

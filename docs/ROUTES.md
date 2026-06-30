@@ -7,7 +7,7 @@ Die Routen werden in `internal/router/router.go` registriert.
 | `/` | GET | `HomeHandler` | `index.html` | Nein | Startseite |
 | `/about` | GET | `AboutHandler` | `about.html` | Nein | Ueber uns |
 | `/dogs` | GET | `DogsHandler` | `dogs.html` | Nein | Hunde/Elternhunde |
-| `/puppies` | GET | `MakePuppiesHandler(driver)` | `puppies.html` | Nein | Oeffentliche Welpenliste aus Neo4j plus feste Galerie |
+| `/puppies` | GET | `MakePuppiesHandler(driver)` | `puppies.html` | Nein | Neo4j-Welpenliste; bei DB-Fehler Hinweis plus feste Galerie mit HTTP 200 |
 | `/list-puppies` | GET | `ListPuppiesHandler` | keins | Nein | Permanenter Redirect auf `/puppies` |
 | `/contact` | GET | `ContactHandler` | `contact.html` | Nein | Kontaktformular anzeigen |
 | `/contact` | POST | `ContactHandler` | `contact_result.html` oder `contact.html` | Nein | Kontakt speichern, optional Mail |

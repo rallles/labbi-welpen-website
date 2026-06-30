@@ -47,6 +47,22 @@ Beim direkten Start mit `go run ./cmd` wird aus `.env`
 auch Serveradresse, Upload-, Static- und Template-Verzeichnisse auf Containerwerte.
 Die Zugangsdaten werden weiterhin aus `.env` interpoliert.
 
+## Optionales SMTP
+
+Ohne SMTP-Konfiguration speichert die App Kontaktanfragen nur in Neo4j und versucht
+keinen Mailversand. Fuer Benachrichtigungen muessen alle Werte gemeinsam gesetzt sein:
+
+```env
+SMTP_HOST=smtp.example.de
+SMTP_PORT=587
+SMTP_USER=sender@example.de
+SMTP_PASSWORD=change_me_smtp_password
+CONTACT_MAIL_TO=kontakt@example.de
+```
+
+Fehlt mindestens ein Wert, gilt SMTP als nicht konfiguriert. Die auskommentierten
+Beispiele in `.env.example` sind keine Produktionswerte.
+
 ## Lokaler Start ohne Docker
 
 Du brauchst eine erreichbare Neo4j-Instanz.

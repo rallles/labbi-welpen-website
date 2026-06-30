@@ -51,6 +51,8 @@ type contactRateLimiter struct {
 
 var defaultContactRateLimiter = &contactRateLimiter{requests: make(map[string][]time.Time)}
 
+var errSMTPNotConfigured = errors.New("smtp_not_configured")
+
 // ContactHandler zeigt das Kontaktformular (GET) und verarbeitet es (POST).
 func ContactHandler(w http.ResponseWriter, r *http.Request, cfg config.Config, driver neo4j.DriverWithContext) {
 	switch r.Method {
@@ -111,22 +113,23 @@ func handleContactPost(w http.ResponseWriter, r *http.Request, cfg config.Config
 		return
 	}
 
+	mailConfigured := smtpConfigured(cfg)
 	mailErr := sendContactMail(cfg, contact)
-	contact.MailSent = mailErr == nil && smtpConfigured(cfg)
+	contact.MailSent = mailErr == nil && mailConfigured
 	contact.MailError = sanitizeMailError(mailErr)
 	if err := contactRepo.UpdateMailStatus(ctx, contact.ID, contact.MailSent, contact.MailError); err != nil {
 		log.Printf("Mailstatus konnte nicht aktualisiert werden: %v", err)
 	}
-	if mailErr != nil && smtpConfigured(cfg) {
-		log.Printf("E-Mail-Benachrichtigung fehlgeschlagen: %v", mailErr)
+	if mailErr != nil && mailConfigured {
+		log.Printf("E-Mail-Benachrichtigung fehlgeschlagen")
 	}
 
 	renderTemplate(w, "contact_result.html", ContactResultData{
 		Name:           contact.Name,
 		Saved:          true,
-		MailConfigured: smtpConfigured(cfg),
+		MailConfigured: mailConfigured,
 		MailSent:       contact.MailSent,
-		MailFailed:     mailErr != nil && smtpConfigured(cfg),
+		MailFailed:     mailErr != nil && mailConfigured,
 	})
 }
 
@@ -215,14 +218,15 @@ func validHeaderIP(value string) (string, bool) {
 }
 
 func smtpConfigured(cfg config.Config) bool {
-	return cfg.SMTPHost != "" && cfg.SMTPPort != "" && cfg.SMTPUser != "" &&
-		cfg.SMTPPassword != "" && cfg.ContactMailTo != ""
+	return strings.TrimSpace(cfg.SMTPHost) != "" && strings.TrimSpace(cfg.SMTPPort) != "" &&
+		strings.TrimSpace(cfg.SMTPUser) != "" && strings.TrimSpace(cfg.SMTPPassword) != "" &&
+		strings.TrimSpace(cfg.ContactMailTo) != ""
 }
 
 // sendContactMail versendet eine Benachrichtigungs-E-Mail.
 func sendContactMail(cfg config.Config, contact models.Contact) error {
 	if !smtpConfigured(cfg) {
-		return errors.New("smtp_not_configured")
+		return errSMTPNotConfigured
 	}
 
 	fromAddress, err := parseHeaderAddress(cfg.SMTPUser, "invalid_from")
@@ -313,7 +317,7 @@ func sanitizeMailError(err error) string {
 	if err == nil {
 		return ""
 	}
-	if err.Error() == "smtp_not_configured" {
+	if errors.Is(err, errSMTPNotConfigured) {
 		return "smtp_not_configured"
 	}
 	return "smtp_send_failed"

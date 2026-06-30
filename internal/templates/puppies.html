@@ -5,7 +5,7 @@
 {{ define "content" }}
 <div class="content-wrapper">
   <section class="section puppies-intro">
-    <div class="intro-card card intro-card-wide">
+    <div class="intro-card card intro-card-wide puppies-hero">
       <p class="eyebrow">Aktueller Wurf</p>
       <h1>Unsere aktuellen Welpen</h1>
       <p class="lead">Hier stellen wir die Welpen vor, die aktuell bei uns eingetragen sind.</p>
@@ -35,21 +35,58 @@
       <h2 id="puppies-list-heading">Welpen im Überblick</h2>
     </div>
 
-    {{ if .Puppies }}
+    {{ if .LoadError }}
+    <div class="card puppies-empty puppies-warning" role="status">
+      <p class="eyebrow">Vorübergehend nicht verfügbar</p>
+      <h3>Die Welpenliste macht gerade eine kleine Pause</h3>
+      <p>{{ .LoadError }}</p>
+    </div>
+    {{ else if .Puppies }}
     <div class="puppies-container">
       {{ range .Puppies }}
       {{ $puppy := . }}
-      <article class="puppy-entry">
+      <article class="puppy-entry{{ if .Bilder }} puppy-entry--with-images{{ end }}">
         <div class="puppy-info">
-          <h3>{{ .Name }}</h3>
-          <ul>
-            <li><strong>Geburtsdatum:</strong> {{ .Geburtsdatum }}</li>
-            <li><strong>Geschlecht:</strong> {{ .Geschlecht }}</li>
-            <li><strong>Farbe:</strong> {{ .Farbe }}</li>
-            <li><strong>Gewicht:</strong> {{ .Gewicht }} kg</li>
-            {{ if .Charakter }}<li><strong>Charakter:</strong> {{ .Charakter }}</li>{{ end }}
-          </ul>
-          {{ if .Notizen }}<p>{{ .Notizen }}</p>{{ end }}
+          <header class="puppy-entry__header">
+            <p class="eyebrow">Welpenprofil</p>
+            <h3>{{ .Name }}</h3>
+            <div class="puppy-tags" aria-label="Kurzprofil">
+              {{ if .Geschlecht }}<span>{{ .Geschlecht }}</span>{{ end }}
+              {{ if .Farbe }}<span>{{ .Farbe }}</span>{{ end }}
+            </div>
+          </header>
+
+          <dl class="puppy-meta">
+            {{ if .Geburtsdatum }}
+            <div><dt>Geboren</dt><dd>{{ .Geburtsdatum }}</dd></div>
+            {{ end }}
+            {{ if .Gewicht }}
+            <div><dt>Gewicht</dt><dd>{{ .Gewicht }} kg</dd></div>
+            {{ end }}
+          </dl>
+
+          {{ if .Charakter }}
+          <div class="puppy-copy">
+            <h4>Charakter</h4>
+            <p>{{ .Charakter }}</p>
+          </div>
+          {{ end }}
+
+          {{ if .Eltern }}
+          <div class="puppy-parents">
+            <h4>Eltern</h4>
+            <div class="puppy-parent-list">
+              {{ range .Eltern }}<span>{{ . }}</span>{{ end }}
+            </div>
+          </div>
+          {{ end }}
+
+          {{ if .Notizen }}
+          <div class="puppy-copy puppy-notes">
+            <h4>Gut zu wissen</h4>
+            <p>{{ .Notizen }}</p>
+          </div>
+          {{ end }}
         </div>
         {{ if .Bilder }}
         <div class="puppy-images" aria-label="Bilder von {{ .Name }}">
@@ -65,7 +102,10 @@
     </div>
     {{ else }}
     <div class="card puppies-empty">
-      <p>Aktuell sind keine Welpen eingetragen. Schauen Sie gern später wieder vorbei oder nehmen Sie Kontakt mit uns auf.</p>
+      <p class="eyebrow">Im Moment ist es ruhig</p>
+      <h3>Aktuell sind keine Welpen eingetragen</h3>
+      <p>Schauen Sie gern später wieder vorbei oder lernen Sie uns schon jetzt persönlich kennen.</p>
+      <a href="/contact" class="button button-secondary">Kontakt aufnehmen</a>
     </div>
     {{ end }}
   </section>

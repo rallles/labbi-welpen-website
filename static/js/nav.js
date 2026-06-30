@@ -1,7 +1,9 @@
 (function () {
-  var menuButton = document.querySelector('.hamburger');
+  var header = document.querySelector('.site-header');
+  var menuButton = document.querySelector('.nav-toggle');
   var navigation = document.getElementById('primary-navigation');
-  var desktopQuery = window.matchMedia('(min-width: 56rem)');
+  var navigationLinks = navigation ? navigation.querySelectorAll('.site-nav__link') : [];
+  var desktopQuery = window.matchMedia('(min-width: 60rem)');
 
   if (!menuButton || !navigation) {
     return;
@@ -12,6 +14,21 @@
     menuButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     menuButton.setAttribute('aria-label', isOpen ? 'Menü schließen' : 'Menü öffnen');
   }
+
+  function normalizedPath(path) {
+    if (path.length > 1 && path.endsWith('/')) {
+      return path.slice(0, -1);
+    }
+    return path;
+  }
+
+  var currentPath = normalizedPath(window.location.pathname);
+  navigationLinks.forEach(function (link) {
+    if (normalizedPath(new URL(link.href).pathname) === currentPath) {
+      link.classList.add('is-active');
+      link.setAttribute('aria-current', 'page');
+    }
+  });
 
   menuButton.addEventListener('click', function () {
     var isOpen = menuButton.getAttribute('aria-expanded') === 'true';
@@ -25,7 +42,15 @@
   });
 
   document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape') {
+    if (event.key === 'Escape' && menuButton.getAttribute('aria-expanded') === 'true') {
+      setMenuOpen(false);
+      menuButton.focus();
+    }
+  });
+
+  document.addEventListener('click', function (event) {
+    if (!desktopQuery.matches && menuButton.getAttribute('aria-expanded') === 'true' &&
+        header && !header.contains(event.target)) {
       setMenuOpen(false);
     }
   });

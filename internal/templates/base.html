@@ -14,24 +14,28 @@
   <script defer src="/static/js/nav.js"></script>
 </head>
 <body>
-  <header class="top-nav">
-    <div class="nav-container">
-      <a class="nav-brand" href="/" aria-label="Labbi Welpen Startseite">
-        <img src="/static/images/labbi3.svg" alt="" class="logo">
-        <span class="nav-brand-text">Labbi Welpen</span>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-brand" href="/" aria-label="Labbi Welpen Startseite">
+        <img src="/static/images/labbi3.svg" alt="" class="site-logo">
+        <span class="site-title">Labbi Welpen</span>
       </a>
-      <nav class="nav-links" id="primary-navigation" aria-label="Hauptnavigation">
-        <a href="/">Startseite</a>
-        <a href="/about">Über uns</a>
-        <a href="/dogs">Unsere Hunde</a>
-        <a href="/puppies">Welpen</a>
-        <a href="/contact">Kontakt</a>
-        <a href="/impressum">Impressum</a>
-        <a href="/datenschutz">Datenschutz</a>
-      </nav>
-      <button class="hamburger" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="Menü öffnen">
-        <span></span><span></span><span></span>
+      <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-haspopup="true" aria-label="Menü öffnen">
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
       </button>
+      <nav class="site-nav" id="primary-navigation" aria-label="Hauptnavigation">
+        <ul class="site-nav__list">
+          <li><a class="site-nav__link" href="/">Startseite</a></li>
+          <li><a class="site-nav__link" href="/about">Über uns</a></li>
+          <li><a class="site-nav__link" href="/dogs">Unsere Hunde</a></li>
+          <li><a class="site-nav__link" href="/puppies">Welpen</a></li>
+          <li><a class="site-nav__link" href="/contact">Kontakt</a></li>
+          <li><a class="site-nav__link" href="/impressum">Impressum</a></li>
+          <li><a class="site-nav__link" href="/datenschutz">Datenschutz</a></li>
+        </ul>
+      </nav>
     </div>
   </header>
 

@@ -8,7 +8,7 @@ import (
 	"labbi-app/internal/models"
 )
 
-func TestPuppiesTemplateRendersDatabaseEntriesAndEmptyState(t *testing.T) {
+func TestPuppiesTemplateRendersAllDataStates(t *testing.T) {
 	originalTemplateDir := templateDir
 	SetTemplateDir("../templates")
 	t.Cleanup(func() { templateDir = originalTemplateDir })
@@ -42,6 +42,27 @@ func TestPuppiesTemplateRendersDatabaseEntriesAndEmptyState(t *testing.T) {
 		}
 		if !strings.Contains(response.Body.String(), "Aktuell sind keine Welpen eingetragen") {
 			t.Error("rendered page does not contain the empty-state message")
+		}
+	})
+
+	t.Run("load error", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		page := PuppiesPage{LoadError: puppiesLoadErrorMessage}
+		if err := renderTemplate(response, "puppies.html", page); err != nil {
+			t.Fatalf("renderTemplate() error = %v", err)
+		}
+
+		body := response.Body.String()
+		if !strings.Contains(body, page.LoadError) {
+			t.Error("rendered page does not contain the load-error message")
+		}
+		if strings.Contains(body, "Aktuell sind keine Welpen eingetragen") {
+			t.Error("load-error state incorrectly claims that no puppies exist")
+		}
+		for _, fixedContent := range []string{"Feste Galerie", "/static/images/generated/welpe_001_-480.jpg"} {
+			if !strings.Contains(body, fixedContent) {
+				t.Errorf("load-error state does not contain fixed content %q", fixedContent)
+			}
 		}
 	})
 }

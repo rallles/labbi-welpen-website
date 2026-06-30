@@ -13,8 +13,11 @@ import (
 )
 
 type PuppiesPage struct {
-	Puppies []models.Puppy
+	Puppies   []models.Puppy
+	LoadError string
 }
+
+const puppiesLoadErrorMessage = "Die aktuellen Welpendaten konnten gerade nicht geladen werden."
 
 // MakePuppiesHandler erstellt die oeffentliche, aus Neo4j gespeiste Welpenseite.
 func MakePuppiesHandler(driver neo4j.DriverWithContext) http.HandlerFunc {
@@ -27,14 +30,16 @@ func MakePuppiesHandler(driver neo4j.DriverWithContext) http.HandlerFunc {
 		ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
 		defer cancel()
 
+		page := PuppiesPage{}
 		puppies, err := repository.NewPuppyRepository(driver).List(ctx)
 		if err != nil {
 			log.Printf("Fehler beim Abfragen der oeffentlichen Welpenliste: %v", err)
-			http.Error(w, "Fehler beim Laden der Welpen", http.StatusInternalServerError)
-			return
+			page.LoadError = puppiesLoadErrorMessage
+		} else {
+			page.Puppies = puppies
 		}
 
-		if err := renderTemplate(w, "puppies.html", PuppiesPage{Puppies: puppies}); err != nil {
+		if err := renderTemplate(w, "puppies.html", page); err != nil {
 			log.Printf("Fehler beim Rendern der oeffentlichen Welpenliste: %v", err)
 		}
 	}

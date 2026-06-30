@@ -7,19 +7,19 @@
 
 :root {
   /* Farben: warme Labrador-Palette mit gutem Kontrast und ohne harte Reinweiss-Flaechen. */
-  --color-page: #f4eadb;          /* Hintergrund: warm hell, etwas satter fuer mehr Labrador-Atmosphaere. */
-  --color-page-soft: #fbf4e9;     /* Heller Verlaufston fuer grosszuegige Sektionen. */
-  --color-surface: #fffdf8;       /* Karten: fast weiss fuer klare Lesbarkeit. */
-  --color-surface-warm: #fff4e4;  /* Warme Flaeche fuer CTA/Footer ohne Dominanz. */
-  --color-text: #2d2923;          /* Text: dunkles Braun statt Schwarz, angenehmer auf Beige. */
-  --color-muted: #665f55;         /* Sekundaertext: gedimmt, aber noch gut lesbar. */
-  --color-heading: #1f3328;       /* Headlines: tiefes Gruenbraun fuer ruhige Autoritaet. */
-  --color-primary: #3f7a50;       /* Primaerfarbe: natuerliches Gruen fuer CTAs. */
-  --color-primary-dark: #2f6040;  /* Hover: dunkler fuer klare Rueckmeldung. */
-  --color-primary-soft: #e4efe5;  /* Sanfter Fokus-/Hinweisfond. */
-  --color-accent: #b4833f;        /* Akzent: warmes Goldbraun fuer Eyebrows und Details. */
-  --color-border: #dac9b2;        /* Linien: weich genug fuer ruhige Karten. */
-  --color-border-strong: #c9b28f; /* Staerkere Kontur fuer Hover und wichtige Flaechen. */
+  --color-page: #f3ecdf;
+  --color-page-soft: #fbf7ef;
+  --color-surface: #fffdf8;
+  --color-surface-warm: #f8eddb;
+  --color-text: #304137;
+  --color-muted: #62665d;
+  --color-heading: #18382a;
+  --color-primary: #326447;
+  --color-primary-dark: #244c36;
+  --color-primary-soft: #e5eee7;
+  --color-accent: #a97836;
+  --color-border: #ddcfba;
+  --color-border-strong: #cbb692;
   --color-danger: #a9362a;        /* Fehler: gedecktes Rot statt grell. */
   --color-danger-bg: #fff0ec;     /* Fehlerfond: sichtbar, aber nicht laut. */
   --color-success: #21784c;
@@ -27,8 +27,14 @@
 
   /* Schrift: Systemfont bleibt schnell, vertraut und gut lesbar. */
   --font-sans: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-size-base: 16px;         /* Basisgroesse: mobil gut lesbar und browserfreundlich. */
-  --line-height-base: 1.65;       /* Zeilenhoehe: entspannter fuer laengere Infotexte. */
+  --font-size-base: 16px;
+  --font-size-body: clamp(1rem, 0.96rem + 0.18vw, 1.125rem);
+  --font-size-lead: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  --font-size-h1: clamp(2.25rem, 1.72rem + 2.65vw, 4.5rem);
+  --font-size-h2: clamp(1.875rem, 1.55rem + 1.65vw, 3.25rem);
+  --font-size-h3: clamp(1.125rem, 1.06rem + 0.3vw, 1.35rem);
+  --line-height-base: 1.62;
+  --line-height-heading: 1.04;
 
   /* Abstaende: mobile-first Skala, damit Layouts kompakt bleiben und trotzdem atmen. */
   --space-1: 0.25rem;
@@ -38,25 +44,30 @@
   --space-5: 1.5rem;
   --space-6: 2rem;
   --space-7: 2.5rem;              /* Abstand: weniger Leere zwischen kurzen Sektionen. */
+  --page-gutter: clamp(1.25rem, 2.2vw + 0.7rem, 3rem);
+  --section-gap: clamp(1.75rem, 1.5vw + 1.25rem, 2.75rem);
+  --card-padding: clamp(1.25rem, 1vw + 1rem, 1.875rem);
 
   /* Formen: Karten bleiben hochwertig, aber nicht verspielt. */
-  --radius-sm: 5px;
-  --radius-md: 8px;
-  --shadow-sm: 0 4px 16px rgba(45, 41, 35, 0.08);
-  --shadow-md: 0 18px 42px rgba(45, 41, 35, 0.14);
+  --radius-sm: 0.625rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.375rem;
+  --shadow-sm: 0 5px 18px rgba(39, 55, 46, 0.07);
+  --shadow-md: 0 16px 38px rgba(39, 55, 46, 0.11);
 
   /* Breiten: Desktop bleibt professionell zentriert, Textzeilen bleiben lesbar. */
-  --container-max: 1120px;
-  --content-narrow: 680px;
-  --content-readable: 760px;
+  --container-max: 1200px;
+  --content-narrow: 42rem;
+  --content-readable: 48rem;
 
   /* Navigation: feste Werte verhindern Ueberdeckung durch den fixed Header. */
-  --nav-height-mobile: 3.75rem;   /* Headerhoehe: kompakt, aber mit 44px Touchzielen. */
-  --nav-height-desktop: 4.25rem;  /* Desktophoehe: etwas luftiger fuer horizontale Navigation. */
+  --nav-height-mobile: 4.75rem;
+  --nav-height-desktop: 6rem;
+  --control-height: 3rem;
 
   /* Breakpoints: mobile-first; Grids wachsen erst, wenn genug Platz da ist. */
   --breakpoint-md: 48rem;
-  --breakpoint-nav: 56rem;
+  --breakpoint-nav: 60rem;
   --breakpoint-lg: 64rem;
 }
 
@@ -87,6 +98,7 @@ body {
     linear-gradient(180deg, var(--color-page-soft) 0, var(--color-page) 26rem); /* Farbe: warmer Seitenanfang gibt mehr Tiefe ohne Dekokitsch. */
   color: var(--color-text);
   font-family: var(--font-sans);
+  font-size: var(--font-size-body);
   line-height: var(--line-height-base);
 }
 
@@ -128,21 +140,22 @@ h2,
 h3 {
   margin: 0 0 var(--space-3);
   color: var(--color-heading);
-  line-height: 1.16;       /* Headlines bleiben kompakt und hochwertig. */
+  line-height: var(--line-height-heading);
+  text-wrap: balance;
 }
 
 h1 {
-  font-size: clamp(2rem, 6.5vw, 3.15rem); /* Schriftgroesse: harmonischer Umbruch, Desktop nicht ueberlaut. */
-  letter-spacing: 0;
+  font-size: var(--font-size-h1);
+  letter-spacing: -0.025em;
 }
 
 h2 {
-  font-size: clamp(1.35rem, 4.5vw, 2rem);
-  letter-spacing: 0;
+  font-size: var(--font-size-h2);
+  letter-spacing: -0.018em;
 }
 
 h3 {
-  font-size: 1.08rem;
+  font-size: var(--font-size-h3);
   letter-spacing: 0;
 }
 
@@ -171,16 +184,16 @@ textarea {
 
 .lead {
   color: var(--color-muted);
-  font-size: 1.04rem;      /* Lead-Text: leicht groesser fuer klare Seitenhierarchie. */
-  line-height: 1.72;
+  font-size: var(--font-size-lead);
+  line-height: 1.6;
 }
 
 .eyebrow {
   margin-bottom: var(--space-2);
   color: var(--color-accent);
-  font-size: 0.78rem;      /* Kleine Labelgroesse statt lauter Ueberschrift. */
+  font-size: 0.75rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
 }
 
@@ -192,13 +205,13 @@ textarea {
   width: 100%;
   max-width: var(--container-max);
   margin-inline: auto;
-  padding-inline: var(--space-4); /* Mobile: ca. 1rem Rand nach Vorgabe. */
+  padding-inline: var(--page-gutter);
 }
 
 .main-wrapper {
   flex: 1;
-  padding-top: calc(var(--nav-height-mobile) + var(--space-4)); /* Positionierung: Content startet unter fixed Header, aber ohne unnoetige Leere. */
-  padding-bottom: var(--space-6);
+  padding-top: calc(var(--nav-height-mobile) + var(--space-5));
+  padding-bottom: var(--section-gap);
 }
 
 .content,
@@ -208,11 +221,11 @@ textarea {
 
 .content-wrapper {
   display: grid;
-  gap: var(--space-6);     /* Abstand: klare Trennung ohne riesige Leerraeume. */
+  gap: var(--section-gap);
 }
 
 .section {
-  padding-block: var(--space-3); /* Abstand: kurze Seiten wirken dichter und weniger verloren. */
+  padding-block: var(--space-2);
 }
 
 .section-header {
@@ -252,17 +265,26 @@ textarea {
   display: grid;
   gap: var(--space-5);
   align-items: center;
-  padding: var(--space-5);
+  padding: var(--card-padding);
   overflow: hidden;
   background:
     linear-gradient(135deg, rgba(255, 253, 248, 0.98), rgba(255, 244, 228, 0.94)); /* Farbe: warmer Hero-Fond fuer hochwertigeren ersten Eindruck. */
   border: 1px solid rgba(201, 178, 143, 0.75);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
 }
 
 .hero-content {
   max-width: var(--content-narrow);
+}
+
+.hero-content h1 {
+  max-width: 17ch;
+  font-size: clamp(2.375rem, 1.8rem + 2.1vw, 4rem);
+}
+
+.hero-home .hero-content h1 {
+  max-width: 15ch;
 }
 
 .hero-media {
@@ -271,7 +293,7 @@ textarea {
 
 .hero-media img {
   width: 100%;
-  max-height: clamp(340px, 58vh, 640px); /* Bildgroesse: emotionaler, aber kontrollierter Hero. */
+  max-height: clamp(260px, 48vh, 560px);
   display: block;
   aspect-ratio: 5 / 4;
   object-fit: cover;       /* Bilder werden nie verzerrt, nur sinnvoll zugeschnitten. */
@@ -311,13 +333,70 @@ textarea {
   box-shadow: var(--shadow-sm);
 }
 
+/* Startseite: klare Inhaltsblöcke statt einer Folge gleich schwerer Karten. */
+.home-intro {
+  display: grid;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.home-intro__copy {
+  margin-bottom: 0;
+}
+
+.home-facts {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.home-facts > div {
+  padding: var(--space-4);
+  background: rgba(255, 253, 248, 0.7);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.home-facts dt {
+  margin-bottom: var(--space-1);
+  color: var(--color-heading);
+  font-weight: 800;
+}
+
+.home-facts dd {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.96em;
+}
+
+.home-principles .section-header {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.home-puppies-panel {
+  display: grid;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--card-padding);
+  background: linear-gradient(135deg, rgba(229, 238, 231, 0.8), rgba(255, 253, 248, 0.92));
+  border: 1px solid rgba(50, 100, 71, 0.22);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.home-puppies-panel p:not(.eyebrow) {
+  max-width: 42rem;
+  color: var(--color-muted);
+}
+
 /* ==========================================================================
    Karten
    ========================================================================== */
 
 .card {
   min-width: 0;
-  padding: var(--space-5);
+  padding: var(--card-padding);
   background: var(--color-surface); /* Karten weiss/hell fuer klare Inhalte. */
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -507,11 +586,11 @@ textarea {
 
 .button,
 .btn {
-  min-height: 44px;        /* Touchziel: Buttons bleiben auf Mobilgeraeten bequem. */
+  min-height: var(--control-height);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.82rem 1.12rem;
+  padding: 0.72rem 1.15rem;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   font-weight: 800;
@@ -556,6 +635,14 @@ textarea {
   flex-wrap: wrap;
   gap: var(--space-3);
   align-items: center;
+}
+
+@media (max-width: 29.99rem) {
+  .button-row .button,
+  .cta-panel > .button,
+  .home-puppies-panel > .button {
+    width: 100%;
+  }
 }
 
 /* ==========================================================================
@@ -755,21 +842,8 @@ textarea.form-control {
    ========================================================================== */
 
 @media (min-width: 48rem) {
-  .container {
-    padding-inline: var(--space-5); /* Abstand: Tablet/Desktop bekommen mehr Randruhe. */
-  }
-
-  .main-wrapper {
-    padding-top: calc(var(--nav-height-desktop) + var(--space-5)); /* Abstand: Desktop startet sichtbar unter Header, aber weniger leer. */
-  }
-
   .section {
     padding-block: var(--space-4);
-  }
-
-  .hero {
-    grid-template-columns: minmax(0, 0.82fr) minmax(340px, 1.18fr); /* Grid: Bild bekommt mehr emotionale Flaeche auf Desktop. */
-    padding: var(--space-6);
   }
 
   .feature-grid,
@@ -797,6 +871,22 @@ textarea.form-control {
     grid-template-columns: minmax(0, 1fr) auto;
     padding: var(--space-5) var(--space-6);
   }
+
+  .home-intro {
+    grid-template-columns: minmax(0, 1.05fr) minmax(18rem, 0.95fr);
+    gap: var(--space-6);
+  }
+
+  .home-puppies-panel {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: var(--space-5) var(--space-6);
+  }
+}
+
+@media (min-width: 60rem) {
+  .main-wrapper {
+    padding-top: calc(var(--nav-height-desktop) + var(--space-5));
+  }
 }
 
 @media (min-width: 64rem) {
@@ -811,10 +901,12 @@ textarea.form-control {
   }
 
   .hero {
-    margin-inline: calc(var(--space-4) * -1); /* Positionierung: Hero wirkt auf Desktop breiter, Container bleibt kontrolliert. */
+    grid-template-columns: minmax(0, 0.9fr) minmax(22rem, 1.1fr);
+    gap: var(--space-6);
+    padding: clamp(1.5rem, 2vw, 2.25rem);
   }
 
   .hero-media img {
-    min-height: 430px;     /* Bildgroesse: Desktop-Hero bekommt mehr emotionale Wirkung. */
+    min-height: 360px;
   }
 }

@@ -23,6 +23,28 @@ docker volume ls | grep neo4j
 
 Bei Passwortwechsel mit bestehendem Volume nicht einfach `.env` aendern und erwarten, dass Neo4j das alte Passwort vergisst. Backup/Restore oder bewusstes Volume-Reset planen.
 
+## Oeffentliche Welpenliste zeigt einen Ladehinweis
+
+Symptom:
+
+- `/puppies` zeigt feste Inhalte und Galerie, aber statt der dynamischen Welpenliste einen Ladehinweis.
+
+Ursache:
+
+- Neo4j ist voruebergehend nicht erreichbar oder die Abfrage ist fehlgeschlagen.
+
+Pruefen:
+
+```bash
+docker compose ps
+docker compose logs --tail=100 web neo4j
+curl -i http://localhost:8081/healthz
+```
+
+Der HTTP-Healthcheck bestaetigt die Erreichbarkeit der Go-App, ersetzt aber nicht die
+Neo4j-Pruefung. Nach Wiederherstellung der DB-Verbindung laedt `/puppies` beim naechsten
+Request wieder dynamische Daten.
+
 ## Login funktioniert nicht
 
 Symptom:
@@ -98,6 +120,7 @@ Symptom:
 
 Ursachen:
 
+- SMTP ist absichtlich nicht konfiguriert; dann ist dieses Verhalten korrekt.
 - SMTP-Konfiguration unvollstaendig.
 - SMTP-Credentials falsch.
 - Provider blockiert Login oder Port.
@@ -117,7 +140,11 @@ Pruefen:
 - `SMTP_PASSWORD`
 - `CONTACT_MAIL_TO`
 
-SMTP ist optional; ohne vollstaendige Config wird gespeichert, aber nicht gesendet.
+SMTP ist optional. Nur wenn alle fuenf Werte gesetzt sind, wird ein Versand versucht.
+Ohne vollstaendige Config wird die Anfrage in Neo4j gespeichert (`MailSent=false`,
+`MailError=smtp_not_configured`). Bei einem echten Versandfehler bleibt sie ebenfalls
+gespeichert (`MailError=smtp_send_failed`). In der Ergebnisansicht wird der jeweilige
+Zustand ohne technische oder geheime Details angezeigt.
 
 ## Zertifikat/Nginx-Probleme
 

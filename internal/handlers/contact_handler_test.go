@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"net/mail"
@@ -11,6 +12,79 @@ import (
 	"labbi-app/internal/config"
 	"labbi-app/internal/models"
 )
+
+func TestSMTPConfigured(t *testing.T) {
+	if smtpConfigured(config.Config{}) {
+		t.Fatal("smtpConfigured(empty config) = true, want false")
+	}
+
+	complete := config.Config{
+		SMTPHost:      "smtp.example.de",
+		SMTPPort:      "587",
+		SMTPUser:      "sender@example.de",
+		SMTPPassword:  "secret",
+		ContactMailTo: "kontakt@example.de",
+	}
+	if !smtpConfigured(complete) {
+		t.Fatal("smtpConfigured(complete config) = false, want true")
+	}
+
+	complete.SMTPPassword = "   "
+	if smtpConfigured(complete) {
+		t.Fatal("smtpConfigured(config with whitespace-only password) = true, want false")
+	}
+}
+
+func TestSendContactMailWithoutSMTPReturnsControlledError(t *testing.T) {
+	err := sendContactMail(config.Config{}, models.Contact{})
+	if !errors.Is(err, errSMTPNotConfigured) {
+		t.Fatalf("sendContactMail() error = %v, want errSMTPNotConfigured", err)
+	}
+	if got := sanitizeMailError(err); got != "smtp_not_configured" {
+		t.Fatalf("sanitizeMailError() = %q, want smtp_not_configured", got)
+	}
+}
+
+func TestSanitizeMailErrorMapsSendFailureToStableCode(t *testing.T) {
+	if got := sanitizeMailError(errors.New("provider detail")); got != "smtp_send_failed" {
+		t.Fatalf("sanitizeMailError() = %q, want smtp_send_failed", got)
+	}
+}
+
+func TestContactResultTemplateDistinguishesSMTPState(t *testing.T) {
+	originalTemplateDir := templateDir
+	SetTemplateDir("../templates")
+	t.Cleanup(func() { templateDir = originalTemplateDir })
+
+	tests := []struct {
+		name string
+		data ContactResultData
+		want string
+	}{
+		{
+			name: "not configured",
+			data: ContactResultData{Saved: true, MailConfigured: false},
+			want: "automatische E-Mail-Benachrichtigung ist aktuell nicht konfiguriert",
+		},
+		{
+			name: "configured but failed",
+			data: ContactResultData{Saved: true, MailConfigured: true, MailFailed: true},
+			want: "E-Mail-Benachrichtigung konnte gerade nicht versendet werden",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			response := httptest.NewRecorder()
+			if err := renderTemplate(response, "contact_result.html", tt.data); err != nil {
+				t.Fatalf("renderTemplate() error = %v", err)
+			}
+			if !strings.Contains(response.Body.String(), tt.want) {
+				t.Fatalf("rendered result does not contain %q", tt.want)
+			}
+		})
+	}
+}
 
 func TestBuildContactMailMessageSanitizesHeaders(t *testing.T) {
 	cfg := config.Config{
